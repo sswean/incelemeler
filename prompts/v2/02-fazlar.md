@@ -46,7 +46,7 @@ Bu matris, bir özelliğin **ne zaman** yapılacağının tek yetkili kaynağıd
 | Gerçek sağlayıcı adaptörleri (fiyat/müsaitlik) | 3 | Yalnızca sözleşme + kimlik bilgisi sağlanırsa |
 | Teklif talebi (lead) iletimi işletmeye | 3 | KVKK aktarım incelemesi gerekli |
 | Davranışa dayalı kişiselleştirme ve öneriler | 4 | KVKK incelemesi |
-| Kullanıcı koleksiyonları/listeleri | 4 | v1 §6 ile çelişkide §19 (Faz 4) geçerlidir |
+| Kullanıcı koleksiyonları/listeleri | 4 | v1 §6 ile v1 §19 çelişkisinde bu matris (Faz 4) geçerlidir |
 | Etkileşimli ve gelişmiş karşılaştırma aracı (3–4 öğe) | 4 | Editoryal karşılaştırma Faz 1'de |
 | Harici arama motoruna geçiş (Meilisearch/Typesense) | 4 | Ölçüt tetiklerse ADR ile Faz 3 |
 | Üründe yapay zekâ (doğal dil arama, özet) — yalnızca doğrulanmış veriyle | 4 | Faz 1–3 YASAK |

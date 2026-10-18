@@ -34,6 +34,7 @@ Alt navigasyon (5 sekme):
 | REQ-MOB-017 | ZORUNLU · 2 | **Hata izleme:** çökme raporlama (kaynak haritaları yüklenmiş), kişisel veri maskelenmiş; analitik yalnızca rızayla. |
 | REQ-MOB-018 | ZORUNLU · 2 | **Mobil testler:** birim + bileşen testleri; E2E (Maestro ya da Detox — ADR) duman senaryoları: misafir keşif, arama + filtre, listeleme açma, giriş, favori ekleme, değerlendirme gönderme, derin bağlantı açma, hesap silme başlatma; cihaz matrisi `MANUAL-QA` içinde. |
 | REQ-MOB-019 | ZORUNLU · 2 | **Mağaza varlıkları taslakları:** Türkçe uygulama adı, alt başlık, açıklama, anahtar kelimeler, ekran görüntüsü senaryoları (demo veriyle, "Demo" ibaresi olmadan gerçek görünmeyecek biçimde — gerçek işletme verisi yoksa mağaza görselleri İnsan onayıyla), destek URL'si, gizlilik politikası URL'si. |
+| REQ-MOB-021 | ZORUNLU · 2 | **Bildirim merkezi** (web `/bildirimler` ve mobil Profil): liste, okundu/okunmadı, tür filtresi, derin bağlantıyla ilgili ekrana gitme, toplu okundu; türler: değerlendirme durumu, işletme yanıtı, kaydedilen listelemede değişiklik, editoryal öneri, (izinliyse) fırsat; saklama 90 gün. |
 | REQ-MOB-020 | OLMALI · 2 | Sponsorlu içerik ve fırsat tercihleri: kullanıcı fırsat/sponsorlu **bildirimlerini** kapatabilir; akıştaki sponsorlu yerleşimler etiketli kalır (kapatma seçeneği gelir modeline göre B sınıfı karar). |
 
 ---
@@ -90,6 +91,8 @@ Alt navigasyon (5 sekme):
 ### A14.1 Tasarım ilkeleri (İlke — test edilmez, ölçülebilir alt kurallarla desteklenir)
 
 Premium ve minimal · içerik odaklı · görsel açıdan güçlü ama gereksiz efektlerden uzak · güven veren, profesyonel ve modern · seyahat, mekan keşfi, tüketici teknolojisi ve günlük yaşam içeriklerine eşit derecede uygun · mobil öncelikli · reklamlarla dolu, karmaşık, eski haber sitesi görünümünden uzak · büyük ve kaliteli görseller · tutarlı kartlar · ince kenarlıklar ve kontrollü gölgeler · dengeli beyaz alan · net filtreler, arama alanları ve kategori navigasyonu.
+
+**Kapsam kuralı (v1):** Sadece birkaç kutudan oluşan basit bir dashboard tasarımı üretme; son kullanıcıya yönelik bütün platformu (A15.5 sayfa envanteri) tasarla.
 
 **Ölçülebilir alt kurallar:** renk, aralık, yarıçap, gölge ve tipografi **yalnızca** token'lardan gelir (token dışı değer lint ile yakalanır); tek tipografi ölçeği; tek ikon seti; sayfa başına en fazla 1 birincil (dolu) buton grubu; animasyon süreleri token'lı ve `prefers-reduced-motion` ile kapanır.
 

@@ -33,7 +33,7 @@ Bu sorgular düz tam metin aramayla karşılanamaz; Faz 1'de **kural ve sözlük
 | REQ-ARA-008 | ZORUNLU · 1 | **Sıralama seçenekleri:** Önerilen (alaka + Bayes puanı + tazelik + mesafe; **ticari sinyal içermez**), Puana göre (Bayes), En çok değerlendirilen, En yakın (konum varsa), En yeni (içerik). "Önerilen" formülünün bileşenleri `/nasil-degerlendiriyoruz` sayfasında açıklanır. |
 | REQ-ARA-009 | ZORUNLU · 1 | **Organik sıralama değişmezliği testi:** aynı tohum veride arama ve kategori listesi sorgusu tüm kampanyalar aktifken ve hepsi silinmişken çalıştırılır; organik `data` dizisi iki durumda birebir aynıdır (AK-04). |
 | REQ-ARA-010 | ZORUNLU · 1 | Otomatik tamamlama: yer adları, kategoriler, listelemeler ve içerikler gruplu; klavye ile gezilebilir (ARIA combobox); son aramalar yalnızca cihazda (misafir) ya da rızayla hesapta. |
-| REQ-ARA-011 | ZORUNLU · 1 | Liste ve **harita** görünümü (listeleme listelerinde); harita sağlayıcısı yoksa harita KAPALI, liste + adres gösterilir. Harita "bu alanda ara" eylemi; kümelenme; sponsorlu pinler farklı stil + etiket ve organik pinleri gizlemez. |
+| REQ-ARA-011 | ZORUNLU · 1 | Liste görünümü ZORUNLU. **Harita görünümü İSTEĞE BAĞLI · 1** (harita sağlayıcısı X-005'e bağlı; Faz 2'de mobilde ZORUNLU); sağlayıcı yoksa harita KAPALI, liste + adres gösterilir. Harita "bu alanda ara" eylemi; kümelenme; sponsorlu pinler farklı stil + etiket ve organik pinleri gizlemez. |
 | REQ-ARA-012 | ZORUNLU · 1 | Mobil web'de filtreler **bottom sheet** içinde; uygulanan filtre sayısı rozetli; "Temizle" ve "Sonuçları göster (N)" butonları; URL filtre durumunu yansıtır (paylaşılabilir, geri tuşu çalışır). |
 | REQ-ARA-013 | ZORUNLU · 1 | Sıfır sonuç durumu: hangi filtrelerin sonucu sıfırladığını gösterir, tek tıkla gevşetme önerir, yakın şehir/kategori önerir; boş sayfa bırakılmaz. |
 | REQ-ARA-014 | ZORUNLU · 1 | `search_events`: normalize sorgu, filtre özeti, sonuç sayısı, tıklanan sonuç sırası, oturum karması (kişisel veri yok; rızaya bağlı). "En çok aranan" ve "sonuçsuz aramalar" raporları buradan. |
@@ -84,6 +84,7 @@ Sponsorlu içerik ve işletme tanıtımları önemli bir gelir kaynağıdır; bu
 | Kategori/keşif listesi | Her 10 kartta ≤ 2; ardışık iki sponsorlu yok | Varsayılan yuvalar 3. ve 8. sıra; organik sıra numarası sponsoru saymaz; aktif filtreleri karşılamayan sponsorlu öğe gösterilmez |
 | Arama sonuçları | Sayfa başına ≤ 2; ilk 10 içinde ≤ 1 | Sorgunun konum/kategori/filtresiyle eşleşmeyen sponsorlu sonuç **asla** gösterilmez |
 | Harita | Görünür alanda ≤ 1 sponsorlu pin | Farklı pin stili + etiket |
+| Rehber/Haber içerik gövdesi (sponsorlu yuva bloğu, ör. "şehir rehberi ortağı") | ≤ 1 | Bölümler arasında, etiketli; Liste, Karşılaştırma ve İnceleme içeriklerinde 0 |
 | Listeleme detay sayfası | ≤ 1 rakip sponsorlu kutu | Sayfanın alt yarısında, "Benzer seçenekler" listesinin dışında |
 | Editoryal Liste ("En iyiler") ve karşılaştırma tablosu | **0** | Listenin/tablonun içinde sponsorlu öğe yok |
 | Değerlendirme alanı/formu, hesap sayfaları, moderasyon akışları | **0** | — |
@@ -177,6 +178,8 @@ WordPress yönetim paneli kullanılmaz; projeye özel arayüz geliştirilir (AK-
 | REQ-ADM-006 | ZORUNLU · 1 | Ana sayfa düzenleyici: modül ekle/sırala/gizle, veri kaynağı (editoryal seçim/kural/kişisel/sponsorlu), görünürlük kuralları (tarih, şehir, platform), önizleme; sponsorlu sınırları aşan yapılandırma kaydedilemez. |
 | REQ-ADM-007 | ZORUNLU · 1 | SEO alanları: başlık, açıklama, canonical geçersiz kılma (yalnızca yönetici), `noindex`, OG görseli, yapılandırılmış veri önizlemesi; yönlendirme yönetimi (301/410, zincir uyarısı). |
 | REQ-ADM-008 | ZORUNLU · 1 | Panel arayüzü Türkçe; panelin kendisi de erişilebilirlik ve klavye kullanımı gereksinimlerine tabidir (Ek A18). |
+| REQ-ADM-010 | ZORUNLU · 1 | **Gelir raporu** (modül 22): kaynağa göre — sponsorluk anlaşma tutarları (elle girilen, yalnızca yönetici), affiliate komisyonu (tahmini ve onaylı ayrı; yalnızca sağlayıcı raporu/içe aktarma varsa), işletme paketleri (Faz 3); dönem filtresi, CSV; yalnızca gerçek ya da elle girilmiş veriden, kaynağı etiketli; veri yoksa "Veri yok". |
+| REQ-ADM-011 | ZORUNLU · 2 | **Bildirim yönetimi** (modül 20): şablonlar (işlemsel/editoryal/ticari ayrımı), hedef kitle, sıklık sınırları ve sessiz saatlerle uyum, önizleme ve test gönderimi (yalnızca personel cihazlarına); gerçek kullanıcılara gönderim C sınıfı ve ticari iletiler ayrı onaya bağlı (A17.5). |
 | REQ-ADM-009 | OLMALI · 1 | Editör iş akışları: bana atananlar, inceleme bekleyenler, yayın takvimi, tazelik görevleri; içerik kontrol listesi (kaynak, deneyim beyanı, menfaat beyanı, alt metin, iç bağlantı). |
 
 ---

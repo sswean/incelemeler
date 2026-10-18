@@ -141,7 +141,7 @@ Kodda, veritabanında, API'de, testlerde, arayüz metinlerinde ve dokümanlarda 
 | **"Rehber"** | Arayüzde ve URL'de yalnızca **yazı türü** için. Kişiler için her zaman "Turist rehberi". | — | — |
 | **"Kayıt"** | Tek başına kullanmak YASAK. Anlamına göre: Listeleme / Üyelik / Olay kaydı (`Event`) / Denetim kaydı (`AuditLog`). | — | — |
 
-v1'deki eski adlar (`ContentItems`, `Reviews`, `Comments`, `Offers`, `AffiliateClicks`, `CarRentalProviders`, `TourGuides`, `Hotels`, `ProviderIntegrations`) bu tabloya göre yeniden modellenir (Ek A2).
+v1'deki eski adlar (`ContentItems`, `UserPreferences` → `user_preferences`, `Reviews`, `Comments`, `Offers`, `AffiliateClicks`, `CarRentalProviders`, `TourGuides`, `Hotels`, `ProviderIntegrations`) bu tabloya göre yeniden modellenir (Ek A2).
 
 ### §4.2 Kavramsal model (özet)
 

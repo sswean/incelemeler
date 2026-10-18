@@ -23,7 +23,7 @@ Bu matris, bir özelliğin **ne zaman** yapılacağının tek yetkili kaynağıd
 | Yorum (puansız tartışma) | Kapsam dışı (varsayılan) | Flag kapalı |
 | Arama (PostgreSQL tam metin + Türkçe normalizasyon + trigram), filtre, sıralama, otomatik tamamlama | 1 | |
 | Yapılandırılmış sorgu ayrıştırma ("Antalya'da denize yakın uygun fiyatlı otel" → konum + tür + özellik + fiyat) | 1 | Kural/sözlük tabanlı; yapay zekâ YOK (Ç-8) |
-| Web liste sayfasında harita görünümü | 1 (İSTEĞE BAĞLI) | Harita sağlayıcısı X-kaydı; erişim yoksa harita KAPALI, liste + adres gösterilir |
+| Web liste sayfasında harita görünümü (liste görünümü ZORUNLU) | 1 (İSTEĞE BAĞLI) | Harita sağlayıcısı X-kaydı; erişim yoksa harita KAPALI, liste + adres gösterilir |
 | "Yakınımdakiler" (izinli tarayıcı konumu; izin yoksa şehir seçimi) | 1 (İSTEĞE BAĞLI) | |
 | Yöneticinin oluşturduğu sponsorlu içerik ve sponsorlu yerleşim (yuva, tarih, zorunlu açıklama, sınırlar) | 1 | v1 §9 "ilk sürüm", E2E-005 |
 | Sponsorluk kampanyası kaydı, gösterim/tıklama olay kaydı, kampanya başına yönetici raporu | 1 | E2E-005/006 |
@@ -56,7 +56,7 @@ Bu matris, bir özelliğin **ne zaman** yapılacağının tek yetkili kaynağıd
 | Çok dilli yayın | **Kapsam dışı** | Mimari hazırlık (i18n anahtarları, `locale` alanı) Faz 1 |
 
 **Yönetim paneli modülleri (v1 §11 numaraları):**
-- **Faz 1:** 1 (gerçek sayaçlı genel pano), 2, 3, 4–8 (tek "Listeleme yönetimi" modülünde, türe göre formlar), 9, 10, 11, 12, 13 (yönetici kampanya kaydı), 14, 16, 17, 18, 19, 21 (temel), 22 (kampanya başına gösterim/tıklama), 23, 24 (temel), 25.
+- **Faz 1:** 1 (gerçek sayaçlı genel pano), 2, 3, 4–8 (tek "Listeleme yönetimi" modülünde, türe göre formlar), 9, 10, 11, 12, 13 (yönetici kampanya kaydı), 14, 16, 17, 18, 19, 21 (temel), 22 (kampanya başına gösterim/tıklama + kaynağa göre gelir raporu, REQ-ADM-010), 23, 24 (temel), 25.
 - **Faz 2:** 20 (bildirim yönetimi).
 - **Faz 3:** 15 (gerçek entegrasyonlar), 22'nin gelişmiş hali, işletme paketleri yönetimi.
 

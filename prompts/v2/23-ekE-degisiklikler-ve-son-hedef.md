@@ -29,7 +29,7 @@
 |---|---|
 | §1 Proje tanımı ve vizyon (rol, kullanım senaryoları, hedef, alan adı, marka, sloganlar, iki ürün, ortak hesap) | §1, §5.1, §6.1 |
 | §2 Kesin teknik kısıtlar (WordPress yasağı, prototip yasağı, web/backend/mobil/DevOps yığını, modüler monolit, monorepo) | AK-13, §1.3, §5.2 Ç-1/Ç-9/Ç-10, §14, Ek A1, A20 |
-| §3 Marka kimliği ve görsel tasarım (yaklaşım, palet, UI, logo, fotoğraf kuralı, "basit dashboard üretme") | Ek A14 (A14.1–A14.7), §5.2 Ç-3/Ç-4 |
+| §3 Marka kimliği ve görsel tasarım (yaklaşım, palet, UI, logo, fotoğraf kuralı, "basit dashboard üretme") | Ek A14 (A14.1 kapsam kuralı dahil – A14.7), A15.5, §5.2 Ç-3/Ç-4 |
 | §4 Kategori mimarisi (A–J ve tüm alt kategoriler, konaklama/araç kiralama/mekan/rehber gereksinimleri, YMYL) | Ek A4 (A4.2 tablosu tüm v1 öğelerini içerir), A2.2, A4.4, A9.4 REQ-ENT-015, REQ-KAT-004 |
 | §5 Web sayfa yapısı (18 ana sayfa modülü, sponsorlu denge, sayfa listesi) | Ek A15.4, A15.5, A8.3 |
 | §6 Mobil uygulama (5 sekme, özellikler, misafir modu, mağaza kuralları) | Ek A12, §7.1 |

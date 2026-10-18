@@ -214,7 +214,7 @@ Kodda, veritabanında, API'de, testlerde, arayüz metinlerinde ve dokümanlarda 
 | **"Rehber"** | Arayüzde ve URL'de yalnızca **yazı türü** için. Kişiler için her zaman "Turist rehberi". | — | — |
 | **"Kayıt"** | Tek başına kullanmak YASAK. Anlamına göre: Listeleme / Üyelik / Olay kaydı (`Event`) / Denetim kaydı (`AuditLog`). | — | — |
 
-v1'deki eski adlar (`ContentItems`, `Reviews`, `Comments`, `Offers`, `AffiliateClicks`, `CarRentalProviders`, `TourGuides`, `Hotels`, `ProviderIntegrations`) bu tabloya göre yeniden modellenir (Ek A2).
+v1'deki eski adlar (`ContentItems`, `UserPreferences` → `user_preferences`, `Reviews`, `Comments`, `Offers`, `AffiliateClicks`, `CarRentalProviders`, `TourGuides`, `Hotels`, `ProviderIntegrations`) bu tabloya göre yeniden modellenir (Ek A2).
 
 ### §4.2 Kavramsal model (özet)
 
@@ -342,7 +342,7 @@ Bu matris, bir özelliğin **ne zaman** yapılacağının tek yetkili kaynağıd
 | Yorum (puansız tartışma) | Kapsam dışı (varsayılan) | Flag kapalı |
 | Arama (PostgreSQL tam metin + Türkçe normalizasyon + trigram), filtre, sıralama, otomatik tamamlama | 1 | |
 | Yapılandırılmış sorgu ayrıştırma ("Antalya'da denize yakın uygun fiyatlı otel" → konum + tür + özellik + fiyat) | 1 | Kural/sözlük tabanlı; yapay zekâ YOK (Ç-8) |
-| Web liste sayfasında harita görünümü | 1 (İSTEĞE BAĞLI) | Harita sağlayıcısı X-kaydı; erişim yoksa harita KAPALI, liste + adres gösterilir |
+| Web liste sayfasında harita görünümü (liste görünümü ZORUNLU) | 1 (İSTEĞE BAĞLI) | Harita sağlayıcısı X-kaydı; erişim yoksa harita KAPALI, liste + adres gösterilir |
 | "Yakınımdakiler" (izinli tarayıcı konumu; izin yoksa şehir seçimi) | 1 (İSTEĞE BAĞLI) | |
 | Yöneticinin oluşturduğu sponsorlu içerik ve sponsorlu yerleşim (yuva, tarih, zorunlu açıklama, sınırlar) | 1 | v1 §9 "ilk sürüm", E2E-005 |
 | Sponsorluk kampanyası kaydı, gösterim/tıklama olay kaydı, kampanya başına yönetici raporu | 1 | E2E-005/006 |
@@ -375,7 +375,7 @@ Bu matris, bir özelliğin **ne zaman** yapılacağının tek yetkili kaynağıd
 | Çok dilli yayın | **Kapsam dışı** | Mimari hazırlık (i18n anahtarları, `locale` alanı) Faz 1 |
 
 **Yönetim paneli modülleri (v1 §11 numaraları):**
-- **Faz 1:** 1 (gerçek sayaçlı genel pano), 2, 3, 4–8 (tek "Listeleme yönetimi" modülünde, türe göre formlar), 9, 10, 11, 12, 13 (yönetici kampanya kaydı), 14, 16, 17, 18, 19, 21 (temel), 22 (kampanya başına gösterim/tıklama), 23, 24 (temel), 25.
+- **Faz 1:** 1 (gerçek sayaçlı genel pano), 2, 3, 4–8 (tek "Listeleme yönetimi" modülünde, türe göre formlar), 9, 10, 11, 12, 13 (yönetici kampanya kaydı), 14, 16, 17, 18, 19, 21 (temel), 22 (kampanya başına gösterim/tıklama + kaynağa göre gelir raporu, REQ-ADM-010), 23, 24 (temel), 25.
 - **Faz 2:** 20 (bildirim yönetimi).
 - **Faz 3:** 15 (gerçek entegrasyonlar), 22'nin gelişmiş hali, işletme paketleri yönetimi.
 
@@ -884,7 +884,7 @@ Yeni `kind` eklemek kod değişikliği + ADR gerektirir. Kategori ve özellik ek
 
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|
-| REQ-VER-001 | ZORUNLU · 0 | `listings` ortak alanları: `id, kind, slug, name, shortDescription, primaryCategoryId, organizationId?, status, primaryMediaId?, priceLevel?, attributes JSONB, attributeSchemaVersion, dataOrigin, source, sourceVerifiedAt?, publishedAt, updatedAt, deletedAt, version`. |
+| REQ-VER-001 | ZORUNLU · 0 | `listings` ortak alanları: `id, kind, slug, name, shortDescription, description (blok JSON, kaynaklı; "Hakkında" bölümü), primaryCategoryId, organizationId?, status, primaryMediaId?, priceLevel?, attributes JSONB, attributeSchemaVersion, dataOrigin, source, sourceVerifiedAt?, publishedAt, updatedAt, deletedAt, version`. |
 | REQ-VER-002 | ZORUNLU · 1 | `categories`: ağaç (closure table ya da `ltree`), `allowedKinds[]`, sıralama, SEO alanları ve **kategori bayrakları**: `ymyl`, `requiresExpertReview`, `ugcEnabled`, `sponsorshipAllowed`, `requiresLicense` (+ lisans türü), `legalGate`. Kod bu bayraklara göre davranır (ör. `sponsorshipAllowed=false` kategoride yerleşim oluşturulamaz). |
 | REQ-VER-003 | ZORUNLU · 1 | `attribute_definitions`: `key, label(i18n), type (bool/enum/multi_enum/int/decimal+unit/text/date), options, filterable, showOnCard, required, unit, validation`; kategoriye bağlı ve **sürümlü** şema. `listings.attributes` yazılırken şemaya karşı doğrulanır; geçersiz veri kaydedilmez. |
 | REQ-VER-004 | ZORUNLU · 1 | **Editör puanı ve kullanıcı puanı ayrı tablolarda ve ayrı API alanlarındadır** (`editorialVerdict.score`, `userRating`). İkisini toplayan/ortalayan fonksiyon, sorgu ya da alan YASAK (kod araması + test). |
@@ -907,6 +907,8 @@ Yeni `kind` eklemek kod değişikliği + ADR gerektirir. Kategori ve özellik ek
 | REQ-VER-021 | ZORUNLU · 1 | İndeks planı ADR'de belgelenir; en az: `listings(kind, status, primaryCategoryId)`, GiST(geo), GIN(arama `tsvector`), GIN trigram (normalize ad), `user_reviews(listingId, status, createdAt DESC)`, kısmi benzersiz (aktif değerlendirme), `placements(slotKey, startsAt, endsAt) WHERE status='ACTIVE'`, olay tablolarında zaman bölümleme (aylık). Her indeksin gerekçesi bir sorguya bağlanır; `EXPLAIN` çıktıları kritik sorgular için `docs/architecture/` altında. |
 | REQ-VER-022 | ZORUNLU · 1 | **Migration stratejisi:** yalnızca ileri migration; yıkıcı değişiklikler expand/contract ile en az iki sürümde; kolon/tablo silen migration ayrı PR + ADR + yedek doğrulaması; CI'da boş veritabanına tüm migration'lar ve bir önceki sürümden yükseltme test edilir. |
 | REQ-VER-023 | ZORUNLU · 1 | Kimlikler: dahili `uuid` (v7 ÖNERİLİR); herkese açık URL'lerde yalnızca slug. |
+| REQ-VER-024 | ZORUNLU · 1 | `user_preferences` (v1 `UserPreferences`): ilgi alanları, seçili şehir, bildirim konuları ve kanalları, sessiz saatler, kişiselleştirme açık/kapalı, dil. `consent_records`'tan ayrıdır (tercih ≠ hukuki rıza); hesap silmede silinir. |
+| REQ-VER-025 | ZORUNLU · 1 | **İlişkisel bütünlük:** tüm ilişkiler yabancı anahtar (FK) kısıtlıdır; varsayılan `ON DELETE RESTRICT`, `CASCADE` yalnızca sahip olunan alt tablolarda (ör. revizyonlar, kriter puanları); yumuşak silinmiş kayda yeni referans verilemez; anonimleştirmede referanslar korunur (kullanıcı → "Silinmiş kullanıcı" yer tutucusu). Kurallar ER tablo sözlüğünde belgelenir ve migration testleri FK ihlalini yakalar. |
 
 ---
 
@@ -1001,6 +1003,7 @@ v1'in kategori listesi şu eksenlere ayrılarak uygulanır (Ç-12):
 | REQ-KAT-004 | ZORUNLU · 1 | **YMYL ve lisanslı kategoriler:** sağlık, finans, hukuk gibi güven gereksinimi yüksek kategoriler ve lisans gerektiren kategoriler (turist rehberi, konaklama, seyahat acentesi/tur operatörü, alkol servisi olan mekan tanıtımı) kategori bayraklarıyla işaretlenir. Bu kategorilerde: uzman incelemesi zorunlu, sponsorluk varsayılan kapalı, yayın `legalGate` arkasında; açılması C sınıfı (Ek D1). |
 | REQ-KAT-005 | ZORUNLU · 1 | Navigasyon: üst menüde en fazla 7 öğe (öneri: Seyahat, Konaklama, Yeme-İçme, Ürünler, Hizmetler, Rehberler, Fırsatlar); mega menü en fazla 2 seviye; mobil "Keşfet" sekmesinde en fazla 12 kategori kutucuğu. Menü yönetim panelinden düzenlenir. |
 | REQ-LST-001 | ZORUNLU · 1 | Her listeleme türü için **sayfa şablonu**, yayın için zorunlu alanlar, tipe özgü bloklar, birincil CTA ve **yasak CTA** tablosu (A4.4). Zorunlu alanı eksik listeleme yayımlanamaz (API doğrulaması + test). |
+| REQ-LST-010 | ZORUNLU · 1 | Her listeleme şablonunda kısa tanıtımın yanında **"Hakkında" (detaylı açıklama)** bloğu bulunur (`description`; turist rehberinde kişinin kendi açıklaması, onaylı); işletme tarafından sağlanan metin "İşletme tarafından sağlandı" ibaresiyle gösterilir. |
 | REQ-LST-002 | ZORUNLU · 1 | Bilinmeyen opsiyonel alan "Bilinmiyor" olarak gösterilir ya da hiç gösterilmez; asla "0", "Kapalı" ya da tahmini değer gösterilmez. |
 | REQ-LST-003 | ZORUNLU · 1 | 390×844 mobil görünümde ilk ekranda: ad, tür/kategori, konum (ilçe/mahalle) ya da marka, puan özeti (ya da "Yeterli değerlendirme yok"), fiyat seviyesi/fiyat durumu, uygunsa açık/kapalı durumu ve birincil CTA. |
 | REQ-LST-004 | ZORUNLU · 1 | Her listeleme sayfasının altında: "Bilgi hatalı mı? Düzeltme öner", "Bilgiler son doğrulama: {tarih}", bu listelemenin geçtiği rehber ve listeler, benzer seçenekler (organik; sponsorlu olan ayrı kutuda ve etiketli). |
@@ -1017,7 +1020,7 @@ v1'in kategori listesi şu eksenlere ayrılarak uygulanır (Ç-12):
 | **Mekan** (restoran, kafe, kahvaltı, pastane, bar) | Ad, kategori, mutfak türü, adres + koordinat, ilçe, ≥ 1 iletişim kanalı, fiyat seviyesi ya da "bilinmiyor", saatler ya da "bilinmiyor" | Haftalık saat tablosu + özel gün saatleri; menü (görsel/PDF/yapılandırılmış, **tarihli**: "Menü fotoğrafı: Eylül 2026"); özellikler (rezervasyon, paket servis, alkol servisi, bahçe, manzara, çocuk dostu, evcil hayvan, tekerlekli sandalye erişimi); fotoğraflar kaynağa göre sekmeli (İşletme / Kullanıcı / Editör); harita | Yol tarifi al · Ara · Rezervasyon yap (yalnızca rezervasyon bağlantısı varsa) | Satın al, bilet al, araç kirala |
 | **Konaklama** | Ad, konaklama türü, adres + koordinat, il/ilçe, ≥ 1 iletişim kanalı ya da sağlayıcı bağlantısı, **turizm belge numarası** (hukuki kapı, Ek D1) | Konum mesafeleri ("Denize kuş uçuşu ~350 m" — hesaplama yöntemi belirtilir); sezon; pansiyon tipleri; oda tipleri (kapasite, yatak, m²); olanaklar; giriş-çıkış saatleri; "Kimler için uygun" (ziyaret türü dağılımı, n ≥ 10); son 12 ay puanı | "{Sağlayıcı}'da fiyatları gör" (tarih/kişi parametreli) · Web sitesi · Ara | Tarih/kişi parametresi olmadan "gecelik X ₺" |
 | **Araç kiralama firması** | Ad, ≥ 1 şube (konum türü: havalimanı/şehir), iletişim | Şube listesi ve teslim prosedürü (terminal içi masa/servis aracı/karşılama); mesai dışı teslim koşulu; araç sınıfları ve örnek modeller ("Ekonomi: X **veya benzeri**" ifadesi ZORUNLU); şartlar (min. yaş, ehliyet yılı, kredi kartı/depozito, km sınırı, yakıt politikası, ek sürücü, tek yön); sigorta kapsamları açıklaması | "Fiyat ve müsaitlik için {Sağlayıcı}'ya git" · Ara | Canlı veri yokken "günlük X ₺'den başlayan" |
-| **Turist rehberi (kişi)** | Ad (kişinin açık rızasıyla), ≥ 1 bölge, ≥ 1 dil, **ruhsat doğrulandı** | Diller (seviye), hizmet bölgeleri, uzmanlık alanları, tur türleri, fiyatlandırma modeli, "Ruhsat bilgisi doğrulandı: {tarih}", bağlı turlar | İletişime geç (kişinin izin verdiği kanal) | Doğrulanmamış kişiye "Profesyonel rehber" rozeti |
+| **Turist rehberi (kişi)** | Ad (kişinin açık rızasıyla), ≥ 1 bölge, ≥ 1 dil, **ruhsat doğrulandı** | Diller (seviye), hizmet bölgeleri, uzmanlık alanları, tur türleri, fiyatlandırma modeli, "Ruhsat bilgisi doğrulandı: {tarih}", bağlı turlar | İletişime geç (kişinin izin verdiği kanal) · Rezervasyon bağlantısı (rehberin kendi dış kanalı, varsa; platform içi rezervasyon değil) | Doğrulanmamış kişiye "Profesyonel rehber" rozeti |
 | **Tur / aktivite** | Ad, operatör (kuruluş), başlangıç noktası, süre, kategori | Program akışı; dahil olanlar/olmayanlar; dil; grup büyüklüğü; zorluk; yaş sınırı; erişilebilirlik; sezon; "Hava koşullarına bağlı iptal olabilir" (balon, tekne); iptal koşulu yalnızca sağlayıcıdan | "{Sağlayıcı}'da tarih seç" · Operatörle iletişim | Platform içi satın alma (kapsam dışı) |
 | **Ürün** | Marka, model, kategori, ≥ 5 teknik özellik (kategori şemasından) | Varyant seçici; çıkış tarihi; Türkiye'de satış durumu; birimli teknik özellik tablosu; editör testi (süre, koşullar, yazılım sürümü); artılar/eksiler; "Kimler için / kimler için değil"; alternatifler; karşılaştırma bağlantıları; satıcı teklif listesi (satıcı, fiyat, kontrol zamanı) | "{Satıcı}'da gör" (affiliate açıklamasıyla) | Taze olmayan veride "En ucuz"; mekan CTA'ları |
 | **Etkinlik** | Ad, başlangıç–bitiş (`Europe/Istanbul`), mekan listelemesi, kategori | Sanatçı/organizatör; bilet durumu (kaynaklı); fiyat aralığı; yaş sınırı; erişilebilirlik; oturumlar | "Bilet al ({Satıcı})" — yalnızca bitişten önce | Bitmiş etkinlikte bilet CTA'sı; tarihinden önce değerlendirme |
@@ -1035,7 +1038,7 @@ v1'in kategori listesi şu eksenlere ayrılarak uygulanır (Ç-12):
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|
 | REQ-ICR-001 | ZORUNLU · 1 | **Blok tabanlı içerik editörü** (özel geliştirme; çekirdek editör kütüphanesi lisans izin listesinden seçilebilir — ADR). İçerik JSON blok dizisi olarak saklanır; her blok tipinin zod şeması `packages/contracts` içindedir; web ve mobil aynı blokları render eder. |
-| REQ-ICR-002 | ZORUNLU · 1 | **Blok tipleri (Faz 1):** başlık, paragraf (zengin metin: kalın, italik, bağlantı, liste), görsel, galeri, tablo, **listeleme kartı** (canlı veriye bağlı), **karşılaştırma tablosu** (listelemelerden/özelliklerden beslenir), harita (listeleme seçimi), bilgi kutusu (ipucu/uyarı), artılar–eksiler, puan kutusu (yalnızca `EditorialVerdict` bağlıysa), SSS, alıntı, **CTA** (dış yönlendirme servisine bağlı), **ticari açıklama bloğu** (sponsorlu/affiliate içerikte otomatik eklenir, silinemez), içindekiler. Ham HTML bloğu YASAK. |
+| REQ-ICR-002 | ZORUNLU · 1 | **Blok tipleri (Faz 1):** başlık, paragraf (zengin metin: kalın, italik, bağlantı, liste), görsel, galeri, tablo, **listeleme kartı** (canlı veriye bağlı), **karşılaştırma tablosu** (listelemelerden/özelliklerden beslenir), harita (listeleme seçimi), bilgi kutusu (ipucu/uyarı), artılar–eksiler, puan kutusu (yalnızca `EditorialVerdict` bağlıysa), SSS, alıntı, **CTA** (dış yönlendirme servisine bağlı), **ticari açıklama bloğu** (sponsorlu/affiliate içerikte otomatik eklenir, silinemez), **sponsorlu yuva bloğu** (v1 "sponsorlu alan"; bir `PlacementSlot`'a bağlıdır, etiket zorunlu, A8.3 sınırlarına tabi; Liste, Karşılaştırma ve İnceleme içeriklerinde YASAK), içindekiler. Ham HTML bloğu YASAK. |
 | REQ-ICR-003 | ZORUNLU · 1 | Gömülü listeleme kartları **canlı** veriden render edilir (ad, puan, fiyat durumu, açık/kapalı); listeleme kapanırsa içerikte "Kalıcı olarak kapandı" görünür ve editöre bildirim düşer. |
 | REQ-ICR-004 | ZORUNLU · 1 | İçerik türleri ve şablonları: **Rehber** (destinasyon/konu; içindekiler, harita, pratik bilgi), **Liste** ("En iyi N"; seçim yöntemi kutusu ZORUNLU; sıra editoryal ve sponsorluktan bağımsız; içinde sponsorlu öğe YASAK), **Karşılaştırma** (A vs B; kriter tablosu; kazanan ancak test edildiyse), **İnceleme** (uzun test yazısı; `EditorialVerdict`'e bağlı), **Haber** (tarihli), **Sponsorlu içerik** (ticari ilişki ZORUNLU; puanlama blokları kullanılamaz). |
 | REQ-ICR-005 | ZORUNLU · 1 | **Yayın akışı:** `TASLAK → İNCELEMEDE → ONAYLANDI → ZAMANLANDI → YAYINDA → GÜNCELLENİYOR → ARŞİV`. Yazar yayımlayamaz; editör onaylar. Sponsorlu içerik ek olarak **ticari açıklama kontrolü** adımından geçer (yönetici/hukuk kontrol listesi). Önizleme bağlantısı (imzalı, süreli, `noindex`). Zamanlanmış yayın `Europe/Istanbul`'a göre. |
@@ -1106,7 +1109,7 @@ Deneyim tarihi gelecekte olamaz; 24 aydan eski deneyimler "Eski deneyim ({ay yı
 
 **Sürtünme azaltma:** taslak otomatik kaydedilir (misafirde cihazda, üyede hesapta); misafir yazmaya başlayabilir, "Gönder"de giriş istenir ve taslak eksiksiz geri yüklenir; fotoğraflar arka planda yüklenir; mobilde çevrimdışı gönderim kuyruğa alınır; hatalar alanın yanında ve formun üstünde özetlenir.
 
-**Kullanıcıya görünen durumlar:** `Taslak → İncelemede → Yayında | Yayımlanmadı (gerekçe kodu + açıklama + "Düzenle ve yeniden gönder") → Bildirildi (karar verilene kadar yayında) → Kaldırıldı (gerekçe) → İtiraz edildi → İtiraz sonuçlandı`. Her geçişte uygulama içi bildirim + işlemsel e-posta. Yayımlanmış ve düzenlenmiş değerlendirmede "Düzenlendi: {tarih}".
+**Kullanıcıya görünen durumlar:** `Taslak → İncelemede → Yayında | Yayımlanmadı (gerekçe kodu + açıklama + "Düzenle ve yeniden gönder") → Bildirildi (karar verilene kadar yayında) → Kaldırıldı (gerekçe) → İtiraz edildi → İtiraz sonuçlandı`. Her geçişte işlemsel e-posta ve "Değerlendirmelerim" sayfasında durum güncellemesi (Faz 1); uygulama içi bildirim merkezi ve push Faz 2'de eklenir. Yayımlanmış ve düzenlenmiş değerlendirmede "Düzenlendi: {tarih}".
 
 ### A6.5 Gereksinimler
 
@@ -1181,7 +1184,7 @@ Bu sorgular düz tam metin aramayla karşılanamaz; Faz 1'de **kural ve sözlük
 | REQ-ARA-008 | ZORUNLU · 1 | **Sıralama seçenekleri:** Önerilen (alaka + Bayes puanı + tazelik + mesafe; **ticari sinyal içermez**), Puana göre (Bayes), En çok değerlendirilen, En yakın (konum varsa), En yeni (içerik). "Önerilen" formülünün bileşenleri `/nasil-degerlendiriyoruz` sayfasında açıklanır. |
 | REQ-ARA-009 | ZORUNLU · 1 | **Organik sıralama değişmezliği testi:** aynı tohum veride arama ve kategori listesi sorgusu tüm kampanyalar aktifken ve hepsi silinmişken çalıştırılır; organik `data` dizisi iki durumda birebir aynıdır (AK-04). |
 | REQ-ARA-010 | ZORUNLU · 1 | Otomatik tamamlama: yer adları, kategoriler, listelemeler ve içerikler gruplu; klavye ile gezilebilir (ARIA combobox); son aramalar yalnızca cihazda (misafir) ya da rızayla hesapta. |
-| REQ-ARA-011 | ZORUNLU · 1 | Liste ve **harita** görünümü (listeleme listelerinde); harita sağlayıcısı yoksa harita KAPALI, liste + adres gösterilir. Harita "bu alanda ara" eylemi; kümelenme; sponsorlu pinler farklı stil + etiket ve organik pinleri gizlemez. |
+| REQ-ARA-011 | ZORUNLU · 1 | Liste görünümü ZORUNLU. **Harita görünümü İSTEĞE BAĞLI · 1** (harita sağlayıcısı X-005'e bağlı; Faz 2'de mobilde ZORUNLU); sağlayıcı yoksa harita KAPALI, liste + adres gösterilir. Harita "bu alanda ara" eylemi; kümelenme; sponsorlu pinler farklı stil + etiket ve organik pinleri gizlemez. |
 | REQ-ARA-012 | ZORUNLU · 1 | Mobil web'de filtreler **bottom sheet** içinde; uygulanan filtre sayısı rozetli; "Temizle" ve "Sonuçları göster (N)" butonları; URL filtre durumunu yansıtır (paylaşılabilir, geri tuşu çalışır). |
 | REQ-ARA-013 | ZORUNLU · 1 | Sıfır sonuç durumu: hangi filtrelerin sonucu sıfırladığını gösterir, tek tıkla gevşetme önerir, yakın şehir/kategori önerir; boş sayfa bırakılmaz. |
 | REQ-ARA-014 | ZORUNLU · 1 | `search_events`: normalize sorgu, filtre özeti, sonuç sayısı, tıklanan sonuç sırası, oturum karması (kişisel veri yok; rızaya bağlı). "En çok aranan" ve "sonuçsuz aramalar" raporları buradan. |
@@ -1232,6 +1235,7 @@ Sponsorlu içerik ve işletme tanıtımları önemli bir gelir kaynağıdır; bu
 | Kategori/keşif listesi | Her 10 kartta ≤ 2; ardışık iki sponsorlu yok | Varsayılan yuvalar 3. ve 8. sıra; organik sıra numarası sponsoru saymaz; aktif filtreleri karşılamayan sponsorlu öğe gösterilmez |
 | Arama sonuçları | Sayfa başına ≤ 2; ilk 10 içinde ≤ 1 | Sorgunun konum/kategori/filtresiyle eşleşmeyen sponsorlu sonuç **asla** gösterilmez |
 | Harita | Görünür alanda ≤ 1 sponsorlu pin | Farklı pin stili + etiket |
+| Rehber/Haber içerik gövdesi (sponsorlu yuva bloğu, ör. "şehir rehberi ortağı") | ≤ 1 | Bölümler arasında, etiketli; Liste, Karşılaştırma ve İnceleme içeriklerinde 0 |
 | Listeleme detay sayfası | ≤ 1 rakip sponsorlu kutu | Sayfanın alt yarısında, "Benzer seçenekler" listesinin dışında |
 | Editoryal Liste ("En iyiler") ve karşılaştırma tablosu | **0** | Listenin/tablonun içinde sponsorlu öğe yok |
 | Değerlendirme alanı/formu, hesap sayfaları, moderasyon akışları | **0** | — |
@@ -1325,6 +1329,8 @@ WordPress yönetim paneli kullanılmaz; projeye özel arayüz geliştirilir (AK-
 | REQ-ADM-006 | ZORUNLU · 1 | Ana sayfa düzenleyici: modül ekle/sırala/gizle, veri kaynağı (editoryal seçim/kural/kişisel/sponsorlu), görünürlük kuralları (tarih, şehir, platform), önizleme; sponsorlu sınırları aşan yapılandırma kaydedilemez. |
 | REQ-ADM-007 | ZORUNLU · 1 | SEO alanları: başlık, açıklama, canonical geçersiz kılma (yalnızca yönetici), `noindex`, OG görseli, yapılandırılmış veri önizlemesi; yönlendirme yönetimi (301/410, zincir uyarısı). |
 | REQ-ADM-008 | ZORUNLU · 1 | Panel arayüzü Türkçe; panelin kendisi de erişilebilirlik ve klavye kullanımı gereksinimlerine tabidir (Ek A18). |
+| REQ-ADM-010 | ZORUNLU · 1 | **Gelir raporu** (modül 22): kaynağa göre — sponsorluk anlaşma tutarları (elle girilen, yalnızca yönetici), affiliate komisyonu (tahmini ve onaylı ayrı; yalnızca sağlayıcı raporu/içe aktarma varsa), işletme paketleri (Faz 3); dönem filtresi, CSV; yalnızca gerçek ya da elle girilmiş veriden, kaynağı etiketli; veri yoksa "Veri yok". |
+| REQ-ADM-011 | ZORUNLU · 2 | **Bildirim yönetimi** (modül 20): şablonlar (işlemsel/editoryal/ticari ayrımı), hedef kitle, sıklık sınırları ve sessiz saatlerle uyum, önizleme ve test gönderimi (yalnızca personel cihazlarına); gerçek kullanıcılara gönderim C sınıfı ve ticari iletiler ayrı onaya bağlı (A17.5). |
 | REQ-ADM-009 | OLMALI · 1 | Editör iş akışları: bana atananlar, inceleme bekleyenler, yayın takvimi, tazelik görevleri; içerik kontrol listesi (kaynak, deneyim beyanı, menfaat beyanı, alt metin, iç bağlantı). |
 
 ---
@@ -1382,6 +1388,7 @@ Alt navigasyon (5 sekme):
 | REQ-MOB-017 | ZORUNLU · 2 | **Hata izleme:** çökme raporlama (kaynak haritaları yüklenmiş), kişisel veri maskelenmiş; analitik yalnızca rızayla. |
 | REQ-MOB-018 | ZORUNLU · 2 | **Mobil testler:** birim + bileşen testleri; E2E (Maestro ya da Detox — ADR) duman senaryoları: misafir keşif, arama + filtre, listeleme açma, giriş, favori ekleme, değerlendirme gönderme, derin bağlantı açma, hesap silme başlatma; cihaz matrisi `MANUAL-QA` içinde. |
 | REQ-MOB-019 | ZORUNLU · 2 | **Mağaza varlıkları taslakları:** Türkçe uygulama adı, alt başlık, açıklama, anahtar kelimeler, ekran görüntüsü senaryoları (demo veriyle, "Demo" ibaresi olmadan gerçek görünmeyecek biçimde — gerçek işletme verisi yoksa mağaza görselleri İnsan onayıyla), destek URL'si, gizlilik politikası URL'si. |
+| REQ-MOB-021 | ZORUNLU · 2 | **Bildirim merkezi** (web `/bildirimler` ve mobil Profil): liste, okundu/okunmadı, tür filtresi, derin bağlantıyla ilgili ekrana gitme, toplu okundu; türler: değerlendirme durumu, işletme yanıtı, kaydedilen listelemede değişiklik, editoryal öneri, (izinliyse) fırsat; saklama 90 gün. |
 | REQ-MOB-020 | OLMALI · 2 | Sponsorlu içerik ve fırsat tercihleri: kullanıcı fırsat/sponsorlu **bildirimlerini** kapatabilir; akıştaki sponsorlu yerleşimler etiketli kalır (kapatma seçeneği gelir modeline göre B sınıfı karar). |
 
 ---
@@ -1438,6 +1445,8 @@ Alt navigasyon (5 sekme):
 ### A14.1 Tasarım ilkeleri (İlke — test edilmez, ölçülebilir alt kurallarla desteklenir)
 
 Premium ve minimal · içerik odaklı · görsel açıdan güçlü ama gereksiz efektlerden uzak · güven veren, profesyonel ve modern · seyahat, mekan keşfi, tüketici teknolojisi ve günlük yaşam içeriklerine eşit derecede uygun · mobil öncelikli · reklamlarla dolu, karmaşık, eski haber sitesi görünümünden uzak · büyük ve kaliteli görseller · tutarlı kartlar · ince kenarlıklar ve kontrollü gölgeler · dengeli beyaz alan · net filtreler, arama alanları ve kategori navigasyonu.
+
+**Kapsam kuralı (v1):** Sadece birkaç kutudan oluşan basit bir dashboard tasarımı üretme; son kullanıcıya yönelik bütün platformu (A15.5 sayfa envanteri) tasarla.
 
 **Ölçülebilir alt kurallar:** renk, aralık, yarıçap, gölge ve tipografi **yalnızca** token'lardan gelir (token dışı değer lint ile yakalanır); tek tipografi ölçeği; tek ikon seti; sayfa başına en fazla 1 birincil (dolu) buton grubu; animasyon süreleri token'lı ve `prefers-reduced-motion` ile kapanır.
 
@@ -1767,7 +1776,7 @@ Uygulama içi hesap silme; üçüncü taraf girişle birlikte gizlilik odaklı e
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|
 | REQ-OPS-001 | ZORUNLU · 0 | **Ortamlar:** yerel (Docker Compose), CI, PR önizleme (İSTEĞE BAĞLI), staging (üretime benzer, `noindex`, temel kimlik doğrulamalı), üretim. Ortam başına ayrı veritabanı, depolama, sırlar. |
-| REQ-OPS-002 | ZORUNLU · 0 | **CI aşamaları:** kurulum (önbellekli) → lint + format → typecheck → birim → entegrasyon (gerçek PostgreSQL konteyneri) → build → OpenAPI fark kontrolü → E2E (web/admin) → erişilebilirlik → Lighthouse CI (Faz 1) → sır/lisans/bağımlılık/SAST taramaları → `req:check`. PR'larda zorunlu kontroller. |
+| REQ-OPS-002 | ZORUNLU · 0 | **CI aşamaları:** kurulum (önbellekli) → lint + format → typecheck → birim → entegrasyon (gerçek PostgreSQL konteyneri) → build → OpenAPI fark kontrolü → E2E (web/admin) → erişilebilirlik → Lighthouse CI (Faz 1) → sır/lisans/bağımlılık/SAST taramaları → `req:check`. PR'larda zorunlu kontroller. **CD:** `main` yeşilken staging'e otomatik dağıtım (migration + duman testi + başarısızlıkta otomatik geri alma); üretim dağıtım hattı hazırlanır ama tetiklenmesi C sınıfıdır (İnsan onayı). |
 | REQ-OPS-003 | ZORUNLU · 1 | **Barındırma önerisi** ADR'de seçenek karşılaştırmasıyla (yönetilen PostgreSQL + konteyner/uygulama platformu + S3 uyumlu depolama + CDN/WAF); **veri yerleşimi (Türkiye içi / AB) KVKK aktarım kuralları nedeniyle C sınıfı İnsan kararıdır**; karar verilene kadar dağıtım yapılmaz. Altyapı kodu (IaC) taslağı İSTEĞE BAĞLI Faz 1. |
 | REQ-OPS-004 | ZORUNLU · 1 | **Sıfır kesintili dağıtım** ve migration güvenliği (REQ-VER-022); geri alma planı (önceki imaj + geriye uyumlu şema). |
 | REQ-OPS-005 | ZORUNLU · 1 | **Yedekleme:** yönetilen veritabanı otomatik yedek + zaman noktasına geri dönüş; hedefler (varsayılan, B sınıfı): **RPO ≤ 15 dk, RTO ≤ 4 saat**; nesne depolama sürümleme; **geri yükleme tatbikatı** her faz kapısında staging'de (komut ve süre raporlanır); yedekler şifreli ve ayrı hesap/bölgede (aktarım kuralları dikkate alınarak). |
@@ -2081,7 +2090,7 @@ Hiçbiri henüz sağlanmamıştır. Her biri için İnsan'dan beklenen eylem C s
 |---|---|
 | §1 Proje tanımı ve vizyon (rol, kullanım senaryoları, hedef, alan adı, marka, sloganlar, iki ürün, ortak hesap) | §1, §5.1, §6.1 |
 | §2 Kesin teknik kısıtlar (WordPress yasağı, prototip yasağı, web/backend/mobil/DevOps yığını, modüler monolit, monorepo) | AK-13, §1.3, §5.2 Ç-1/Ç-9/Ç-10, §14, Ek A1, A20 |
-| §3 Marka kimliği ve görsel tasarım (yaklaşım, palet, UI, logo, fotoğraf kuralı, "basit dashboard üretme") | Ek A14 (A14.1–A14.7), §5.2 Ç-3/Ç-4 |
+| §3 Marka kimliği ve görsel tasarım (yaklaşım, palet, UI, logo, fotoğraf kuralı, "basit dashboard üretme") | Ek A14 (A14.1 kapsam kuralı dahil – A14.7), A15.5, §5.2 Ç-3/Ç-4 |
 | §4 Kategori mimarisi (A–J ve tüm alt kategoriler, konaklama/araç kiralama/mekan/rehber gereksinimleri, YMYL) | Ek A4 (A4.2 tablosu tüm v1 öğelerini içerir), A2.2, A4.4, A9.4 REQ-ENT-015, REQ-KAT-004 |
 | §5 Web sayfa yapısı (18 ana sayfa modülü, sponsorlu denge, sayfa listesi) | Ek A15.4, A15.5, A8.3 |
 | §6 Mobil uygulama (5 sekme, özellikler, misafir modu, mağaza kuralları) | Ek A12, §7.1 |

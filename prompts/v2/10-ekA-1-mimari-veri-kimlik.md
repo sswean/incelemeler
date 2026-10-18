@@ -87,7 +87,7 @@ Yeni `kind` eklemek kod değişikliği + ADR gerektirir. Kategori ve özellik ek
 
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|
-| REQ-VER-001 | ZORUNLU · 0 | `listings` ortak alanları: `id, kind, slug, name, shortDescription, primaryCategoryId, organizationId?, status, primaryMediaId?, priceLevel?, attributes JSONB, attributeSchemaVersion, dataOrigin, source, sourceVerifiedAt?, publishedAt, updatedAt, deletedAt, version`. |
+| REQ-VER-001 | ZORUNLU · 0 | `listings` ortak alanları: `id, kind, slug, name, shortDescription, description (blok JSON, kaynaklı; "Hakkında" bölümü), primaryCategoryId, organizationId?, status, primaryMediaId?, priceLevel?, attributes JSONB, attributeSchemaVersion, dataOrigin, source, sourceVerifiedAt?, publishedAt, updatedAt, deletedAt, version`. |
 | REQ-VER-002 | ZORUNLU · 1 | `categories`: ağaç (closure table ya da `ltree`), `allowedKinds[]`, sıralama, SEO alanları ve **kategori bayrakları**: `ymyl`, `requiresExpertReview`, `ugcEnabled`, `sponsorshipAllowed`, `requiresLicense` (+ lisans türü), `legalGate`. Kod bu bayraklara göre davranır (ör. `sponsorshipAllowed=false` kategoride yerleşim oluşturulamaz). |
 | REQ-VER-003 | ZORUNLU · 1 | `attribute_definitions`: `key, label(i18n), type (bool/enum/multi_enum/int/decimal+unit/text/date), options, filterable, showOnCard, required, unit, validation`; kategoriye bağlı ve **sürümlü** şema. `listings.attributes` yazılırken şemaya karşı doğrulanır; geçersiz veri kaydedilmez. |
 | REQ-VER-004 | ZORUNLU · 1 | **Editör puanı ve kullanıcı puanı ayrı tablolarda ve ayrı API alanlarındadır** (`editorialVerdict.score`, `userRating`). İkisini toplayan/ortalayan fonksiyon, sorgu ya da alan YASAK (kod araması + test). |
@@ -110,6 +110,8 @@ Yeni `kind` eklemek kod değişikliği + ADR gerektirir. Kategori ve özellik ek
 | REQ-VER-021 | ZORUNLU · 1 | İndeks planı ADR'de belgelenir; en az: `listings(kind, status, primaryCategoryId)`, GiST(geo), GIN(arama `tsvector`), GIN trigram (normalize ad), `user_reviews(listingId, status, createdAt DESC)`, kısmi benzersiz (aktif değerlendirme), `placements(slotKey, startsAt, endsAt) WHERE status='ACTIVE'`, olay tablolarında zaman bölümleme (aylık). Her indeksin gerekçesi bir sorguya bağlanır; `EXPLAIN` çıktıları kritik sorgular için `docs/architecture/` altında. |
 | REQ-VER-022 | ZORUNLU · 1 | **Migration stratejisi:** yalnızca ileri migration; yıkıcı değişiklikler expand/contract ile en az iki sürümde; kolon/tablo silen migration ayrı PR + ADR + yedek doğrulaması; CI'da boş veritabanına tüm migration'lar ve bir önceki sürümden yükseltme test edilir. |
 | REQ-VER-023 | ZORUNLU · 1 | Kimlikler: dahili `uuid` (v7 ÖNERİLİR); herkese açık URL'lerde yalnızca slug. |
+| REQ-VER-024 | ZORUNLU · 1 | `user_preferences` (v1 `UserPreferences`): ilgi alanları, seçili şehir, bildirim konuları ve kanalları, sessiz saatler, kişiselleştirme açık/kapalı, dil. `consent_records`'tan ayrıdır (tercih ≠ hukuki rıza); hesap silmede silinir. |
+| REQ-VER-025 | ZORUNLU · 1 | **İlişkisel bütünlük:** tüm ilişkiler yabancı anahtar (FK) kısıtlıdır; varsayılan `ON DELETE RESTRICT`, `CASCADE` yalnızca sahip olunan alt tablolarda (ör. revizyonlar, kriter puanları); yumuşak silinmiş kayda yeni referans verilemez; anonimleştirmede referanslar korunur (kullanıcı → "Silinmiş kullanıcı" yer tutucusu). Kurallar ER tablo sözlüğünde belgelenir ve migration testleri FK ihlalini yakalar. |
 
 ---
 

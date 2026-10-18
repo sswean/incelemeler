@@ -2,7 +2,7 @@
 
 ### §7.1 Faz × kapsam matrisi
 
-Bu matris, bir özelliğin **ne zaman** yapılacağının tek yetkili kaynağıdır. Ek A ürünün nihai hedefini tarif eder, zamanlamayı tarif etmez. Matriste olmayan bir özellik "aktif faz dışı" sayılır ve `docs/PARKING-LOT.md` dosyasına yazılır. Aşağıdaki varsayılanlar Faz 0 raporunda İnsan onayına sunulur (B sınıfı).
+Bu matris zamanlamanın birincil kaynağıdır. Matriste satırı olmayan bir REQ'in fazı, Ek A'daki REQ satırının faz sütunudur. Matris ile REQ satırı çelişirse matris geçerlidir ve çelişki `ÇATIŞMA` olarak kaydedilir. Ne matriste ne Ek A'da olan özellik `docs/PARKING-LOT.md` dosyasına yazılır. Aşağıdaki varsayılanlar Faz 0 raporunda İnsan onayına sunulur (B sınıfı).
 
 | Özellik | Faz | Not / çözülen v1 çelişkisi |
 |---|---|---|
@@ -29,6 +29,8 @@ Bu matris, bir özelliğin **ne zaman** yapılacağının tek yetkili kaynağıd
 | Sponsorluk kampanyası kaydı, gösterim/tıklama olay kaydı, kampanya başına yönetici raporu | 1 | E2E-005/006 |
 | Affiliate bağlantı yönetimi, merkezi yönlendirici, tıklama kaydı, `rel` nitelikleri, alan adı izin listesi | 1 | E2E-006 |
 | Hesapsız işletme başvuru formu + yönetici inceleme kuyruğu | 1 | E2E-007 |
+| Fırsat (`Deal`) yönetimi ve `/firsatlar` | 1 | A8.1, REQ-ENT-016 |
+| Personel 2FA, rol × izin matrisi, denetim kaydı | 1 | REQ-HSP-007/009, REQ-VER-017 |
 | Hesapsız reklam/sponsorluk başvuru formu | 1 | |
 | Dış entegrasyon portları + MOCK adaptörler + "sağlayıcıda kontrol et" bağlantısı | 1 | E2E-008 |
 | İşlemsel e-posta (doğrulama, sıfırlama) | 1 | Gönderim sağlayıcısı X-kaydı; yerelde e-posta yakalayıcı |
@@ -56,11 +58,11 @@ Bu matris, bir özelliğin **ne zaman** yapılacağının tek yetkili kaynağıd
 | Çok dilli yayın | **Kapsam dışı** | Mimari hazırlık (i18n anahtarları, `locale` alanı) Faz 1 |
 
 **Yönetim paneli modülleri (v1 §11 numaraları):**
-- **Faz 1:** 1 (gerçek sayaçlı genel pano), 2, 3, 4–8 (tek "Listeleme yönetimi" modülünde, türe göre formlar), 9, 10, 11, 12, 13 (yönetici kampanya kaydı), 14, 16, 17, 18, 19, 21 (temel), 22 (kampanya başına gösterim/tıklama + kaynağa göre gelir raporu, REQ-ADM-010), 23, 24 (temel), 25.
+- **Faz 1:** 1 (gerçek sayaçlı genel pano), 2, 3, 4–8 (tek "Listeleme yönetimi" modülünde, türe göre formlar), 9, 10, 11, 12, 13 (yönetici kampanya kaydı), 14, 16, 17, 18, 19, 21 (temel), 22 (kampanya başına gösterim/tıklama + kaynağa göre gelir raporu, REQ-ADM-010), 23, 24 (temel), 25, 26, 27, 28, 29, 30 (A10).
 - **Faz 2:** 20 (bildirim yönetimi).
 - **Faz 3:** 15 (gerçek entegrasyonlar), 22'nin gelişmiş hali, işletme paketleri yönetimi.
 
-**Roller:** Faz 1: Süper yönetici, Yönetici, Editör, Yazar, Moderatör, Üye. Faz 3: İşletme temsilcisi, Reklamveren temsilcisi (bunlar global rol değil, **kuruluş kapsamlı üyeliktir**, Ek A3).
+**Roller:** Faz 1: Süper yönetici, Yönetici, Editör, Yazar, Moderatör, **Satış/Sponsorluk sorumlusu** (kampanya ve sponsor kuruluş ticari alanları; editör değerlendirmelerine yayından önce erişimi yok, REQ-GUN-012), Üye. Faz 3: İşletme temsilcisi, Reklamveren temsilcisi (bunlar global rol değil, **kuruluş kapsamlı üyeliktir**, Ek A3).
 
 **"Mobil" kelimesi** Faz 1'de "mobil öncelikli responsive web" anlamına gelir; yerel uygulama Faz 2'dir.
 
@@ -70,10 +72,10 @@ Varsayılan (B sınıfı; İnsan Faz 0 raporunda değiştirebilir):
 
 - **Tam uygulanan pilot türler (Faz 1):** (1) Mekan — yeme-içme; (2) Konaklama; (3) Ürün — teknoloji. Ek olarak **destinasyon sayfaları ve rehber içerikleri**.
 - Tür-özel alanlar, filtreler, detay şablonu, yapılandırılmış veri ve E2E kapsamı pilot türlerde tam uygulanır. Diğer türler (araç kiralama firması, tur/aktivite, hizmet işletmesi, ilgi noktası, turist rehberi, etkinlik) veri modelinde ve genel şablonda yer alır; **yayın eşiği** sağlanana kadar gizli kalır.
-- **Kanıt:** Faz 1 sonunda dördüncü bir tür (ör. Tur/Aktivite kategorisi + özellik şeması) **yalnızca yönetim panelinden** eklenip yayımlanır ve demo betiğinde gösterilir.
+- **Kanıt:** Faz 1 sonunda pilot olmayan ve kodda zaten tanımlı bir tür altında (ör. `EXPERIENCE` → "Tekne turları" kategorisi + özellik şeması + değerlendirme kriterleri) **yalnızca yönetim panelinden** yeni bir kategori eklenip yayımlanır ve demo betiğinde gösterilir. Yeni `kind` eklenmez (Ç-11).
 - **Lansman şehirleri (öneri):** İstanbul, İzmir, Antalya, Muğla, Nevşehir (Kapadokya).
 - Araç kiralama firması sayfaları Faz 1 sonunda **canlı fiyat olmadan** açılabilir.
-- **Soğuk başlangıç önlemi:** Yönetim panelinde CSV/XLSX toplu içe aktarma (alan doğrulama, yinelenen kayıt tespiti — ad + koordinat yakınlığı, önizleme, geri alma, `source` alanı ZORUNLU) Faz 1'de ZORUNLU. Kaynak; lisanslı veri, işletme beyanı ya da editör girişi olmalıdır (scraping YASAK).
+- **Soğuk başlangıç önlemi:** Yönetim panelinde CSV/XLSX toplu içe aktarma (alan doğrulama, yinelenen listeleme tespiti — ad + koordinat yakınlığı, önizleme, geri alma, `source` alanı ZORUNLU) Faz 1'de ZORUNLU. Kaynak; lisanslı veri, işletme beyanı ya da editör girişi olmalıdır (scraping YASAK).
 - **Yayın eşikleri** (yönetim panelinden ayarlanabilir; varsayılanlar):
 
 | Sayfa | Menüde görünme ve indekslenme eşiği |
@@ -82,6 +84,7 @@ Varsayılan (B sınıfı; İnsan Faz 0 raporunda değiştirebilir):
 | İlçe × kategori hub'ı | ≥ 10 listeleme |
 | Ürün kategorisi | ≥ 15 ürün (teknik özellikleri dolu) ve ≥ 3 editör değerlendirmeli ürün |
 | Destinasyon (il) sayfası | ≥ 1 rehber ve ≥ 2 yayımlanmış hub |
+| Pilot olmayan türlerin tek tek listeleme sayfaları | Yayın için zorunlu alanlar tamamsa yayımlanabilir ve aramada/korpusta bulunur; bu türlerin hub/kategori sayfaları yukarıdaki eşiklere tabidir (eşik altında menü, site haritası ve otomatik tamamlama dışında) |
 | Eşiğin altı | Sayfa üretilmez ya da `noindex` + menü/site haritası dışı; "Yakında" sayfası açılmaz |
 
 ### §7.3 Aşırı mühendislik yasağı
@@ -149,7 +152,7 @@ Her madde kanıtla raporlanır:
 ### §8.3 Faz Bitti Tanımı (Faz 1–4 ortak)
 
 - Aktif fazın tüm ZORUNLU REQ'leri `TAMAM` ya da İnsan'ın yazılı onayıyla `ERTELENDİ`. `TAMAM` olmayan her OLMALI REQ için tek satırlık gerekçe.
-- Fazın E2E senaryoları CI'da **art arda 3 koşuda** yeşil (kararsız test yok).
+- Fazın E2E senaryoları CI'da **art arda 3 koşuda** yeşil (kararsız test yok). X-031 sağlanana kadar CI iş akışı dosyası yazılır ve aynı adımlar yerelde `pnpm ci:local` ile art arda 3 kez çalıştırılır; "CI'da yeşil" ölçütleri `DOĞRULANAMADI (CI yok)` olarak raporlanır ve `req:check (b)` son `ci:local` sonucunu kullanır.
 - Açık P0 hata sayısı 0; P1 hatalar listelenmiş.
 - Temiz klon testi geçti (`pnpm verify` + `pnpm test:e2e`).
 - Bağımlılık denetiminde yüksek/kritik açık yok (varsa ADR'li istisna); sır taraması temiz.

@@ -75,7 +75,7 @@ Aşağıdaki sözcükler yalnızca **BÜYÜK HARFLE** yazıldıklarında bu anla
 | **ÖNERİLİR** | İyi uygulama; uygulayıp uygulamamaya sen karar verirsin. | Önemliyse ADR |
 | **İSTEĞE BAĞLI** | Kapsamda ama faz bitişi için gerekli değil. | — |
 
-Ek A'daki her REQ satırı tam olarak bir normatif sözcük taşır.
+Ek A'daki her REQ'in düzeyi `Düzey · Faz` sütunundaki sözcüktür. Satır içindeki başka normatif sözcükler yalnızca o alt maddeyi niteler (ör. ZORUNLU bir REQ içindeki "İSTEĞE BAĞLI" alt madde faz bitişi için gerekmez).
 
 ### §3.2 Öncelik sırası
 
@@ -120,8 +120,8 @@ Kodda, veritabanında, API'de, testlerde, arayüz metinlerinde ve dokümanlarda 
 | **Marka** | Ürün üreticisi. | `Organization` (type=BRAND) | İşletme ile aynı olmak zorunda değildir. |
 | **İçerik (editoryal)** | Anlatı içeriği: Rehber, Liste ("En iyiler"), Karşılaştırma, İnceleme (uzun test yazısı), Haber, Sponsorlu içerik. Listelemelere gömülü kart bloklarıyla bağlanır. | `Article` + `articleType` | Listeleme ve kullanıcı girdileri içerik değildir. |
 | **Editör değerlendirmesi** (UI: "Editör değerlendirmesi") | Ekibin bir listeleme hakkındaki yapılandırılmış değerlendirmesi: kriter puanları, artılar/eksiler, özet, editör puanı ve ZORUNLU **deneyim beyanı**. Listeleme başına en fazla 1 güncel kayıt. | `EditorialVerdict` | Kullanıcı değerlendirmesi |
-| **Kullanıcı değerlendirmesi** (UI: "Değerlendirme") | Üyenin bir listelemeye verdiği puan, metin ve deneyim bilgisi. Moderasyondan geçer. Üye başına listeleme başına 1 aktif kayıt. | `UserReview` | Yorum |
-| **Yorum** | Bir içeriğin altındaki puansız tartışma. **Faz 1–3'te yok** (feature flag kapalı). v1'deki "yorum yapar" ifadeleri = Kullanıcı değerlendirmesi. | `Comment` | Kullanıcı değerlendirmesi |
+| **Kullanıcı değerlendirmesi** (UI: "Değerlendirme") | Üyenin bir listelemeye verdiği puan, metin ve deneyim bilgisi. Moderasyondan geçer. Üye başına listeleme başına 1 aktif değerlendirme. | `UserReview` | Yorum |
+| **Yorum** | Bir içeriğin altındaki puansız tartışma. **Hiçbir fazda yok** (kapsam dışı, §7.1; feature flag kapalı). v1'deki "yorum yapar" ifadeleri = Kullanıcı değerlendirmesi. | `Comment` | Kullanıcı değerlendirmesi |
 | **İşletme yanıtı** | Doğrulanmış işletme temsilcisinin bir değerlendirmeye herkese açık yanıtı (değerlendirme başına 1). | `OwnerResponse` | — |
 | **Soru-cevap** | Listeleme hakkında soru ve cevaplar. | `Question` / `Answer` | — |
 | **Editör puanı / Kullanıcı puanı** | İki ayrı sayı, iki ayrı API alanı. **Asla birleştirilmez**; "genel puan" hesaplanmaz. | `EditorialVerdict.score`, `RatingStats` | — |
@@ -195,7 +195,7 @@ User ─< Favorite ; User ─< Collection (Faz 4)
 | Ç-10 | "Gerektiğinde OpenAPI", "gerektiğinde statik üretim". | OpenAPI Faz 1'den itibaren her uç nokta için ZORUNLU ve koddan üretilir. Render stratejisi (SSR/SSG/ISR) sayfa türü başına ADR'de tablo olarak tanımlanır. |
 | Ç-11 | §4 "yeni kategoriler kod yazmadan eklenir" ↔ §12 `Hotels`, `Products`, `CarRentalProviders`, `TourGuides` ayrı tablolar. | **Kategori = veri, tür (kind) = kod.** Yeni kategori ve özellik panelden eklenir; yeni *tür* kod + ADR gerektirir. Dikeye özel ayrı ana tablolar kurulmaz (Ek A2). |
 | Ç-12 | §4 kategori listesi tür, özellik ve içerik türünü tek ağaçta topluyor ("Aile dostu konaklama", "Şehir rehberleri", "Balayı otelleri"). | Beş eksen: listeleme türü · kategori · özellik · içerik türü · koleksiyon sayfası (Ek A4). |
-| Ç-13 | "Sponsorlu ürün incelemesi" türü + editör puanı yasağı yok. | Sponsorlu içerikte editör puanı, "Editörün seçimi", "En iyi", "Kazanan" rozeti YASAK. Tür adı "Sponsorlu tanıtım" olur ve puanlama şablonu kullanamaz (Ek A8). |
+| Ç-13 | "Sponsorlu ürün incelemesi" türü + editör puanı yasağı yok. | Sponsorlu içerikte editör puanı, "Editörün seçimi", "En iyi", "Kazanan" rozeti YASAK. v1'deki "Sponsorlu ürün incelemesi" türü kaldırılır; ihtiyaç `articleType=SPONSORED` ("Sponsorlu içerik") ile karşılanır. "Sponsorlu tanıtım" yalnızca bu türün listelemeye bağlı alt şablonunun adıdır ve puanlama blokları kullanamaz (Ek A8). |
 | Ç-14 | "Yerel rehberler", "tur satın alma", "platform içi rezervasyon ve ödeme" lisans gerektirebilir. | Turist rehberi profilleri yalnızca ruhsat doğrulamasıyla yayımlanır; tur satışı ve platform içi rezervasyon/ödeme **kapsam dışıdır** (dış yönlendirme yapılır) — hukuki inceleme olmadan açılmaz (Ek D1). |
 | Ç-15 | Etiket sözlüğü serbest seçim gibi ("Sponsorlu", "Reklam", "İş birliği", "Sponsorlu sonuç"). | Ticari ilişki türüne göre **sabit** etiket sözlüğü; editör değiştiremez; metinler hukuki incelemeyle kesinleşir ve yapılandırmadan güncellenir (Ek A8.2). |
 

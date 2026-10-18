@@ -54,7 +54,7 @@ Faz 0'dan itibaren ZORUNLU; `AGENTS.md` ve README'de yazılı; CI aynı komutlar
 
 | Komut | İşlev | Kabul ölçütü |
 |---|---|---|
-| `pnpm setup` (`scripts/init.sh`) | Bağımlılıkları kurar, `.env` yoksa `.env.example`'dan kopyalar, Docker servislerini başlatır, migration uygular, demo seed yükler. | Temiz klonda tek komut; idempotent. |
+| `pnpm run setup` (`scripts/init.sh`; pnpm'in yerleşik `setup` komutuyla çakışmaması için README, AGENTS.md ve CI'da daima `run` ile yazılır) | Bağımlılıkları kurar, `.env` yoksa `.env.example`'dan kopyalar, Docker servislerini başlatır, migration uygular, demo seed yükler. | Temiz klonda tek komut; idempotent. |
 | `pnpm dev` | Web, API, admin (ve Faz 2'den itibaren mobil Metro) geliştirme modunda. | Portlar README'de. |
 | `pnpm verify` | Lint, typecheck, birim, entegrasyon, build, `req:check`. | Yerelde ve CI'da aynı sonuç. |
 | `pnpm test:smoke` | En kritik 3–5 akış. | < 2 dakika. |
@@ -127,7 +127,7 @@ Faz 0'da oluşturulur, sürekli güncellenir.
 - ZORUNLU yığın, altın kurallar ya da faz kapsamında değişiklik.
 - Lisans izin listesi dışında bağımlılık ekleme.
 - Faz geçişi (1 → 2 → 3 → 4).
-- Lisans/belge gerektiren kategorilerin (turist rehberi, konaklama, sağlık, finans, hukuk, alkol) yayına açılması.
+- REQ-KAT-004 kapsamındaki (YMYL ve lisanslı) kategorilerin **üretimde gerçek listelemelerle** yayına açılması.
 
 **Soru sorma biçimi:** Her soru seçenekli, önerili ve varsayılanlıdır (Ek C-5). Aynı soruyu tekrar sorma. Yanıtları `OPEN-QUESTIONS` ve ilgili ADR'ye işle. Engelle karşılaştığında yıkıcı kısa yol kullanma.
 

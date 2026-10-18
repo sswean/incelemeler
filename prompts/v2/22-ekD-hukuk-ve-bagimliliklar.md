@@ -67,3 +67,4 @@ Hiçbiri henüz sağlanmamıştır. Her biri için İnsan'dan beklenen eylem C s
 | X-028 | Stok görsel lisansı (isteğe bağlı) ve fotoğraf çekimi | 1 | Placeholder sistemi |
 | X-029 | Eser meta veri kaynağı (film/kitap/oyun; lisanslı) | 4 | Tür kapalı |
 | X-030 | Marka tescili ve logo tasarımı | 1 | Geçici kelime işareti |
+| X-031 | Git uzak deposu + CI çalıştırıcısı (dal koruması dahil) | 0 | Yerel `pnpm ci:local` |

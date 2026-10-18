@@ -129,24 +129,24 @@ Yeni `kind` eklemek kod değişikliği + ADR gerektirir. Kategori ve özellik ek
 | REQ-HSP-008 | ZORUNLU · 1 | Hız sınırları (varsayılan): giriş IP başına 10/dk ve hesap başına 5/dk (artan bekleme); parola sıfırlama e-posta başına 3/saat; kayıt IP başına 5/saat; değerlendirme gönderme üye başına 5/gün. Aşımda 429 + `Retry-After`. Yanıtlar hesabın var olup olmadığını açığa vurmaz. |
 | REQ-HSP-009 | ZORUNLU · 1 | **Rol × izin matrisi** `docs/requirements/HSP.md` içinde tablo olarak yazılır; her hücre bir yetkilendirme testine bağlanır. Varsayılan özet aşağıdadır. |
 | REQ-HSP-010 | ZORUNLU · 3 | Kuruluş kapsamlı yetki: İşletme temsilcisi yalnızca kendi kuruluşunun listelemelerini, yanıtlarını ve raporlarını görür/değiştirir; başka kuruluşun kaynağına erişim 404 döner (IDOR testi). |
-| REQ-HSP-011 | ZORUNLU · 1 | Hesap silme web'de (Faz 2'de uygulama içinde de) self-servis; onay adımı + 30 gün geri alma penceresi (varsayılan, B sınıfı) sonrasında anonimleştirme; yayımlanmış değerlendirmelerin akıbeti hukuki karara bağlıdır (L-kaydı) — karar gelene kadar varsayılan: içerik "Silinmiş kullanıcı" olarak anonimleştirilir. |
+| REQ-HSP-011 | ZORUNLU · 1 | Hesap silme web'de (Faz 2'de uygulama içinde de) self-servis; onay adımından sonra hesap "silme bekliyor" durumuna geçer ve giriş yapılamaz; 30 günlük geri alma penceresinin (varsayılan, B sınıfı) sonunda REQ-KVK-021 uygulanır (varsayılan: "içeriklerimi de sil"; "anonim kalsın" seçeneği L-kaydı karara bağlanana kadar KAPALI). |
 | REQ-HSP-012 | ZORUNLU · 1 | Kullanıcı verilerini makine tarafından okunabilir biçimde (JSON) dışa aktarabilir; talep kaydı ve süre takibi Ek A17'ye bağlıdır. |
 | REQ-HSP-013 | OLMALI · 1 | Kamuya açık profil: görünen ad (gerçek ad zorunlu değil), avatar (isteğe bağlı), şehir (isteğe bağlı), değerlendirme sayısı, üyelik ayı. E-posta, telefon ve kesin konum asla herkese açık değildir. Profil gizlilik ayarı: herkese açık / yalnızca değerlendirmelerde ad. |
 | REQ-HSP-014 | ZORUNLU · 1 | Yaş: hizmet 18 yaş ve üzerine yöneliktir (varsayılan, hukuki doğrulama L-kaydı); kayıtta beyan alınır. |
 
 **Rol matrisi (özet; ayrıntı HSP.md'de):**
 
-| Eylem | Süper yön. | Yönetici | Editör | Yazar | Moderatör | Üye | İşletme t. (F3) | Reklamveren t. (F3) |
-|---|---|---|---|---|---|---|---|---|
-| Rol atama, sistem ayarları, hukuki kapı açma talebi | ✔ | — | — | — | — | — | — | — |
-| Kategori/özellik şeması yönetimi | ✔ | ✔ | — | — | — | — | — | — |
-| Listeleme oluşturma/düzenleme | ✔ | ✔ | ✔ | taslak | — | düzeltme önerisi | kendi listelemesi: öneri (onaylı) | — |
-| İçerik yayımlama | ✔ | ✔ | ✔ | taslak + incelemeye gönder | — | — | — | — |
-| Editör değerlendirmesi/puanı | ✔ | ✔ | ✔ | taslak | — | — | — | — |
-| Kullanıcı değerlendirmesi moderasyonu | ✔ | ✔ | — | — | ✔ | bildir | bildir + yanıt | — |
-| Sponsorluk kampanyası/yerleşim | ✔ | ✔ (tutar alanı: yönetici) | sponsorlu içerik metni | — | — | — | — | kendi kampanyası: başvuru/rapor |
-| Affiliate bağlantı yönetimi | ✔ | ✔ | bağlantı ekleme (izinli alanlar) | — | — | — | — | — |
-| Denetim kaydı görüntüleme | ✔ | ✔ (salt okunur) | — | — | kendi işlemleri | — | — | — |
-| Kişisel veri dışa aktarma (kullanıcı adına) | ✔ | — | — | — | — | kendi verisi | — | — |
+| Eylem | Süper yön. | Yönetici | Editör | Yazar | Moderatör | Satış/Sponsorluk | Üye | İşletme t. (F3) | Reklamveren t. (F3) |
+|---|---|---|---|---|---|---|---|---|---|
+| Rol atama, sistem ayarları, hukuki kapı açma talebi | ✔ | — | — | — | — | — | — | — | — |
+| Kategori/özellik şeması yönetimi | ✔ | ✔ | — | — | — | — | — | — | — |
+| Listeleme oluşturma/düzenleme | ✔ | ✔ | ✔ | taslak | — | — | düzeltme önerisi | kendi listelemesi: öneri (onaylı) | — |
+| İçerik yayımlama | ✔ | ✔ | ✔ | taslak + incelemeye gönder | — | — | — | — | — |
+| Editör değerlendirmesi/puanı | ✔ | ✔ | ✔ | taslak | — | **—** (yayından önce görmez) | — | — | — |
+| Kullanıcı değerlendirmesi moderasyonu | ✔ | ✔ | — | — | ✔ | — | bildir | bildir + yanıt | — |
+| Sponsorluk kampanyası/yerleşim | ✔ | ✔ (tutar alanı: yönetici) | sponsorlu içerik metni | — | — | ✔ (ticari alanlar, kreatif; onay yönetici) | — | — | kendi kampanyası: başvuru/rapor |
+| Affiliate bağlantı yönetimi | ✔ | ✔ | bağlantı ekleme (izinli alanlar) | — | — | bağlantı ekleme (izinli alanlar) | — | — | — |
+| Denetim kaydı görüntüleme | ✔ | ✔ (salt okunur) | — | — | kendi işlemleri | kendi işlemleri | — | — | — |
+| Kişisel veri dışa aktarma (kullanıcı adına) | ✔ | — | — | — | — | — | kendi verisi | — | — |
 
-**Çıkar çatışması kuralı:** Satış/sponsorluk sorumlusu rolündeki bir personel aynı listelemenin editör değerlendirmesini düzenleyemez; moderatör kendi değerlendirmesini ya da yakını olduğu işletmeyi modere edemez (beyan alanı + kontrol).
+**Çıkar çatışması kuralı:** Satış/Sponsorluk sorumlusu rolündeki bir personel aynı listelemenin editör değerlendirmesini düzenleyemez; moderatör kendi değerlendirmesini ya da yakını olduğu işletmeyi modere edemez (beyan alanı + kontrol).

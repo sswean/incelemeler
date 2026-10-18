@@ -21,7 +21,7 @@
 17. **Mobil:** misafir modu, derin bağlantı, push ön izni ve ticari push ayrımı, konum minimizasyonu, mağaza gereksinimleri, OTA politikası, mobil E2E.
 18. **Kalite ve operasyon:** OWASP ASVS L2 hedefi, SSRF/dosya yükleme sertleştirmesi, Core Web Vitals ve Lighthouse bütçeleri, API p95 bütçeleri, RPO/RTO, geri yükleme tatbikatı, SLO'lar, runbook'lar, canlıya geçiş kontrol listesi.
 19. **E2E kataloğu** 8 senaryodan 27 senaryoya genişletildi.
-20. **Dış bağımlılık listesi** (30 madde) eklendi.
+20. **Dış bağımlılık listesi** (31 madde) eklendi.
 
 ## E2 — v1 bölümlerinin v2'deki karşılıkları (hiçbir v1 maddesi düşürülmedi)
 

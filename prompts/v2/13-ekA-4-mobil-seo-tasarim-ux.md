@@ -33,7 +33,7 @@ Alt navigasyon (5 sekme):
 | REQ-MOB-016 | ZORUNLU · 2 | **Dağıtım:** EAS Build/Submit/Update (ADR); kanallar: development / preview / production; OTA güncellemeleri yalnızca JS/varlık düzeltmeleri için — yerel kod/izin değişikliği mağaza sürümü gerektirir; sürümleme (semver + build numarası); minimum OS sürümleri ADR'de; tablet desteği kararı ADR'de (varsayılan: telefon öncelikli, tablette ölçeklenmiş). Mağaza gönderimi C sınıfı. |
 | REQ-MOB-017 | ZORUNLU · 2 | **Hata izleme:** çökme raporlama (kaynak haritaları yüklenmiş), kişisel veri maskelenmiş; analitik yalnızca rızayla. |
 | REQ-MOB-018 | ZORUNLU · 2 | **Mobil testler:** birim + bileşen testleri; E2E (Maestro ya da Detox — ADR) duman senaryoları: misafir keşif, arama + filtre, listeleme açma, giriş, favori ekleme, değerlendirme gönderme, derin bağlantı açma, hesap silme başlatma; cihaz matrisi `MANUAL-QA` içinde. |
-| REQ-MOB-019 | ZORUNLU · 2 | **Mağaza varlıkları taslakları:** Türkçe uygulama adı, alt başlık, açıklama, anahtar kelimeler, ekran görüntüsü senaryoları (demo veriyle, "Demo" ibaresi olmadan gerçek görünmeyecek biçimde — gerçek işletme verisi yoksa mağaza görselleri İnsan onayıyla), destek URL'si, gizlilik politikası URL'si. |
+| REQ-MOB-019 | ZORUNLU · 2 | **Mağaza varlıkları taslakları:** Türkçe uygulama adı, alt başlık, açıklama, anahtar kelimeler, ekran görüntüsü senaryoları (demo veri kullanılan her görselde "(Demo)" eki görünür kalır; "Demo" ibaresiz mağaza görseli yalnızca gerçek ve lisanslı veriyle ve İnsan onayıyla — C sınıfı), destek URL'si, gizlilik politikası URL'si. |
 | REQ-MOB-021 | ZORUNLU · 2 | **Bildirim merkezi** (web `/bildirimler` ve mobil Profil): liste, okundu/okunmadı, tür filtresi, derin bağlantıyla ilgili ekrana gitme, toplu okundu; türler: değerlendirme durumu, işletme yanıtı, kaydedilen listelemede değişiklik, editoryal öneri, (izinliyse) fırsat; saklama 90 gün. |
 | REQ-MOB-020 | OLMALI · 2 | Sponsorlu içerik ve fırsat tercihleri: kullanıcı fırsat/sponsorlu **bildirimlerini** kapatabilir; akıştaki sponsorlu yerleşimler etiketli kalır (kapatma seçeneği gelir modeline göre B sınıfı karar). |
 
@@ -51,7 +51,7 @@ Alt navigasyon (5 sekme):
 | REQ-SEO-002 | ZORUNLU · 1 | Her sayfa için benzersiz `<title>` (≤ 60 karakter hedef) ve meta açıklama (≤ 155 karakter hedef); şablonlar türe göre; Türkçe ek uyumu yardımcıları kullanılır (A15.2). Yinelenen başlık/açıklama CI raporunda listelenir. |
 | REQ-SEO-003 | ZORUNLU · 1 | **URL şeması** A15.1'deki tablodur; küçük harf, tire ayracı, sonda eğik çizgi yok (aykırı biçim 301 ile normalleştirilir); slug'da yıl/fiyat gibi bayatlayan bilgi yok; slug değişikliği 301 (REQ-VER-013). |
 | REQ-SEO-004 | ZORUNLU · 1 | **Canonical:** her indekslenebilir sayfada kendine referans veren canonical; filtre/sıralama parametreli varyantlar ana hub'a canonical verir ya da `noindex,follow`; yalnızca **izin listesindeki** yüzeyler (ör. il × kategori, il × kategori × tek bir öne çıkan özellik — eşik sağlanırsa) temiz URL ile indekslenir. |
-| REQ-SEO-005 | ZORUNLU · 1 | **Tarama kontrolü:** arama sonuçları (`/ara`), karşılaştırma aracı, hesap sayfaları, `/git/`, önizleme, panel `noindex` ve gerekirse robots.txt'de `Disallow`; sınırsız filtre kombinasyonu taranabilir bağlantı üretmez (filtre bağlantıları izin listesi dışında `nofollow` ya da form/JS ile). |
+| REQ-SEO-005 | ZORUNLU · 1 | **Tarama kontrolü:** arama sonuçları (`/ara`), karşılaştırma aracı, hesap sayfaları, `/git/`, önizleme, panel `noindex` ile dışarıda tutulur ve robots.txt'de **Disallow edilmez** (taranması engellenen sayfanın `noindex`'i okunamaz; doğrulanır) — istisna: `/git/` yönlendirme yolu Disallow edilir; sınırsız filtre kombinasyonu taranabilir bağlantı üretmez (filtre bağlantıları izin listesi dışında `nofollow` ya da form/JS ile). |
 | REQ-SEO-006 | ZORUNLU · 1 | **XML site haritaları:** dizin + türe göre bölümlü (listelemeler, içerikler, hub'lar, destinasyonlar, görseller); her dosya ≤ 50.000 URL; `lastmod` yalnızca anlamlı değişiklikte güncellenir; `noindex`, eşiğin altı, demo, kapalı ve yönlendirilen URL'ler site haritasında yer almaz (test). |
 | REQ-SEO-007 | ZORUNLU · 1 | `robots.txt` ortama göre (staging/preview tamamen `Disallow` + HTTP temel kimlik doğrulama; üretimde site haritası dizini bildirimi). |
 | REQ-SEO-008 | ZORUNLU · 1 | **Yapılandırılmış veri (JSON-LD):** içeriğin gerçek türüyle eşleşen tipler (Ek A2.2 tablosu + `Article`, `BreadcrumbList`, `ItemList`, `Person` yazarlar için, `Organization` site için, `WebSite` + arama kutusu uygunluğu doğrulanarak). **Kurallar:** (a) `Review`/`AggregateRating` yalnızca sayfada görünen gerçek değerlendirmelerden; n < 3 ise `AggregateRating` yok; (b) Google'ın işletmelerin kendi sitelerindeki "kendine hizmet eden" değerlendirmelere ilişkin kısıtları doğrulanır ve uygulanır; (c) sponsorlu içerikte editör `Review` işaretlemesi yok; (d) demo veride JSON-LD yok; (e) fiyat işaretlemesi yalnızca güncel ve kaynaklı fiyatta. Rich Results test doğrulaması CI'da şema doğrulayıcıyla (çevrimdışı) + `M` (canlı test aracı). |
@@ -184,7 +184,7 @@ Button (birincil/ikincil/metin/tehlike; yükleniyor/devre dışı) · Input / Te
 | Konaklama (tüm türler) | `/konaklama/{slug}` | `/konaklama/ornek-butik-otel-goreme` | evet |
 | Hizmet işletmesi | `/isletme/{slug}` | | evet |
 | Araç kiralama firması | `/arac-kiralama/{slug}` | | evet |
-| Turist rehberi (kişi) | `/tur-rehberi/{slug}` | | kişinin rızası + ruhsat doğrulaması varsa |
+| Turist rehberi (kişi) | `/turist-rehberi/{slug}` | | kişinin rızası + ruhsat doğrulaması varsa |
 | Tur / aktivite | `/tur/{slug}` | | evet |
 | İlgi noktası | `/yer/{slug}` | `/yer/kaputas-plaji` | evet |
 | Etkinlik | `/etkinlik/{slug}` (yıllık tekrarlarda `-{yyyy}`) | | bitişten 30 gün sonra noindex |
@@ -201,6 +201,7 @@ Button (birincil/ikincil/metin/tehlike; yükleniyor/devre dışı) · Input / Te
 | Yazar/editör | `/yazar/{slug}` | | evet |
 | Kullanıcı profili | `/kullanici/{kullanici-adi}` | | profil ayarına göre |
 | Arama | `/ara?q=…` | | noindex |
+| Hesap silme talebi | `/hesap-silme` | | noindex |
 | Hesap ve kişisel | `/hesabim/…`, `/kaydedilenler`, `/bildirimler` (F2), `/gecmis` (F2) | | noindex |
 | İşletme akışları | `/isletmeni-ekle`, `/isletmeni-sahiplen/{slug}` (F3), `/isletme-paneli/…` (F3) | | noindex (panel) |
 | Reklam/sponsorluk başvurusu | `/reklam-ve-sponsorluk` | | evet |
@@ -259,7 +260,7 @@ Ana sayfa · Kategori keşif sayfaları · Kategori alt sayfaları · Arama sonu
 | Y5 | Değerlendirme yazma (misafir başlar, girişte taslak korunur) → moderasyon → yayın → bildirim | E2E-004 / E2E-012 |
 | Y6 | Bildir → moderatör kararı → itiraz → farklı moderatör kararı | E2E-015 |
 | Y7 | İşletme başvurusu → yönetici incelemesi | E2E-007 |
-| Y8 | Editör → kategori + özellik şeması → listeleme → rehber → yayın → sitede görünür | E2E-001 |
+| Y8 | Yönetici → kategori + özellik şeması; Editör → listeleme → rehber → yayın → sitede görünür | E2E-001 |
 | Y9 | Yönetici → kampanya + yerleşim → etiketli görünür → tıklama kaydı → bitişte kaybolur | E2E-005 / E2E-006 |
 | Y10 | Çerez reddi → analitik yüklenmez; tercih değişikliği | E2E-016 |
 | Y11 | Hesap silme + veri dışa aktarma | E2E-017 |

@@ -148,7 +148,7 @@ Aşağıdaki sözcükler yalnızca **BÜYÜK HARFLE** yazıldıklarında bu anla
 | **ÖNERİLİR** | İyi uygulama; uygulayıp uygulamamaya sen karar verirsin. | Önemliyse ADR |
 | **İSTEĞE BAĞLI** | Kapsamda ama faz bitişi için gerekli değil. | — |
 
-Ek A'daki her REQ satırı tam olarak bir normatif sözcük taşır.
+Ek A'daki her REQ'in düzeyi `Düzey · Faz` sütunundaki sözcüktür. Satır içindeki başka normatif sözcükler yalnızca o alt maddeyi niteler (ör. ZORUNLU bir REQ içindeki "İSTEĞE BAĞLI" alt madde faz bitişi için gerekmez).
 
 ### §3.2 Öncelik sırası
 
@@ -193,8 +193,8 @@ Kodda, veritabanında, API'de, testlerde, arayüz metinlerinde ve dokümanlarda 
 | **Marka** | Ürün üreticisi. | `Organization` (type=BRAND) | İşletme ile aynı olmak zorunda değildir. |
 | **İçerik (editoryal)** | Anlatı içeriği: Rehber, Liste ("En iyiler"), Karşılaştırma, İnceleme (uzun test yazısı), Haber, Sponsorlu içerik. Listelemelere gömülü kart bloklarıyla bağlanır. | `Article` + `articleType` | Listeleme ve kullanıcı girdileri içerik değildir. |
 | **Editör değerlendirmesi** (UI: "Editör değerlendirmesi") | Ekibin bir listeleme hakkındaki yapılandırılmış değerlendirmesi: kriter puanları, artılar/eksiler, özet, editör puanı ve ZORUNLU **deneyim beyanı**. Listeleme başına en fazla 1 güncel kayıt. | `EditorialVerdict` | Kullanıcı değerlendirmesi |
-| **Kullanıcı değerlendirmesi** (UI: "Değerlendirme") | Üyenin bir listelemeye verdiği puan, metin ve deneyim bilgisi. Moderasyondan geçer. Üye başına listeleme başına 1 aktif kayıt. | `UserReview` | Yorum |
-| **Yorum** | Bir içeriğin altındaki puansız tartışma. **Faz 1–3'te yok** (feature flag kapalı). v1'deki "yorum yapar" ifadeleri = Kullanıcı değerlendirmesi. | `Comment` | Kullanıcı değerlendirmesi |
+| **Kullanıcı değerlendirmesi** (UI: "Değerlendirme") | Üyenin bir listelemeye verdiği puan, metin ve deneyim bilgisi. Moderasyondan geçer. Üye başına listeleme başına 1 aktif değerlendirme. | `UserReview` | Yorum |
+| **Yorum** | Bir içeriğin altındaki puansız tartışma. **Hiçbir fazda yok** (kapsam dışı, §7.1; feature flag kapalı). v1'deki "yorum yapar" ifadeleri = Kullanıcı değerlendirmesi. | `Comment` | Kullanıcı değerlendirmesi |
 | **İşletme yanıtı** | Doğrulanmış işletme temsilcisinin bir değerlendirmeye herkese açık yanıtı (değerlendirme başına 1). | `OwnerResponse` | — |
 | **Soru-cevap** | Listeleme hakkında soru ve cevaplar. | `Question` / `Answer` | — |
 | **Editör puanı / Kullanıcı puanı** | İki ayrı sayı, iki ayrı API alanı. **Asla birleştirilmez**; "genel puan" hesaplanmaz. | `EditorialVerdict.score`, `RatingStats` | — |
@@ -268,7 +268,7 @@ User ─< Favorite ; User ─< Collection (Faz 4)
 | Ç-10 | "Gerektiğinde OpenAPI", "gerektiğinde statik üretim". | OpenAPI Faz 1'den itibaren her uç nokta için ZORUNLU ve koddan üretilir. Render stratejisi (SSR/SSG/ISR) sayfa türü başına ADR'de tablo olarak tanımlanır. |
 | Ç-11 | §4 "yeni kategoriler kod yazmadan eklenir" ↔ §12 `Hotels`, `Products`, `CarRentalProviders`, `TourGuides` ayrı tablolar. | **Kategori = veri, tür (kind) = kod.** Yeni kategori ve özellik panelden eklenir; yeni *tür* kod + ADR gerektirir. Dikeye özel ayrı ana tablolar kurulmaz (Ek A2). |
 | Ç-12 | §4 kategori listesi tür, özellik ve içerik türünü tek ağaçta topluyor ("Aile dostu konaklama", "Şehir rehberleri", "Balayı otelleri"). | Beş eksen: listeleme türü · kategori · özellik · içerik türü · koleksiyon sayfası (Ek A4). |
-| Ç-13 | "Sponsorlu ürün incelemesi" türü + editör puanı yasağı yok. | Sponsorlu içerikte editör puanı, "Editörün seçimi", "En iyi", "Kazanan" rozeti YASAK. Tür adı "Sponsorlu tanıtım" olur ve puanlama şablonu kullanamaz (Ek A8). |
+| Ç-13 | "Sponsorlu ürün incelemesi" türü + editör puanı yasağı yok. | Sponsorlu içerikte editör puanı, "Editörün seçimi", "En iyi", "Kazanan" rozeti YASAK. v1'deki "Sponsorlu ürün incelemesi" türü kaldırılır; ihtiyaç `articleType=SPONSORED` ("Sponsorlu içerik") ile karşılanır. "Sponsorlu tanıtım" yalnızca bu türün listelemeye bağlı alt şablonunun adıdır ve puanlama blokları kullanamaz (Ek A8). |
 | Ç-14 | "Yerel rehberler", "tur satın alma", "platform içi rezervasyon ve ödeme" lisans gerektirebilir. | Turist rehberi profilleri yalnızca ruhsat doğrulamasıyla yayımlanır; tur satışı ve platform içi rezervasyon/ödeme **kapsam dışıdır** (dış yönlendirme yapılır) — hukuki inceleme olmadan açılmaz (Ek D1). |
 | Ç-15 | Etiket sözlüğü serbest seçim gibi ("Sponsorlu", "Reklam", "İş birliği", "Sponsorlu sonuç"). | Ticari ilişki türüne göre **sabit** etiket sözlüğü; editör değiştiremez; metinler hukuki incelemeyle kesinleşir ve yapılandırmadan güncellenir (Ek A8.2). |
 
@@ -321,7 +321,7 @@ Temel kullanım senaryoları (v1'den aynen):
 
 ### §7.1 Faz × kapsam matrisi
 
-Bu matris, bir özelliğin **ne zaman** yapılacağının tek yetkili kaynağıdır. Ek A ürünün nihai hedefini tarif eder, zamanlamayı tarif etmez. Matriste olmayan bir özellik "aktif faz dışı" sayılır ve `docs/PARKING-LOT.md` dosyasına yazılır. Aşağıdaki varsayılanlar Faz 0 raporunda İnsan onayına sunulur (B sınıfı).
+Bu matris zamanlamanın birincil kaynağıdır. Matriste satırı olmayan bir REQ'in fazı, Ek A'daki REQ satırının faz sütunudur. Matris ile REQ satırı çelişirse matris geçerlidir ve çelişki `ÇATIŞMA` olarak kaydedilir. Ne matriste ne Ek A'da olan özellik `docs/PARKING-LOT.md` dosyasına yazılır. Aşağıdaki varsayılanlar Faz 0 raporunda İnsan onayına sunulur (B sınıfı).
 
 | Özellik | Faz | Not / çözülen v1 çelişkisi |
 |---|---|---|
@@ -348,6 +348,8 @@ Bu matris, bir özelliğin **ne zaman** yapılacağının tek yetkili kaynağıd
 | Sponsorluk kampanyası kaydı, gösterim/tıklama olay kaydı, kampanya başına yönetici raporu | 1 | E2E-005/006 |
 | Affiliate bağlantı yönetimi, merkezi yönlendirici, tıklama kaydı, `rel` nitelikleri, alan adı izin listesi | 1 | E2E-006 |
 | Hesapsız işletme başvuru formu + yönetici inceleme kuyruğu | 1 | E2E-007 |
+| Fırsat (`Deal`) yönetimi ve `/firsatlar` | 1 | A8.1, REQ-ENT-016 |
+| Personel 2FA, rol × izin matrisi, denetim kaydı | 1 | REQ-HSP-007/009, REQ-VER-017 |
 | Hesapsız reklam/sponsorluk başvuru formu | 1 | |
 | Dış entegrasyon portları + MOCK adaptörler + "sağlayıcıda kontrol et" bağlantısı | 1 | E2E-008 |
 | İşlemsel e-posta (doğrulama, sıfırlama) | 1 | Gönderim sağlayıcısı X-kaydı; yerelde e-posta yakalayıcı |
@@ -375,11 +377,11 @@ Bu matris, bir özelliğin **ne zaman** yapılacağının tek yetkili kaynağıd
 | Çok dilli yayın | **Kapsam dışı** | Mimari hazırlık (i18n anahtarları, `locale` alanı) Faz 1 |
 
 **Yönetim paneli modülleri (v1 §11 numaraları):**
-- **Faz 1:** 1 (gerçek sayaçlı genel pano), 2, 3, 4–8 (tek "Listeleme yönetimi" modülünde, türe göre formlar), 9, 10, 11, 12, 13 (yönetici kampanya kaydı), 14, 16, 17, 18, 19, 21 (temel), 22 (kampanya başına gösterim/tıklama + kaynağa göre gelir raporu, REQ-ADM-010), 23, 24 (temel), 25.
+- **Faz 1:** 1 (gerçek sayaçlı genel pano), 2, 3, 4–8 (tek "Listeleme yönetimi" modülünde, türe göre formlar), 9, 10, 11, 12, 13 (yönetici kampanya kaydı), 14, 16, 17, 18, 19, 21 (temel), 22 (kampanya başına gösterim/tıklama + kaynağa göre gelir raporu, REQ-ADM-010), 23, 24 (temel), 25, 26, 27, 28, 29, 30 (A10).
 - **Faz 2:** 20 (bildirim yönetimi).
 - **Faz 3:** 15 (gerçek entegrasyonlar), 22'nin gelişmiş hali, işletme paketleri yönetimi.
 
-**Roller:** Faz 1: Süper yönetici, Yönetici, Editör, Yazar, Moderatör, Üye. Faz 3: İşletme temsilcisi, Reklamveren temsilcisi (bunlar global rol değil, **kuruluş kapsamlı üyeliktir**, Ek A3).
+**Roller:** Faz 1: Süper yönetici, Yönetici, Editör, Yazar, Moderatör, **Satış/Sponsorluk sorumlusu** (kampanya ve sponsor kuruluş ticari alanları; editör değerlendirmelerine yayından önce erişimi yok, REQ-GUN-012), Üye. Faz 3: İşletme temsilcisi, Reklamveren temsilcisi (bunlar global rol değil, **kuruluş kapsamlı üyeliktir**, Ek A3).
 
 **"Mobil" kelimesi** Faz 1'de "mobil öncelikli responsive web" anlamına gelir; yerel uygulama Faz 2'dir.
 
@@ -389,10 +391,10 @@ Varsayılan (B sınıfı; İnsan Faz 0 raporunda değiştirebilir):
 
 - **Tam uygulanan pilot türler (Faz 1):** (1) Mekan — yeme-içme; (2) Konaklama; (3) Ürün — teknoloji. Ek olarak **destinasyon sayfaları ve rehber içerikleri**.
 - Tür-özel alanlar, filtreler, detay şablonu, yapılandırılmış veri ve E2E kapsamı pilot türlerde tam uygulanır. Diğer türler (araç kiralama firması, tur/aktivite, hizmet işletmesi, ilgi noktası, turist rehberi, etkinlik) veri modelinde ve genel şablonda yer alır; **yayın eşiği** sağlanana kadar gizli kalır.
-- **Kanıt:** Faz 1 sonunda dördüncü bir tür (ör. Tur/Aktivite kategorisi + özellik şeması) **yalnızca yönetim panelinden** eklenip yayımlanır ve demo betiğinde gösterilir.
+- **Kanıt:** Faz 1 sonunda pilot olmayan ve kodda zaten tanımlı bir tür altında (ör. `EXPERIENCE` → "Tekne turları" kategorisi + özellik şeması + değerlendirme kriterleri) **yalnızca yönetim panelinden** yeni bir kategori eklenip yayımlanır ve demo betiğinde gösterilir. Yeni `kind` eklenmez (Ç-11).
 - **Lansman şehirleri (öneri):** İstanbul, İzmir, Antalya, Muğla, Nevşehir (Kapadokya).
 - Araç kiralama firması sayfaları Faz 1 sonunda **canlı fiyat olmadan** açılabilir.
-- **Soğuk başlangıç önlemi:** Yönetim panelinde CSV/XLSX toplu içe aktarma (alan doğrulama, yinelenen kayıt tespiti — ad + koordinat yakınlığı, önizleme, geri alma, `source` alanı ZORUNLU) Faz 1'de ZORUNLU. Kaynak; lisanslı veri, işletme beyanı ya da editör girişi olmalıdır (scraping YASAK).
+- **Soğuk başlangıç önlemi:** Yönetim panelinde CSV/XLSX toplu içe aktarma (alan doğrulama, yinelenen listeleme tespiti — ad + koordinat yakınlığı, önizleme, geri alma, `source` alanı ZORUNLU) Faz 1'de ZORUNLU. Kaynak; lisanslı veri, işletme beyanı ya da editör girişi olmalıdır (scraping YASAK).
 - **Yayın eşikleri** (yönetim panelinden ayarlanabilir; varsayılanlar):
 
 | Sayfa | Menüde görünme ve indekslenme eşiği |
@@ -401,6 +403,7 @@ Varsayılan (B sınıfı; İnsan Faz 0 raporunda değiştirebilir):
 | İlçe × kategori hub'ı | ≥ 10 listeleme |
 | Ürün kategorisi | ≥ 15 ürün (teknik özellikleri dolu) ve ≥ 3 editör değerlendirmeli ürün |
 | Destinasyon (il) sayfası | ≥ 1 rehber ve ≥ 2 yayımlanmış hub |
+| Pilot olmayan türlerin tek tek listeleme sayfaları | Yayın için zorunlu alanlar tamamsa yayımlanabilir ve aramada/korpusta bulunur; bu türlerin hub/kategori sayfaları yukarıdaki eşiklere tabidir (eşik altında menü, site haritası ve otomatik tamamlama dışında) |
 | Eşiğin altı | Sayfa üretilmez ya da `noindex` + menü/site haritası dışı; "Yakında" sayfası açılmaz |
 
 ### §7.3 Aşırı mühendislik yasağı
@@ -468,7 +471,7 @@ Her madde kanıtla raporlanır:
 ### §8.3 Faz Bitti Tanımı (Faz 1–4 ortak)
 
 - Aktif fazın tüm ZORUNLU REQ'leri `TAMAM` ya da İnsan'ın yazılı onayıyla `ERTELENDİ`. `TAMAM` olmayan her OLMALI REQ için tek satırlık gerekçe.
-- Fazın E2E senaryoları CI'da **art arda 3 koşuda** yeşil (kararsız test yok).
+- Fazın E2E senaryoları CI'da **art arda 3 koşuda** yeşil (kararsız test yok). X-031 sağlanana kadar CI iş akışı dosyası yazılır ve aynı adımlar yerelde `pnpm ci:local` ile art arda 3 kez çalıştırılır; "CI'da yeşil" ölçütleri `DOĞRULANAMADI (CI yok)` olarak raporlanır ve `req:check (b)` son `ci:local` sonucunu kullanır.
 - Açık P0 hata sayısı 0; P1 hatalar listelenmiş.
 - Temiz klon testi geçti (`pnpm verify` + `pnpm test:e2e`).
 - Bağımlılık denetiminde yüksek/kritik açık yok (varsa ADR'li istisna); sır taraması temiz.
@@ -559,7 +562,7 @@ Faz 0'dan itibaren ZORUNLU; `AGENTS.md` ve README'de yazılı; CI aynı komutlar
 
 | Komut | İşlev | Kabul ölçütü |
 |---|---|---|
-| `pnpm setup` (`scripts/init.sh`) | Bağımlılıkları kurar, `.env` yoksa `.env.example`'dan kopyalar, Docker servislerini başlatır, migration uygular, demo seed yükler. | Temiz klonda tek komut; idempotent. |
+| `pnpm run setup` (`scripts/init.sh`; pnpm'in yerleşik `setup` komutuyla çakışmaması için README, AGENTS.md ve CI'da daima `run` ile yazılır) | Bağımlılıkları kurar, `.env` yoksa `.env.example`'dan kopyalar, Docker servislerini başlatır, migration uygular, demo seed yükler. | Temiz klonda tek komut; idempotent. |
 | `pnpm dev` | Web, API, admin (ve Faz 2'den itibaren mobil Metro) geliştirme modunda. | Portlar README'de. |
 | `pnpm verify` | Lint, typecheck, birim, entegrasyon, build, `req:check`. | Yerelde ve CI'da aynı sonuç. |
 | `pnpm test:smoke` | En kritik 3–5 akış. | < 2 dakika. |
@@ -632,7 +635,7 @@ Faz 0'da oluşturulur, sürekli güncellenir.
 - ZORUNLU yığın, altın kurallar ya da faz kapsamında değişiklik.
 - Lisans izin listesi dışında bağımlılık ekleme.
 - Faz geçişi (1 → 2 → 3 → 4).
-- Lisans/belge gerektiren kategorilerin (turist rehberi, konaklama, sağlık, finans, hukuk, alkol) yayına açılması.
+- REQ-KAT-004 kapsamındaki (YMYL ve lisanslı) kategorilerin **üretimde gerçek listelemelerle** yayına açılması.
 
 **Soru sorma biçimi:** Her soru seçenekli, önerili ve varsayılanlıdır (Ek C-5). Aynı soruyu tekrar sorma. Yanıtları `OPEN-QUESTIONS` ve ilgili ADR'ye işle. Engelle karşılaştığında yıkıcı kısa yol kullanma.
 
@@ -926,27 +929,27 @@ Yeni `kind` eklemek kod değişikliği + ADR gerektirir. Kategori ve özellik ek
 | REQ-HSP-008 | ZORUNLU · 1 | Hız sınırları (varsayılan): giriş IP başına 10/dk ve hesap başına 5/dk (artan bekleme); parola sıfırlama e-posta başına 3/saat; kayıt IP başına 5/saat; değerlendirme gönderme üye başına 5/gün. Aşımda 429 + `Retry-After`. Yanıtlar hesabın var olup olmadığını açığa vurmaz. |
 | REQ-HSP-009 | ZORUNLU · 1 | **Rol × izin matrisi** `docs/requirements/HSP.md` içinde tablo olarak yazılır; her hücre bir yetkilendirme testine bağlanır. Varsayılan özet aşağıdadır. |
 | REQ-HSP-010 | ZORUNLU · 3 | Kuruluş kapsamlı yetki: İşletme temsilcisi yalnızca kendi kuruluşunun listelemelerini, yanıtlarını ve raporlarını görür/değiştirir; başka kuruluşun kaynağına erişim 404 döner (IDOR testi). |
-| REQ-HSP-011 | ZORUNLU · 1 | Hesap silme web'de (Faz 2'de uygulama içinde de) self-servis; onay adımı + 30 gün geri alma penceresi (varsayılan, B sınıfı) sonrasında anonimleştirme; yayımlanmış değerlendirmelerin akıbeti hukuki karara bağlıdır (L-kaydı) — karar gelene kadar varsayılan: içerik "Silinmiş kullanıcı" olarak anonimleştirilir. |
+| REQ-HSP-011 | ZORUNLU · 1 | Hesap silme web'de (Faz 2'de uygulama içinde de) self-servis; onay adımından sonra hesap "silme bekliyor" durumuna geçer ve giriş yapılamaz; 30 günlük geri alma penceresinin (varsayılan, B sınıfı) sonunda REQ-KVK-021 uygulanır (varsayılan: "içeriklerimi de sil"; "anonim kalsın" seçeneği L-kaydı karara bağlanana kadar KAPALI). |
 | REQ-HSP-012 | ZORUNLU · 1 | Kullanıcı verilerini makine tarafından okunabilir biçimde (JSON) dışa aktarabilir; talep kaydı ve süre takibi Ek A17'ye bağlıdır. |
 | REQ-HSP-013 | OLMALI · 1 | Kamuya açık profil: görünen ad (gerçek ad zorunlu değil), avatar (isteğe bağlı), şehir (isteğe bağlı), değerlendirme sayısı, üyelik ayı. E-posta, telefon ve kesin konum asla herkese açık değildir. Profil gizlilik ayarı: herkese açık / yalnızca değerlendirmelerde ad. |
 | REQ-HSP-014 | ZORUNLU · 1 | Yaş: hizmet 18 yaş ve üzerine yöneliktir (varsayılan, hukuki doğrulama L-kaydı); kayıtta beyan alınır. |
 
 **Rol matrisi (özet; ayrıntı HSP.md'de):**
 
-| Eylem | Süper yön. | Yönetici | Editör | Yazar | Moderatör | Üye | İşletme t. (F3) | Reklamveren t. (F3) |
-|---|---|---|---|---|---|---|---|---|
-| Rol atama, sistem ayarları, hukuki kapı açma talebi | ✔ | — | — | — | — | — | — | — |
-| Kategori/özellik şeması yönetimi | ✔ | ✔ | — | — | — | — | — | — |
-| Listeleme oluşturma/düzenleme | ✔ | ✔ | ✔ | taslak | — | düzeltme önerisi | kendi listelemesi: öneri (onaylı) | — |
-| İçerik yayımlama | ✔ | ✔ | ✔ | taslak + incelemeye gönder | — | — | — | — |
-| Editör değerlendirmesi/puanı | ✔ | ✔ | ✔ | taslak | — | — | — | — |
-| Kullanıcı değerlendirmesi moderasyonu | ✔ | ✔ | — | — | ✔ | bildir | bildir + yanıt | — |
-| Sponsorluk kampanyası/yerleşim | ✔ | ✔ (tutar alanı: yönetici) | sponsorlu içerik metni | — | — | — | — | kendi kampanyası: başvuru/rapor |
-| Affiliate bağlantı yönetimi | ✔ | ✔ | bağlantı ekleme (izinli alanlar) | — | — | — | — | — |
-| Denetim kaydı görüntüleme | ✔ | ✔ (salt okunur) | — | — | kendi işlemleri | — | — | — |
-| Kişisel veri dışa aktarma (kullanıcı adına) | ✔ | — | — | — | — | kendi verisi | — | — |
+| Eylem | Süper yön. | Yönetici | Editör | Yazar | Moderatör | Satış/Sponsorluk | Üye | İşletme t. (F3) | Reklamveren t. (F3) |
+|---|---|---|---|---|---|---|---|---|---|
+| Rol atama, sistem ayarları, hukuki kapı açma talebi | ✔ | — | — | — | — | — | — | — | — |
+| Kategori/özellik şeması yönetimi | ✔ | ✔ | — | — | — | — | — | — | — |
+| Listeleme oluşturma/düzenleme | ✔ | ✔ | ✔ | taslak | — | — | düzeltme önerisi | kendi listelemesi: öneri (onaylı) | — |
+| İçerik yayımlama | ✔ | ✔ | ✔ | taslak + incelemeye gönder | — | — | — | — | — |
+| Editör değerlendirmesi/puanı | ✔ | ✔ | ✔ | taslak | — | **—** (yayından önce görmez) | — | — | — |
+| Kullanıcı değerlendirmesi moderasyonu | ✔ | ✔ | — | — | ✔ | — | bildir | bildir + yanıt | — |
+| Sponsorluk kampanyası/yerleşim | ✔ | ✔ (tutar alanı: yönetici) | sponsorlu içerik metni | — | — | ✔ (ticari alanlar, kreatif; onay yönetici) | — | — | kendi kampanyası: başvuru/rapor |
+| Affiliate bağlantı yönetimi | ✔ | ✔ | bağlantı ekleme (izinli alanlar) | — | — | bağlantı ekleme (izinli alanlar) | — | — | — |
+| Denetim kaydı görüntüleme | ✔ | ✔ (salt okunur) | — | — | kendi işlemleri | kendi işlemleri | — | — | — |
+| Kişisel veri dışa aktarma (kullanıcı adına) | ✔ | — | — | — | — | — | kendi verisi | — | — |
 
-**Çıkar çatışması kuralı:** Satış/sponsorluk sorumlusu rolündeki bir personel aynı listelemenin editör değerlendirmesini düzenleyemez; moderatör kendi değerlendirmesini ya da yakını olduğu işletmeyi modere edemez (beyan alanı + kontrol).
+**Çıkar çatışması kuralı:** Satış/Sponsorluk sorumlusu rolündeki bir personel aynı listelemenin editör değerlendirmesini düzenleyemez; moderatör kendi değerlendirmesini ya da yakını olduğu işletmeyi modere edemez (beyan alanı + kontrol).
 
 
 ---
@@ -998,14 +1001,14 @@ v1'in kategori listesi şu eksenlere ayrılarak uygulanır (Ç-12):
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|
 | REQ-KAT-001 | ZORUNLU · 1 | Yönetici kod değiştirmeden kategori, alt kategori, özellik şeması, değerlendirme kriteri ve koleksiyon sayfası ekleyebilir, sıralayabilir, gizleyebilir. **Kabul:** E2E'de yönetici "Glamping alanları" kategorisini (kind=LODGING) ve 3 özellik (`hasPrivateBathroom: bool`, `tentType: enum`, `maxGuests: int`) oluşturur, bir listeleme ekler, yayımlar ve bu özelliklere göre filtreler — deploy gerekmez. |
-| REQ-KAT-002 | ZORUNLU · 1 | Aynı listeleme iki kategori düğümünde ayrı kayıt olarak bulunmaz; "Aile dostu" bir kategori değil, özellik + koleksiyon olarak çalışır. |
+| REQ-KAT-002 | ZORUNLU · 1 | Aynı listeleme iki kategori düğümünde ayrı listeleme olarak bulunmaz; "Aile dostu" bir kategori değil, özellik + koleksiyon olarak çalışır. |
 | REQ-KAT-003 | ZORUNLU · 1 | Kategori durumları `TASLAK → GİZLİ (yalnızca personel) → YAYINDA`; yayın eşiği (§7.2) altındaki kategori/hub menüde, site haritasında ve aramada önerilmez. |
-| REQ-KAT-004 | ZORUNLU · 1 | **YMYL ve lisanslı kategoriler:** sağlık, finans, hukuk gibi güven gereksinimi yüksek kategoriler ve lisans gerektiren kategoriler (turist rehberi, konaklama, seyahat acentesi/tur operatörü, alkol servisi olan mekan tanıtımı) kategori bayraklarıyla işaretlenir. Bu kategorilerde: uzman incelemesi zorunlu, sponsorluk varsayılan kapalı, yayın `legalGate` arkasında; açılması C sınıfı (Ek D1). |
+| REQ-KAT-004 | ZORUNLU · 1 | **YMYL ve lisanslı kategoriler:** sağlık, finans, hukuk gibi güven gereksinimi yüksek kategoriler ve lisans gerektiren kategoriler (turist rehberi, konaklama, seyahat acentesi/tur operatörü, alkol servisi olan mekan tanıtımı) kategori bayraklarıyla işaretlenir. Bu kategorilerde: uzman incelemesi zorunlu, sponsorluk varsayılan kapalı; yayın **üretim ortamında ve `dataOrigin≠DEMO` listelemelerde** `legalGate` arkasındadır ve açılması C sınıfıdır (Ek D1). Yerel/test/staging ortamlarında `dataOrigin=DEMO` listelemeler için kapı, yalnızca bu ortamlarda yüklenen bir test fikstürüyle (`LegalApproval`, onaylayan=`TEST-FIXTURE`) açılır; fikstür üretim derlemesine giremez (E2E-020). Demo konaklamada belge no açıkça geçersiz bir yer tutucudur (`DEMO-0000`) ve "doğrulandı" ibaresi gösterilmez. |
 | REQ-KAT-005 | ZORUNLU · 1 | Navigasyon: üst menüde en fazla 7 öğe (öneri: Seyahat, Konaklama, Yeme-İçme, Ürünler, Hizmetler, Rehberler, Fırsatlar); mega menü en fazla 2 seviye; mobil "Keşfet" sekmesinde en fazla 12 kategori kutucuğu. Menü yönetim panelinden düzenlenir. |
 | REQ-LST-001 | ZORUNLU · 1 | Her listeleme türü için **sayfa şablonu**, yayın için zorunlu alanlar, tipe özgü bloklar, birincil CTA ve **yasak CTA** tablosu (A4.4). Zorunlu alanı eksik listeleme yayımlanamaz (API doğrulaması + test). |
 | REQ-LST-010 | ZORUNLU · 1 | Her listeleme şablonunda kısa tanıtımın yanında **"Hakkında" (detaylı açıklama)** bloğu bulunur (`description`; turist rehberinde kişinin kendi açıklaması, onaylı); işletme tarafından sağlanan metin "İşletme tarafından sağlandı" ibaresiyle gösterilir. |
 | REQ-LST-002 | ZORUNLU · 1 | Bilinmeyen opsiyonel alan "Bilinmiyor" olarak gösterilir ya da hiç gösterilmez; asla "0", "Kapalı" ya da tahmini değer gösterilmez. |
-| REQ-LST-003 | ZORUNLU · 1 | 390×844 mobil görünümde ilk ekranda: ad, tür/kategori, konum (ilçe/mahalle) ya da marka, puan özeti (ya da "Yeterli değerlendirme yok"), fiyat seviyesi/fiyat durumu, uygunsa açık/kapalı durumu ve birincil CTA. |
+| REQ-LST-003 | ZORUNLU · 1 | 390×844 mobil görünümde ilk ekranda: ad, tür/kategori, konum (ilçe/mahalle) ya da marka, puan özeti (A6.2 eşik tablosundaki metinlerle), fiyat seviyesi/fiyat durumu, uygunsa açık/kapalı durumu ve birincil CTA. |
 | REQ-LST-004 | ZORUNLU · 1 | Her listeleme sayfasının altında: "Bilgi hatalı mı? Düzeltme öner", "Bilgiler son doğrulama: {tarih}", bu listelemenin geçtiği rehber ve listeler, benzer seçenekler (organik; sponsorlu olan ayrı kutuda ve etiketli). |
 | REQ-LST-005 | ZORUNLU · 1 | Tazelik: her listelemede `sourceVerifiedAt`; tür bazında yeniden doğrulama aralığı (varsayılan: mekan saatleri 90 gün, konaklama belge/olanaklar 180 gün, ürün fiyat bilgisi 7 gün, etkinlik 7 gün). Aşılınca editör **tazelik kuyruğuna** düşer ve sayfada "Bu bilgiler {tarih} tarihinde doğrulandı" uyarısı belirginleşir. |
 | REQ-LST-006 | ZORUNLU · 1 | "Kalıcı olarak kapandı" / "Geçici olarak kapalı" / "Satıştan kalktı" durumları: sayfa korunur (değerlendirmeler okunabilir), CTA'lar kaldırılır, benzer seçenekler öne çıkar, arama sıralamasında aşağı iner; `noindex` kararı SEO kuralına göre (Ek A13). |
@@ -1020,9 +1023,9 @@ v1'in kategori listesi şu eksenlere ayrılarak uygulanır (Ç-12):
 | **Mekan** (restoran, kafe, kahvaltı, pastane, bar) | Ad, kategori, mutfak türü, adres + koordinat, ilçe, ≥ 1 iletişim kanalı, fiyat seviyesi ya da "bilinmiyor", saatler ya da "bilinmiyor" | Haftalık saat tablosu + özel gün saatleri; menü (görsel/PDF/yapılandırılmış, **tarihli**: "Menü fotoğrafı: Eylül 2026"); özellikler (rezervasyon, paket servis, alkol servisi, bahçe, manzara, çocuk dostu, evcil hayvan, tekerlekli sandalye erişimi); fotoğraflar kaynağa göre sekmeli (İşletme / Kullanıcı / Editör); harita | Yol tarifi al · Ara · Rezervasyon yap (yalnızca rezervasyon bağlantısı varsa) | Satın al, bilet al, araç kirala |
 | **Konaklama** | Ad, konaklama türü, adres + koordinat, il/ilçe, ≥ 1 iletişim kanalı ya da sağlayıcı bağlantısı, **turizm belge numarası** (hukuki kapı, Ek D1) | Konum mesafeleri ("Denize kuş uçuşu ~350 m" — hesaplama yöntemi belirtilir); sezon; pansiyon tipleri; oda tipleri (kapasite, yatak, m²); olanaklar; giriş-çıkış saatleri; "Kimler için uygun" (ziyaret türü dağılımı, n ≥ 10); son 12 ay puanı | "{Sağlayıcı}'da fiyatları gör" (tarih/kişi parametreli) · Web sitesi · Ara | Tarih/kişi parametresi olmadan "gecelik X ₺" |
 | **Araç kiralama firması** | Ad, ≥ 1 şube (konum türü: havalimanı/şehir), iletişim | Şube listesi ve teslim prosedürü (terminal içi masa/servis aracı/karşılama); mesai dışı teslim koşulu; araç sınıfları ve örnek modeller ("Ekonomi: X **veya benzeri**" ifadesi ZORUNLU); şartlar (min. yaş, ehliyet yılı, kredi kartı/depozito, km sınırı, yakıt politikası, ek sürücü, tek yön); sigorta kapsamları açıklaması | "Fiyat ve müsaitlik için {Sağlayıcı}'ya git" · Ara | Canlı veri yokken "günlük X ₺'den başlayan" |
-| **Turist rehberi (kişi)** | Ad (kişinin açık rızasıyla), ≥ 1 bölge, ≥ 1 dil, **ruhsat doğrulandı** | Diller (seviye), hizmet bölgeleri, uzmanlık alanları, tur türleri, fiyatlandırma modeli, "Ruhsat bilgisi doğrulandı: {tarih}", bağlı turlar | İletişime geç (kişinin izin verdiği kanal) · Rezervasyon bağlantısı (rehberin kendi dış kanalı, varsa; platform içi rezervasyon değil) | Doğrulanmamış kişiye "Profesyonel rehber" rozeti |
+| **Turist rehberi (kişi)** | Ad (kişinin açık rızasıyla), ≥ 1 bölge, ≥ 1 dil, **ruhsat doğrulandı** | Diller (seviye), hizmet bölgeleri, uzmanlık alanları, tur türleri, fiyatlandırma modeli, "Ruhsat bilgisi doğrulandı: {tarih}", bağlı turlar | İletişime geç (kişinin izin verdiği kanal) · Rezervasyon bağlantısı (rehberin kendi dış kanalı, varsa; platform içi rezervasyon değil) | Doğrulanmamış kişiye "Ruhsatlı turist rehberi" rozeti |
 | **Tur / aktivite** | Ad, operatör (kuruluş), başlangıç noktası, süre, kategori | Program akışı; dahil olanlar/olmayanlar; dil; grup büyüklüğü; zorluk; yaş sınırı; erişilebilirlik; sezon; "Hava koşullarına bağlı iptal olabilir" (balon, tekne); iptal koşulu yalnızca sağlayıcıdan | "{Sağlayıcı}'da tarih seç" · Operatörle iletişim | Platform içi satın alma (kapsam dışı) |
-| **Ürün** | Marka, model, kategori, ≥ 5 teknik özellik (kategori şemasından) | Varyant seçici; çıkış tarihi; Türkiye'de satış durumu; birimli teknik özellik tablosu; editör testi (süre, koşullar, yazılım sürümü); artılar/eksiler; "Kimler için / kimler için değil"; alternatifler; karşılaştırma bağlantıları; satıcı teklif listesi (satıcı, fiyat, kontrol zamanı) | "{Satıcı}'da gör" (affiliate açıklamasıyla) | Taze olmayan veride "En ucuz"; mekan CTA'ları |
+| **Ürün** | Marka, model, kategori, ≥ 5 teknik özellik (kategori şemasından) | Varyant seçici; çıkış tarihi; Türkiye'de satış durumu; birimli teknik özellik tablosu; editör testi (süre, koşullar, yazılım sürümü); artılar/eksiler; "Kimler için / kimler için değil"; alternatifler; karşılaştırma bağlantıları; satıcı fiyat bilgisi listesi (`Offer`: satıcı, fiyat, kontrol zamanı) | "{Satıcı}'da gör" (affiliate açıklamasıyla) | Taze olmayan veride "En ucuz"; mekan CTA'ları |
 | **Etkinlik** | Ad, başlangıç–bitiş (`Europe/Istanbul`), mekan listelemesi, kategori | Sanatçı/organizatör; bilet durumu (kaynaklı); fiyat aralığı; yaş sınırı; erişilebilirlik; oturumlar | "Bilet al ({Satıcı})" — yalnızca bitişten önce | Bitmiş etkinlikte bilet CTA'sı; tarihinden önce değerlendirme |
 | **Hizmet işletmesi** (kuaför, güzellik, temizlik, taşınma, transfer, spor salonu) | Ad, kategori, adres **ya da** hizmet bölgesi, iletişim | Hizmet listesi ("başlayan" fiyatlar isteğe bağlı, tarihli); randevu yöntemi; saatler; doğrulanmış belge rozeti | Ara · Mesaj · Randevu bağlantısı · Faz 3: Teklif iste | — |
 | **Destinasyon** | Ad, sınır/konum, kısa özet | Ne zaman gidilir (kaynaklı iklim bilgisi); nasıl gidilir; öne çıkan rehberler; kategori bazlı öne çıkanlar (eşik sağlanırsa); harita; pratik bilgiler | Rehberi oku · Kategorileri keşfet | — |
@@ -1039,7 +1042,7 @@ v1'in kategori listesi şu eksenlere ayrılarak uygulanır (Ç-12):
 |---|---|---|
 | REQ-ICR-001 | ZORUNLU · 1 | **Blok tabanlı içerik editörü** (özel geliştirme; çekirdek editör kütüphanesi lisans izin listesinden seçilebilir — ADR). İçerik JSON blok dizisi olarak saklanır; her blok tipinin zod şeması `packages/contracts` içindedir; web ve mobil aynı blokları render eder. |
 | REQ-ICR-002 | ZORUNLU · 1 | **Blok tipleri (Faz 1):** başlık, paragraf (zengin metin: kalın, italik, bağlantı, liste), görsel, galeri, tablo, **listeleme kartı** (canlı veriye bağlı), **karşılaştırma tablosu** (listelemelerden/özelliklerden beslenir), harita (listeleme seçimi), bilgi kutusu (ipucu/uyarı), artılar–eksiler, puan kutusu (yalnızca `EditorialVerdict` bağlıysa), SSS, alıntı, **CTA** (dış yönlendirme servisine bağlı), **ticari açıklama bloğu** (sponsorlu/affiliate içerikte otomatik eklenir, silinemez), **sponsorlu yuva bloğu** (v1 "sponsorlu alan"; bir `PlacementSlot`'a bağlıdır, etiket zorunlu, A8.3 sınırlarına tabi; Liste, Karşılaştırma ve İnceleme içeriklerinde YASAK), içindekiler. Ham HTML bloğu YASAK. |
-| REQ-ICR-003 | ZORUNLU · 1 | Gömülü listeleme kartları **canlı** veriden render edilir (ad, puan, fiyat durumu, açık/kapalı); listeleme kapanırsa içerikte "Kalıcı olarak kapandı" görünür ve editöre bildirim düşer. |
+| REQ-ICR-003 | ZORUNLU · 1 | Gömülü listeleme kartları **canlı** veriden render edilir (ad, puan, fiyat durumu, açık/kapalı); listeleme kapanırsa içerikte "Kalıcı olarak kapandı" görünür ve editörün panel iş listesine (REQ-ADM-009) görev düşer. |
 | REQ-ICR-004 | ZORUNLU · 1 | İçerik türleri ve şablonları: **Rehber** (destinasyon/konu; içindekiler, harita, pratik bilgi), **Liste** ("En iyi N"; seçim yöntemi kutusu ZORUNLU; sıra editoryal ve sponsorluktan bağımsız; içinde sponsorlu öğe YASAK), **Karşılaştırma** (A vs B; kriter tablosu; kazanan ancak test edildiyse), **İnceleme** (uzun test yazısı; `EditorialVerdict`'e bağlı), **Haber** (tarihli), **Sponsorlu içerik** (ticari ilişki ZORUNLU; puanlama blokları kullanılamaz). |
 | REQ-ICR-005 | ZORUNLU · 1 | **Yayın akışı:** `TASLAK → İNCELEMEDE → ONAYLANDI → ZAMANLANDI → YAYINDA → GÜNCELLENİYOR → ARŞİV`. Yazar yayımlayamaz; editör onaylar. Sponsorlu içerik ek olarak **ticari açıklama kontrolü** adımından geçer (yönetici/hukuk kontrol listesi). Önizleme bağlantısı (imzalı, süreli, `noindex`). Zamanlanmış yayın `Europe/Istanbul`'a göre. |
 | REQ-ICR-006 | ZORUNLU · 1 | Her içerikte: yazar (yazar sayfası bağlantılı), editör, **yayın tarihi**, **son güncelleme tarihi**, güncellemede kısa değişiklik notu ("Güncelleme notları"), kaynaklar bölümü (fiyat/saat/kural gibi olgular için), ticari ilişki beyanı. "Son güncelleme" yalnızca anlamlı içerik değişikliğinde değişir (yazım düzeltmesi tarih yenilemez). |
@@ -1078,9 +1081,9 @@ v1'in kategori listesi şu eksenlere ayrılarak uygulanır (Ç-12):
 | ≥ 5 | 1–5 dağılım çubuğu ve kriter ortalamaları |
 | Son 12 ayda ≥ 5 (mekan, konaklama, hizmet) | "Son 12 ay: 3,8 (24)" ikincil satırı |
 
-- "Puana göre" ve "Önerilen" sıralamalarda ham ortalama kullanılmaz; **Bayes ortalaması**: `(C·m + Σpuan) / (C + n)`; `m` = aynı il × kategori ortalaması, `C` varsayılan 10 (panelden ayarlanır). Formül `/nasil-degerlendiriyoruz` sayfasında açıklanır. n < 3 olanlar "Yeterli değerlendirme yok" grubunda en sonda.
+- "Puana göre" ve "Önerilen" sıralamalarda ham ortalama kullanılmaz; **Bayes ortalaması**: `(C·m + Σpuan) / (C + n)`; `m` = konumlu türlerde aynı il × birincil kategori ortalaması, konumsuz türlerde (PRODUCT, WORK) aynı birincil kategori ortalaması; grupta < 30 yayımlanmış değerlendirme varsa bir üst kategorinin ülke geneli ortalaması; `C` varsayılan 10 (panelden ayarlanır). Formül `/nasil-degerlendiriyoruz` sayfasında açıklanır. n < 3 olanlar "Yeterli değerlendirme yok" grubunda en sonda.
 - Düzenlenen değerlendirmenin yalnızca son sürümü sayılır; kaldırılan ya da "teşvikli" beyanlı değerlendirmeler ortalamaya girmez.
-- Henüz değerlendirme yoksa sahte puan, yıldız, yorum ya da ziyaret sayısı üretilmez (AK-02).
+- Henüz değerlendirme yoksa sahte puan, yıldız, değerlendirme ya da ziyaret sayısı üretilmez (AK-02).
 
 ### A6.3 Değerlendirme kriterleri ve deneyim alanları
 
@@ -1116,8 +1119,8 @@ Deneyim tarihi gelecekte olamaz; 24 aydan eski deneyimler "Eski deneyim ({ay yı
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|
 | REQ-DEG-001 | ZORUNLU · 1 | Puan ölçekleri ve eşikler A6.1–A6.2'deki gibidir. **Kabul:** n = 0, 1, 2, 3, 5, 12 için birim + görsel snapshot testleri; editör ve kullanıcı puanını birleştiren kod yok; Bayes formülü testli. |
-| REQ-DEG-002 | ZORUNLU · 1 | Değerlendirme listesi varsayılan sıralaması **"En yeni"**; kullanıcı seçenekleri: en yeni, en yüksek puan, en düşük puan, en faydalı (Faz 2), belgeli olanlar. Olumsuz değerlendirmeler gizlenemez, aşağı itilemez; sponsorluk ve işletme paketi değerlendirme sıralamasını etkileyemez (otomatik test). |
-| REQ-DEG-003 | ZORUNLU · 1 | Filtreler: puan, deneyim türü/ziyaret türü, dil, fotoğraflı, belgeli. "Doğrulanmış deneyim/Belgeli" rozeti yalnızca `DOCUMENTED` ya da `PROVIDER_VERIFIED` kayıtlara verilir; diğerleri "Kullanıcı beyanı". |
+| REQ-DEG-002 | ZORUNLU · 1 | Değerlendirme listesi varsayılan sıralaması **"En yeni"**; kullanıcı seçenekleri: en yeni, en yüksek puan, en düşük puan, en faydalı (Faz 2), belgeli olanlar. Olumsuz değerlendirmeler gizlenemez, aşağı itilemez; sponsorluk (Faz 1) ve işletme paketi (Faz 3, REQ-ISL-005) değerlendirme sıralamasını etkileyemez (otomatik test). |
+| REQ-DEG-003 | ZORUNLU · 1 | Filtreler: puan, deneyim türü/ziyaret türü, dil, fotoğraflı, belgeli. "Belgeli deneyim" rozeti yalnızca `DOCUMENTED` ya da `PROVIDER_VERIFIED` kayıtlara verilir; diğerleri "Kullanıcı beyanı". |
 | REQ-DEG-004 | ZORUNLU · 1 | Değerlendirme durum makinesi, gerekçe kodları ve bildirimler A6.4'teki gibidir. **Kabul (E2E-004/E2E-012):** misafir yazmaya başlar → giriş yapar → taslak korunur → gönderir → "İncelemede" → onay → bildirim → "Yayında"; ret senaryosunda gerekçe gösterilir ve yeniden gönderme çalışır; EXIF silme testli. |
 | REQ-DEG-005 | ZORUNLU · 1 | Kullanıcı değerlendirmeleri sponsorlu içeriklerde, reklam kreatiflerinde ve işletme paneli dışa aktarımlarında alıntılanamaz (hukuki onay olmadan "değerlendirme widget'ı" yok). |
 | REQ-DEG-006 | ZORUNLU · 3 | İşletme yanıtı: doğrulanmış işletme temsilcisi, değerlendirme başına 1 herkese açık yanıt; yanıtlar da moderasyon kurallarına tabidir; yanıt değerlendirmenin sıralamasını/görünürlüğünü değiştirmez. |
@@ -1134,7 +1137,7 @@ Deneyim tarihi gelecekte olamaz; 24 aydan eski deneyimler "Eski deneyim ({ay yı
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|
 | REQ-GUN-001 | ZORUNLU · 1 | **Moderasyon kuyruğu:** öncelik (risk skoru, bildirim sayısı, hukuki talep), SLA sayaçları (varsayılan: ön moderasyon medyan ≤ 24 saat; hukuki talepler ≤ 24 saat ilk inceleme), hazır gerekçe şablonları (makrolar), toplu işlem, karar başına zorunlu gerekçe kodu, tam denetim kaydı. |
-| REQ-GUN-002 | ZORUNLU · 1 | **Bildir (şikâyet) akışı:** her değerlendirme, fotoğraf, soru-cevap, işletme yanıtı ve içerik için "Bildir": neden (sabit liste) + açıklama + (hukuki taleplerde) talep sahibi bilgileri; misafir de bildirebilir (hız sınırlı); bildirim sahibine durum bildirimi. |
+| REQ-GUN-002 | ZORUNLU · 1 | **Bildir (şikâyet) akışı:** her değerlendirme, fotoğraf, soru-cevap, işletme yanıtı ve içerik için "Bildir": neden (sabit liste) + açıklama + (hukuki taleplerde) talep sahibi bilgileri; misafir de bildirebilir (hız sınırlı); bildirim sahibine durum bildirimi (Faz 1: e-posta). |
 | REQ-GUN-003 | ZORUNLU · 1 | **İtiraz:** kaldırılan içeriğin sahibi ve bildirimi reddedilen taraf 14 gün içinde bir kez itiraz edebilir; itiraz ilk kararı veren moderatörden **farklı** bir moderatör tarafından incelenir. |
 | REQ-GUN-004 | ZORUNLU · 1 | **Sponsor/işletme talebiyle olumsuz değerlendirme silinmez.** Kaldırma yalnızca içerik politikası ihlali, hukuki talep/karar, kullanıcının kendi talebi gerekçeleriyle yapılır; her kaldırmanın gerekçe kodu ve denetim kaydı tutulur; "işletme beğenmedi" bir gerekçe kodu değildir. Sponsor kuruluşa bağlı değerlendirmelerde kaldırma kararı ikinci bir moderatör onayı gerektirir. |
 | REQ-GUN-005 | ZORUNLU · 1 | **Hukuki talepler ve bildirim-kaldırma:** `takedown_requests` (talep eden, dayanak, hedef içerik, belge, durum, karar, süreler); mahkeme/idari kararlar ve kişilik hakkı ihlali iddiaları ayrı akış; yanıt süreleri `compliance_config`'ten (5651 ve ilgili mevzuat — Ek D1, doğrulanacak). |
@@ -1180,7 +1183,7 @@ Bu sorgular düz tam metin aramayla karşılanamaz; Faz 1'de **kural ve sözlük
 | REQ-ARA-004 | ZORUNLU · 1 | PostgreSQL `turkish` metin arama yapılandırmasının kullanılan sürümde varlığı doğrulanır (ADR); özel yapılandırma + `unaccent` (IMMUTABLE sarmalayıcıyla); ağırlıklar (başlık A, kategori/yer B, alt başlık C, gövde D); GIN indeks. Kök bulucunun sınırlılığına karşı "simple" vektörle birleştirme test korpusuyla değerlendirilir. |
 | REQ-ARA-005 | ZORUNLU · 1 | Yazım hatası toleransı: `pg_trgm` ile normalize ad ve yer adları üzerinde trigram indeks; tam metin sonucu az olduğunda (< 5) benzerlik geri dönüşü; eşik test korpusuyla ayarlanır. "Bunu mu demek istediniz?" önerisi. |
 | REQ-ARA-006 | ZORUNLU · 1 | **Sorgu korpusu:** `docs/requirements/ARA-sorgu-korpusu.json` içinde ≥ 50 sorgu (A7.1 örnekleri, Türkçe karakter varyantları, büyük/küçük harf, yazım hataları — "kapadoyka", eş anlamlılar, ekli yer adları) ve her biri için beklenen ilk 5 sonuç (demo veride). **Kabul:** recall@5 ≥ %90; sıfır sonuç yalnızca beklenen sorgularda. CI'da çalışır. |
-| REQ-ARA-007 | ZORUNLU · 1 | **Ortak filtreler:** konum (il/ilçe/yakınımda + yarıçap), kategori, listeleme türü/içerik türü, fiyat seviyesi/bütçe, kullanıcı puanı (≥ 3,5 / ≥ 4 / ≥ 4,5), özellikler (kategori şemasından `filterable`), açık şimdi (saatleri bilinenler), tarih (etkinlik; konaklama/araç kiralama için sağlayıcı yönlendirmesine parametre olarak), sıralama. Her içerik türü için uygun filtre seti şablonla tanımlanır. |
+| REQ-ARA-007 | ZORUNLU · 1 | **Ortak filtreler:** konum (il/ilçe; "yakınımda + yarıçap" İSTEĞE BAĞLI, §7.1), kategori, listeleme türü/içerik türü, fiyat seviyesi/bütçe, kullanıcı puanı (≥ 3,5 / ≥ 4 / ≥ 4,5), özellikler (kategori şemasından `filterable`), açık şimdi (saatleri bilinenler), tarih (etkinlik; konaklama/araç kiralama için sağlayıcı yönlendirmesine parametre olarak), sıralama. Her içerik türü için uygun filtre seti şablonla tanımlanır. |
 | REQ-ARA-008 | ZORUNLU · 1 | **Sıralama seçenekleri:** Önerilen (alaka + Bayes puanı + tazelik + mesafe; **ticari sinyal içermez**), Puana göre (Bayes), En çok değerlendirilen, En yakın (konum varsa), En yeni (içerik). "Önerilen" formülünün bileşenleri `/nasil-degerlendiriyoruz` sayfasında açıklanır. |
 | REQ-ARA-009 | ZORUNLU · 1 | **Organik sıralama değişmezliği testi:** aynı tohum veride arama ve kategori listesi sorgusu tüm kampanyalar aktifken ve hepsi silinmişken çalıştırılır; organik `data` dizisi iki durumda birebir aynıdır (AK-04). |
 | REQ-ARA-010 | ZORUNLU · 1 | Otomatik tamamlama: yer adları, kategoriler, listelemeler ve içerikler gruplu; klavye ile gezilebilir (ARIA combobox); son aramalar yalnızca cihazda (misafir) ya da rızayla hesapta. |
@@ -1221,6 +1224,7 @@ Sponsorlu içerik ve işletme tanıtımları önemli bir gelir kaynağıdır; bu
 | Sponsorlu yerleşim | **Sponsorlu** | "Neden bunu görüyorum?" → "{İşletme} bu alanda görünmek için ödeme yaptı. Sponsorluk puanları ve organik sıralamayı etkilemez." |
 | Ücretsiz ürün/konaklama/davet | **İş birliği** (hukuki incelemeyle "Reklam" olabilir) | "Bu inceleme için ürün/konaklama {Firma} tarafından ücretsiz sağlanmıştır." |
 | Affiliate | **Ortaklık bağlantısı** (CTA'nın hemen yanında) | "Bu bağlantı üzerinden yapılan alışverişlerden komisyon alabiliriz; bu, değerlendirmemizi etkilemez." ("Fiyat senin için değişmez" ifadesi yalnızca sağlayıcı sözleşmesiyle teyit edildiyse.) |
+| İşletmenin sağladığı bilgi/görsel | **İşletme tarafından sağlandı** | "Bu bilgi/görsel {İşletme} tarafından sağlanmış ve editör onayından geçmiştir." |
 | Display reklam (gelecek) | **Reklam** | — |
 
 > **Hukuki not (L-kaydı):** Türk reklam mevzuatındaki güncel düzenlemeler sponsorlu içerikte belirli bir ibarenin ("Reklam" gibi) zorunlu kullanılmasını gerektirebilir. Etiket sözlüğü hukuk incelemesiyle kesinleşene kadar yukarıdaki varsayılanlar kullanılır; değişiklik yalnızca yapılandırma güncellemesidir (Ek D1).
@@ -1277,7 +1281,7 @@ Her listeleme türünün izinli CTA seti Ek A4.4'tedir. Desteklenen eylem türle
 |---|---|---|
 | REQ-AFF-001 | ZORUNLU · 1 | Tüm ticari ve ticari olmayan dış bağlantılar merkezi kayıttadır: `outbound_links` (listeleme/içerik, entegrasyon sağlayıcısı, tür: affiliate/booking/purchase/website/phone/messaging/map/quote_request, hedef URL şablonu, alt kimlik (sub-ID) şablonu, `commercialRelation`, geçerlilik tarihleri, durum, oluşturan). |
 | REQ-AFF-002 | ZORUNLU · 1 | Yönlendirme uç noktası `GET /git/{linkId}?ctx={imzalı bağlam}` → 302. Hedef **yalnızca veritabanından** okunur; istekten gelen URL'ye yönlendirme YAPILMAZ (açık yönlendirme yok). Hedef alan adı sağlayıcının `allowedDomains` listesinde değilse yönlendirme yapılmaz ve alarm üretilir. **Kabul:** keyfi URL'ye yönlendirme denemeleri (parametre enjeksiyonu, `//evil.com`, `https:evil.com`, Unicode alan adları) başarısız olur (güvenlik testi). |
-| REQ-AFF-003 | ZORUNLU · 1 | Yanıt başlıkları: `Cache-Control: no-store`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Robots-Tag: noindex`; `/git/` robots.txt'de `Disallow`. Yönlendirme gecikmesi p95 < 50 ms; tıklama kaydı asenkron. |
+| REQ-AFF-003 | ZORUNLU · 1 | Yanıt başlıkları: `Cache-Control: no-store`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Robots-Tag: noindex`; `/git/` robots.txt'de `Disallow` (asıl mekanizma bağlantılardaki `rel="sponsored nofollow"`; Google Search Central güncel metniyle doğrulanır). Yönlendirme gecikmesi p95 < 50 ms; tıklama kaydı asenkron. |
 | REQ-AFF-004 | ZORUNLU · 1 | HTML'de ticari bağlantılar `rel="sponsored noopener"` (+ gerekirse `nofollow`); yeni sekmede açılıyorsa `noopener noreferrer`; affiliate CTA'nın hemen yanında "Ortaklık bağlantısı" açıklaması (A8.2). |
 | REQ-AFF-005 | ZORUNLU · 1 | `outbound_clicks`: zaman, bağlantı, yüzey, sayfa türü, yuva/yerleşim (varsa), günlük tuzlu oturum karması (ham IP saklanmaz), üye kimliği yalnızca rıza varsa, bot işareti, tekilleştirme anahtarı; aylık bölümlü. Aynı oturum + bağlantı için 30 sn içinde tek tıklama; önceden getirme (`Sec-Purpose: prefetch`) ve bot tıklamaları raporlara girmez. |
 | REQ-AFF-006 | ZORUNLU · 1 | Sağlayıcıya özel kampanya ve alt kimlik parametreleri şablonla eklenir (ör. `{subId}` = yerleşim/sayfa kodu; kişisel veri İÇERMEZ). |
@@ -1296,7 +1300,7 @@ Her listeleme türünün izinli CTA seti Ek A4.4'tedir. Desteklenen eylem türle
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|
 | REQ-ENT-001 | ZORUNLU · 1 | Her port için `MOCK` adaptör (yalnızca yerel/test; üretim derlemesinde YASAK, §12.8) ve **sözleşme testleri**; gerçek adaptörler Faz 3'te ve yalnızca kimlik bilgisi sağlanırsa. |
-| REQ-ENT-002 | ZORUNLU · 1 | Adaptörlerde zaman aşımı (varsayılan 3 sn), sınırlı yeniden deneme (üstel geri çekilme), devre kesici; hata durumunda kullanıcıya fiyat/müsaitlik **gösterilmez**, "Güncel fiyat ve müsaitlik için {Sağlayıcı}'ya bakın" yolu sunulur (E2E-008). |
+| REQ-ENT-002 | ZORUNLU · 1 | Adaptörlerde zaman aşımı (varsayılan 3 sn), sınırlı yeniden deneme (üstel geri çekilme), devre kesici; hata durumunda kullanıcıya fiyat/müsaitlik **gösterilmez**, "Güncel fiyat ve müsaitlik için {Sağlayıcı}'ya bak" yolu sunulur (tek i18n anahtarı; E2E-008 aynı anahtarı doğrular). |
 | REQ-ENT-003 | ZORUNLU · 3 | Sağlayıcı yanıtları ham olarak loglanmaz (kişisel veri/sözleşme kısıtları); yalnızca özet ve hata kodları. |
 
 ### A9.4 Fiyat ve müsaitlik gösterimi
@@ -1337,7 +1341,7 @@ WordPress yönetim paneli kullanılmaz; projeye özel arayüz geliştirilir (AK-
 
 ## A11 — İşletme ve reklamveren portalı (ISL)
 
-İlk sürümde (Faz 1) işletme ve sponsorluk kayıtları **yönetici/editör** tarafından oluşturulur; hesapsız başvuru formları vardır. İşletme ve reklamveren hesapları Faz 3'tedir; self-servis reklam satın alma ve ödeme **kapsam dışıdır** (ayrı İnsan kararı).
+İlk sürümde (Faz 1) işletme ve sponsorluk verileri **yönetici ya da Satış/Sponsorluk sorumlusu** tarafından oluşturulur (editör yalnızca sponsorlu içerik metnini yazar); hesapsız başvuru formları vardır. İşletme ve reklamveren hesapları Faz 3'tedir; self-servis reklam satın alma ve ödeme **kapsam dışıdır** (ayrı İnsan kararı).
 
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|
@@ -1387,7 +1391,7 @@ Alt navigasyon (5 sekme):
 | REQ-MOB-016 | ZORUNLU · 2 | **Dağıtım:** EAS Build/Submit/Update (ADR); kanallar: development / preview / production; OTA güncellemeleri yalnızca JS/varlık düzeltmeleri için — yerel kod/izin değişikliği mağaza sürümü gerektirir; sürümleme (semver + build numarası); minimum OS sürümleri ADR'de; tablet desteği kararı ADR'de (varsayılan: telefon öncelikli, tablette ölçeklenmiş). Mağaza gönderimi C sınıfı. |
 | REQ-MOB-017 | ZORUNLU · 2 | **Hata izleme:** çökme raporlama (kaynak haritaları yüklenmiş), kişisel veri maskelenmiş; analitik yalnızca rızayla. |
 | REQ-MOB-018 | ZORUNLU · 2 | **Mobil testler:** birim + bileşen testleri; E2E (Maestro ya da Detox — ADR) duman senaryoları: misafir keşif, arama + filtre, listeleme açma, giriş, favori ekleme, değerlendirme gönderme, derin bağlantı açma, hesap silme başlatma; cihaz matrisi `MANUAL-QA` içinde. |
-| REQ-MOB-019 | ZORUNLU · 2 | **Mağaza varlıkları taslakları:** Türkçe uygulama adı, alt başlık, açıklama, anahtar kelimeler, ekran görüntüsü senaryoları (demo veriyle, "Demo" ibaresi olmadan gerçek görünmeyecek biçimde — gerçek işletme verisi yoksa mağaza görselleri İnsan onayıyla), destek URL'si, gizlilik politikası URL'si. |
+| REQ-MOB-019 | ZORUNLU · 2 | **Mağaza varlıkları taslakları:** Türkçe uygulama adı, alt başlık, açıklama, anahtar kelimeler, ekran görüntüsü senaryoları (demo veri kullanılan her görselde "(Demo)" eki görünür kalır; "Demo" ibaresiz mağaza görseli yalnızca gerçek ve lisanslı veriyle ve İnsan onayıyla — C sınıfı), destek URL'si, gizlilik politikası URL'si. |
 | REQ-MOB-021 | ZORUNLU · 2 | **Bildirim merkezi** (web `/bildirimler` ve mobil Profil): liste, okundu/okunmadı, tür filtresi, derin bağlantıyla ilgili ekrana gitme, toplu okundu; türler: değerlendirme durumu, işletme yanıtı, kaydedilen listelemede değişiklik, editoryal öneri, (izinliyse) fırsat; saklama 90 gün. |
 | REQ-MOB-020 | OLMALI · 2 | Sponsorlu içerik ve fırsat tercihleri: kullanıcı fırsat/sponsorlu **bildirimlerini** kapatabilir; akıştaki sponsorlu yerleşimler etiketli kalır (kapatma seçeneği gelir modeline göre B sınıfı karar). |
 
@@ -1405,7 +1409,7 @@ Alt navigasyon (5 sekme):
 | REQ-SEO-002 | ZORUNLU · 1 | Her sayfa için benzersiz `<title>` (≤ 60 karakter hedef) ve meta açıklama (≤ 155 karakter hedef); şablonlar türe göre; Türkçe ek uyumu yardımcıları kullanılır (A15.2). Yinelenen başlık/açıklama CI raporunda listelenir. |
 | REQ-SEO-003 | ZORUNLU · 1 | **URL şeması** A15.1'deki tablodur; küçük harf, tire ayracı, sonda eğik çizgi yok (aykırı biçim 301 ile normalleştirilir); slug'da yıl/fiyat gibi bayatlayan bilgi yok; slug değişikliği 301 (REQ-VER-013). |
 | REQ-SEO-004 | ZORUNLU · 1 | **Canonical:** her indekslenebilir sayfada kendine referans veren canonical; filtre/sıralama parametreli varyantlar ana hub'a canonical verir ya da `noindex,follow`; yalnızca **izin listesindeki** yüzeyler (ör. il × kategori, il × kategori × tek bir öne çıkan özellik — eşik sağlanırsa) temiz URL ile indekslenir. |
-| REQ-SEO-005 | ZORUNLU · 1 | **Tarama kontrolü:** arama sonuçları (`/ara`), karşılaştırma aracı, hesap sayfaları, `/git/`, önizleme, panel `noindex` ve gerekirse robots.txt'de `Disallow`; sınırsız filtre kombinasyonu taranabilir bağlantı üretmez (filtre bağlantıları izin listesi dışında `nofollow` ya da form/JS ile). |
+| REQ-SEO-005 | ZORUNLU · 1 | **Tarama kontrolü:** arama sonuçları (`/ara`), karşılaştırma aracı, hesap sayfaları, `/git/`, önizleme, panel `noindex` ile dışarıda tutulur ve robots.txt'de **Disallow edilmez** (taranması engellenen sayfanın `noindex`'i okunamaz; doğrulanır) — istisna: `/git/` yönlendirme yolu Disallow edilir; sınırsız filtre kombinasyonu taranabilir bağlantı üretmez (filtre bağlantıları izin listesi dışında `nofollow` ya da form/JS ile). |
 | REQ-SEO-006 | ZORUNLU · 1 | **XML site haritaları:** dizin + türe göre bölümlü (listelemeler, içerikler, hub'lar, destinasyonlar, görseller); her dosya ≤ 50.000 URL; `lastmod` yalnızca anlamlı değişiklikte güncellenir; `noindex`, eşiğin altı, demo, kapalı ve yönlendirilen URL'ler site haritasında yer almaz (test). |
 | REQ-SEO-007 | ZORUNLU · 1 | `robots.txt` ortama göre (staging/preview tamamen `Disallow` + HTTP temel kimlik doğrulama; üretimde site haritası dizini bildirimi). |
 | REQ-SEO-008 | ZORUNLU · 1 | **Yapılandırılmış veri (JSON-LD):** içeriğin gerçek türüyle eşleşen tipler (Ek A2.2 tablosu + `Article`, `BreadcrumbList`, `ItemList`, `Person` yazarlar için, `Organization` site için, `WebSite` + arama kutusu uygunluğu doğrulanarak). **Kurallar:** (a) `Review`/`AggregateRating` yalnızca sayfada görünen gerçek değerlendirmelerden; n < 3 ise `AggregateRating` yok; (b) Google'ın işletmelerin kendi sitelerindeki "kendine hizmet eden" değerlendirmelere ilişkin kısıtları doğrulanır ve uygulanır; (c) sponsorlu içerikte editör `Review` işaretlemesi yok; (d) demo veride JSON-LD yok; (e) fiyat işaretlemesi yalnızca güncel ve kaynaklı fiyatta. Rich Results test doğrulaması CI'da şema doğrulayıcıyla (çevrimdışı) + `M` (canlı test aracı). |
@@ -1538,7 +1542,7 @@ Button (birincil/ikincil/metin/tehlike; yükleniyor/devre dışı) · Input / Te
 | Konaklama (tüm türler) | `/konaklama/{slug}` | `/konaklama/ornek-butik-otel-goreme` | evet |
 | Hizmet işletmesi | `/isletme/{slug}` | | evet |
 | Araç kiralama firması | `/arac-kiralama/{slug}` | | evet |
-| Turist rehberi (kişi) | `/tur-rehberi/{slug}` | | kişinin rızası + ruhsat doğrulaması varsa |
+| Turist rehberi (kişi) | `/turist-rehberi/{slug}` | | kişinin rızası + ruhsat doğrulaması varsa |
 | Tur / aktivite | `/tur/{slug}` | | evet |
 | İlgi noktası | `/yer/{slug}` | `/yer/kaputas-plaji` | evet |
 | Etkinlik | `/etkinlik/{slug}` (yıllık tekrarlarda `-{yyyy}`) | | bitişten 30 gün sonra noindex |
@@ -1555,6 +1559,7 @@ Button (birincil/ikincil/metin/tehlike; yükleniyor/devre dışı) · Input / Te
 | Yazar/editör | `/yazar/{slug}` | | evet |
 | Kullanıcı profili | `/kullanici/{kullanici-adi}` | | profil ayarına göre |
 | Arama | `/ara?q=…` | | noindex |
+| Hesap silme talebi | `/hesap-silme` | | noindex |
 | Hesap ve kişisel | `/hesabim/…`, `/kaydedilenler`, `/bildirimler` (F2), `/gecmis` (F2) | | noindex |
 | İşletme akışları | `/isletmeni-ekle`, `/isletmeni-sahiplen/{slug}` (F3), `/isletme-paneli/…` (F3) | | noindex (panel) |
 | Reklam/sponsorluk başvurusu | `/reklam-ve-sponsorluk` | | evet |
@@ -1613,7 +1618,7 @@ Ana sayfa · Kategori keşif sayfaları · Kategori alt sayfaları · Arama sonu
 | Y5 | Değerlendirme yazma (misafir başlar, girişte taslak korunur) → moderasyon → yayın → bildirim | E2E-004 / E2E-012 |
 | Y6 | Bildir → moderatör kararı → itiraz → farklı moderatör kararı | E2E-015 |
 | Y7 | İşletme başvurusu → yönetici incelemesi | E2E-007 |
-| Y8 | Editör → kategori + özellik şeması → listeleme → rehber → yayın → sitede görünür | E2E-001 |
+| Y8 | Yönetici → kategori + özellik şeması; Editör → listeleme → rehber → yayın → sitede görünür | E2E-001 |
 | Y9 | Yönetici → kampanya + yerleşim → etiketli görünür → tıklama kaydı → bitişte kaybolur | E2E-005 / E2E-006 |
 | Y10 | Çerez reddi → analitik yüklenmez; tercih değişikliği | E2E-016 |
 | Y11 | Hesap silme + veri dışa aktarma | E2E-017 |
@@ -1681,8 +1686,8 @@ Ana sayfa · Kategori keşif sayfaları · Kategori alt sayfaları · Arama sonu
 
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|
-| REQ-KVK-020 | ZORUNLU · 1 | Hesap silme yolları: Profil → Ayarlar → "Hesabımı sil" (≤ 3 adım) ve herkese açık `/hesap-silme` sayfası (girişsiz talep, e-posta doğrulamalı; mağaza formlarında bu URL kullanılır). "E-posta atın" tipi akış kabul edilmez. |
-| REQ-KVK-021 | ZORUNLU · 1 | Silme sonucu: hesap, profil, favoriler, koleksiyonlar, tercihler, push token'ları, pazarlama verileri silinir; değerlendirmeler/fotoğraflar için seçenek ("içeriklerimi de sil" varsayılan / "anonim kalsın") — ikinci seçenek hukuki karara bağlı; yasal saklama gerektiren kayıtlar erişimi kısıtlı arşive ayrılır ve süre sonunda imha edilir; kullanıcıya silinen/saklanan veri türleri ve süreler gösterilir. Tamamlanma süresi `compliance_config.accountDeletionDays` (varsayılan 30). |
+| REQ-KVK-020 | ZORUNLU · 1 | Hesap silme yolları: Profil → Hesap → "Hesabımı sil" (≤ 3 adım) ve herkese açık `/hesap-silme` sayfası (girişsiz talep, e-posta doğrulamalı; mağaza formlarında bu URL kullanılır). "E-posta atın" tipi akış kabul edilmez. |
+| REQ-KVK-021 | ZORUNLU · 1 | Silme sonucu: hesap, profil, favoriler, koleksiyonlar, tercihler, push token'ları, pazarlama verileri silinir; değerlendirmeler/fotoğraflar için seçenek ("içeriklerimi de sil" varsayılan / "anonim kalsın" — L-kaydı karara bağlanana kadar KAPALI); yasal saklama gerektiren kayıtlar erişimi kısıtlı arşive ayrılır ve süre sonunda imha edilir; kullanıcıya silinen/saklanan veri türleri ve süreler gösterilir. Tamamlanma süresi `compliance_config.accountDeletionDays` (varsayılan 30). |
 | REQ-KVK-022 | ZORUNLU · 1 | `data_subject_requests`: web formu (`/kvkk-basvuru`), uygulama içi form ve diğer kanallardan gelen başvuruların manuel kaydı; türler: bilgi, erişim/kopya, düzeltme, silme, itiraz, zarar giderimi; kimlik doğrulaması oturum ya da kayıtlı e-postayla (gereksiz kimlik verisi istenmez); yanıt süresi sayacı `compliance_config`'ten (doğrulanacak; varsayılan 30 gün) ve 20./27. gün uyarıları; gerekçeli ret şablonu; panel raporunda süresi geçen başvuru 0 değilse kırmızı alarm. |
 | REQ-KVK-023 | ZORUNLU · 1 | **Saklama ve imha politikası:** her veri kategorisi için azami süre ve imha yöntemi (silme/anonimleştirme); periyodik imha işi (aralığı mevzuattaki üst sınırı aşmaz — doğrulanacak), imha kaydı; yedeklerde imha planı. |
 | REQ-KVK-024 | ZORUNLU · 1 | **Veri ihlali müdahale planı** (`docs/legal/ihlal-mudahale-plani.md`, TASLAK): tespit → sınırlama → etki analizi → bildirim kararı (süre `compliance_config`'ten; doğrulanacak) → ilgili kişilere bildirim → kök neden; `breach_incidents` kaydı; yılda bir masa başı tatbikatı. |
@@ -1693,12 +1698,12 @@ Ana sayfa · Kategori keşif sayfaları · Kategori alt sayfaları · Arama sonu
 
 | Tür | Örnek | Onay | Merkezi izin sistemi (İYS) | Ret |
 |---|---|---|---|---|
-| İşlemsel/hizmet | doğrulama, parola sıfırlama, değerlendirme durumu, hesap silme teyidi | gerekmez | hayır | — |
+| İşlemsel/hizmet | doğrulama, parola sıfırlama, değerlendirme durumu, hesap silme teyidi | gerekmez (doğrulanacak, L-012) | hayır (doğrulanacak, L-012) | — |
 | Editoryal bildirim (ticari öğe yok) | takip edilen şehirde yeni rehber | uygulama içi tercih | hukuki teyit | tercih ekranı |
 | Ticari (bireysel alıcı) | bülten, fırsat, sponsorlu içerik, kampanya push'u | **önceden açık onay** | e-posta/SMS için evet (doğrulanacak; push için doğrulanacak) | her iletide tek tık ret |
 | Ticari (tacir/esnaf alıcı) | işletmelere sponsorluk teklifi | hukuki teyit | kayıt + ret kontrolü (doğrulanacak) | her iletide ret |
 
-- İşlemsel iletiye sponsorlu/kampanya içeriği eklenmez (eklenirse ileti ticari sayılır).
+- İşlemsel iletiye sponsorlu/kampanya içeriği eklenmez (eklenirse ilgili mevzuata göre ticari sayılabileceği bildirilir; doğrulanacak, L-012).
 - Bülten kaydında çift aşamalı onay; onay kaydı: kanal, adres, metin sürümü, kaynak, zaman, IP karması.
 - İzin sistemi entegrasyonu `ConsentSyncPort` arkasında; hesap yoksa MOCK + X-kaydı; ret senkronizasyon süresi `compliance_config`'te (doğrulanacak).
 - **Push:** işletim sistemi bildirim izni ≠ ticari ileti onayı. Ayrı anahtarlar: "Hizmet bildirimleri" (varsayılan açık) ve "Fırsatlar ve sponsorlu öneriler" (varsayılan **kapalı**, açık onay metniyle).
@@ -1779,7 +1784,7 @@ Uygulama içi hesap silme; üçüncü taraf girişle birlikte gizlilik odaklı e
 | REQ-OPS-002 | ZORUNLU · 0 | **CI aşamaları:** kurulum (önbellekli) → lint + format → typecheck → birim → entegrasyon (gerçek PostgreSQL konteyneri) → build → OpenAPI fark kontrolü → E2E (web/admin) → erişilebilirlik → Lighthouse CI (Faz 1) → sır/lisans/bağımlılık/SAST taramaları → `req:check`. PR'larda zorunlu kontroller. **CD:** `main` yeşilken staging'e otomatik dağıtım (migration + duman testi + başarısızlıkta otomatik geri alma); üretim dağıtım hattı hazırlanır ama tetiklenmesi C sınıfıdır (İnsan onayı). |
 | REQ-OPS-003 | ZORUNLU · 1 | **Barındırma önerisi** ADR'de seçenek karşılaştırmasıyla (yönetilen PostgreSQL + konteyner/uygulama platformu + S3 uyumlu depolama + CDN/WAF); **veri yerleşimi (Türkiye içi / AB) KVKK aktarım kuralları nedeniyle C sınıfı İnsan kararıdır**; karar verilene kadar dağıtım yapılmaz. Altyapı kodu (IaC) taslağı İSTEĞE BAĞLI Faz 1. |
 | REQ-OPS-004 | ZORUNLU · 1 | **Sıfır kesintili dağıtım** ve migration güvenliği (REQ-VER-022); geri alma planı (önceki imaj + geriye uyumlu şema). |
-| REQ-OPS-005 | ZORUNLU · 1 | **Yedekleme:** yönetilen veritabanı otomatik yedek + zaman noktasına geri dönüş; hedefler (varsayılan, B sınıfı): **RPO ≤ 15 dk, RTO ≤ 4 saat**; nesne depolama sürümleme; **geri yükleme tatbikatı** her faz kapısında staging'de (komut ve süre raporlanır); yedekler şifreli ve ayrı hesap/bölgede (aktarım kuralları dikkate alınarak). |
+| REQ-OPS-005 | ZORUNLU · 1 | **Yedekleme:** yönetilen veritabanı otomatik yedek + zaman noktasına geri dönüş; hedefler (varsayılan, B sınıfı): **RPO ≤ 15 dk, RTO ≤ 4 saat**; nesne depolama sürümleme; **geri yükleme tatbikatı** her faz kapısında: staging varsa staging'de, yoksa yerel Docker ortamında (yedek al → boş veritabanına geri yükle → migration/smoke testi; komut ve süre raporlanır); staging tatbikatı X-002 sağlanana kadar `MANUAL-QA` kaydıdır; yedekler şifreli ve ayrı hesap/bölgede (aktarım kuralları dikkate alınarak). |
 | REQ-OPS-006 | ZORUNLU · 1 | **Gözlemlenebilirlik:** yapılandırılmış loglar (merkezi), dağıtık izleme (OpenTelemetry), hata izleme (web/API/mobil; kaynak haritaları), metrikler (istek oranı, hata oranı, gecikme, kuyruk derinliği, outbox gecikmesi), uptime kontrolleri; uyarılar (hata oranı > %2 / 5 dk, p95 bütçe aşımı / 10 dk, outbox gecikmesi > 5 dk, sertifika süresi < 14 gün, disk > %80). Sağlayıcılar aktarım envanterine girer. |
 | REQ-OPS-007 | OLMALI · 1 | **SLO'lar** (varsayılan): herkese açık site kullanılabilirliği aylık %99,5; `/git/` yönlendirme %99,9; hata bütçesi politikası. |
 | REQ-OPS-008 | ZORUNLU · 1 | **Runbook'lar** (`docs/ops/`): dağıtım, geri alma, veritabanı geri yükleme, sır rotasyonu, olay müdahalesi, veri ihlali (REQ-KVK-024), kampanya acil durdurma ("tüm sponsorlu yerleşimleri kapat" anahtarı), moderasyon yığılması. |
@@ -1828,7 +1833,7 @@ Biçim: Verilen / Ne zaman / O zaman. Test adları kimliği içerir (`[E2E-005]`
 
 | ID | Faz | Senaryo | Kabul (özet) | Bağlı REQ |
 |---|---|---|---|---|
-| **E2E-001** | 1 | Yönetici kategori oluşturur, içerik yayınlar, içerik sitede görünür | **Verilen** 2FA'lı editör/yönetici; **Ne zaman** yeni kategori + özellik şeması oluşturur, bir listeleme ekler, bu listelemeye bağlı bir rehber yazar, incelemeye gönderir ve yayımlar; **O zaman** rehber ve listeleme herkese açık sitede SSR HTML ile 200 döner, kategori hub'ında görünür (eşik sağlanmışsa), site haritasına girer, JSON-LD geçerlidir. | KAT-001, ICR-005, SEO-001/006/008 |
+| **E2E-001** | 1 | Yönetici kategori oluşturur, içerik yayınlar, içerik sitede görünür | **Verilen** 2FA'lı yönetici ve editör; **Ne zaman** yönetici yeni kategori + özellik şeması oluşturur, editör bir listeleme ekler, bu listelemeye bağlı bir rehber yazar ve yayımlar; **O zaman** rehber ve listeleme herkese açık sitede SSR HTML ile 200 döner, kategori hub'ında görünür (eşik sağlanmışsa), site haritasına girer, JSON-LD geçerlidir. | KAT-001, ICR-005, SEO-001/006/008 |
 | **E2E-002** | 1 | Kullanıcı arama yapar, filtre uygular, içerik sayfasını açar | "İzmir'de kahvaltı" araması → ayrıştırılmış çipler (İzmir, Kahvaltı) görünür → "Açık şimdi" + puan ≥ 4 filtresi → URL filtreyi yansıtır → sonuç kartından listeleme açılır → geri tuşu filtreli listeye döner. | ARA-003/007/012 |
 | **E2E-003** | 1 | Kullanıcı oturum açar, favori ekler, profilinde görür | Misafir "Kaydet"e basar → giriş istenir → giriş sonrası işlem tamamlanır → Kaydedilenler'de görünür → kaldırma çalışır. | HSP-001/002 |
 | **E2E-004** | 1 | Kullanıcı değerlendirme yazar ve moderasyon akışına girer | Doğrulanmış üye değerlendirme gönderir → durum "İncelemede" → moderatör kuyruğunda görünür → onay → listeleme sayfasında yayında, `rating_stats` güncellenir (n < 3 iken ortalama gösterilmez). | DEG-001/004, GUN-001 |
@@ -1841,18 +1846,18 @@ Biçim: Verilen / Ne zaman / O zaman. Test adları kimliği içerir (`[E2E-005]`
 | **E2E-011** | 1 | Yetki yükseltme ve IDOR | Yazar yayımlayamaz (403); moderatör kampanya oluşturamaz; 2FA'sız personel panel API'sine erişemez (`MFA_REQUIRED`); üye başka üyenin değerlendirmesini düzenleyemez (404); rol değişikliği denetim kaydına yazılır. | HSP-007/009, GUV-001 |
 | **E2E-012** | 1 | Misafir değerlendirme taslağı → giriş → gönderim | Misafir değerlendirme yazmaya başlar (fotoğraflı) → "Gönder"de giriş → taslak eksiksiz geri yüklenir → gönderim → ret senaryosunda gerekçe görünür → düzenleyip yeniden gönderir; yüklenen fotoğrafta EXIF/GPS yoktur. | DEG-004, GUV-008 |
 | **E2E-013** | 1 | Tatil planlama yolculuğu | Destinasyon sayfası → rehber → gömülü konaklama kartı → konaklama sayfası → tarih/kişi seçimi → "{Sağlayıcı}'da fiyatları gör" parametreli yönlendirme (LINK_ONLY); turizm belge no alanı gösterilir. | LST-001, ENT-015 |
-| **E2E-014** | 1 | Ürün karşılaştırma ve satın alma yönlendirmesi | Ürün kategorisi → editoryal karşılaştırma (alfabetik URL; ters sıra 301) → ürün sayfası → satıcı teklif listesi (kaynak + kontrol zamanı) → "Ortaklık bağlantısı" açıklamalı CTA; satıcılar komisyona göre sıralanmaz. | AFF-009, SEO-003 |
+| **E2E-014** | 1 | Ürün karşılaştırma ve satın alma yönlendirmesi | Ürün kategorisi → editoryal karşılaştırma (alfabetik URL; ters sıra 301) → ürün sayfası → satıcı fiyat bilgisi listesi (`Offer`: kaynak + kontrol zamanı) → "Ortaklık bağlantısı" açıklamalı CTA; satıcılar komisyona göre sıralanmaz. | AFF-009, SEO-003 |
 | **E2E-015** | 1 | Bildir → karar → itiraz | Üye bir değerlendirmeyi bildirir → moderatör kaldırır (gerekçe kodu) → değerlendirme sahibi itiraz eder → **farklı** moderatör karar verir → taraflar bilgilendirilir; sponsor kuruluşa bağlı değerlendirmenin kaldırılması ikinci onay ister. | GUN-002/003/004 |
 | **E2E-016** | 1 | Çerez onayı | REQ-KVK-014 (a)–(d). | KVK-010…014 |
-| **E2E-017** | 1 | Hesap silme ve veri dışa aktarma | Üye verilerini JSON olarak dışa aktarır → "Hesabımı sil" (≤ 3 adım) → oturum kapanır → profil ve favoriler silinir; değerlendirme seçeneğine göre silinir/anonimleşir; girişsiz `/hesap-silme` talebi e-posta doğrulamasıyla çalışır; KVKK başvuru kaydı ve sayaç oluşur. | HSP-011/012, KVK-020…022 |
-| **E2E-018** | 1 | Kod değiştirmeden yeni tür/kategori | Yönetici panelden "Tur/Aktivite > Tekne turları" kategorisi + özellik şeması + değerlendirme kriterleri ekler → listeleme oluşturur → yayımlar → filtreler ve değerlendirme formu yeni kriterleri gösterir; deploy yok. | KAT-001, §7.2 |
-| **E2E-019** | 1 | Organik sıralama değişmezliği | Aynı tohum veride arama ve kategori listesi: tüm kampanyalar aktif / tümü silinmiş → organik `data` dizileri birebir aynı; işletme paketi atanmış listelemenin organik konumu değişmez. | ARA-009, SPN-002, ISL-005 |
+| **E2E-017** | 1 | Hesap silme ve veri dışa aktarma | Üye verilerini JSON olarak dışa aktarır → "Hesabımı sil" (≤ 3 adım) → oturum kapanır, hesap "silme bekliyor" durumuna geçer ve giriş yapılamaz → test saati 30 gün ileri alınınca profil ve favoriler silinir; değerlendirme seçeneğine göre silinir/anonimleşir; girişsiz `/hesap-silme` talebi e-posta doğrulamasıyla çalışır; KVKK başvuru kaydı ve sayaç oluşur. | HSP-011/012, KVK-020…022 |
+| **E2E-018** | 1 | Kod değiştirmeden yeni kategori (var olan tür altında) | Yönetici panelden "Tur/Aktivite > Tekne turları" kategorisi + özellik şeması + değerlendirme kriterleri ekler → listeleme oluşturur → yayımlar → filtreler ve değerlendirme formu yeni kriterleri gösterir; deploy yok. | KAT-001, §7.2 |
+| **E2E-019** | 1 | Organik sıralama değişmezliği | Aynı tohum veride arama ve kategori listesi: tüm kampanyalar aktif / tümü silinmiş → organik `data` dizileri birebir aynı. | ARA-009, SPN-002 |
 | **E2E-020** | 1 | Demo veri ve MOCK sızıntısı yok | Üretim yapılandırmasıyla derleme: MOCK adaptör yoksa derleme başarılı, varsa başarısız; `seed:demo` üretimde reddeder; `dataOrigin=DEMO` kayıtlar site haritasında, JSON-LD'de, analitik/kampanya raporlarında yer almaz ve sayfaları `noindex`. | §12.4, §12.8 |
 | **E2E-021** | 2 | Mobil misafir keşif ve derin bağlantı | Uygulama hesapsız açılır → Keşfet → Ara → listeleme → web URL'si ile derin bağlantı aynı ekranı açar → paylaşım web URL'si üretir. | MOB-002/004/005 |
 | **E2E-022** | 2 | Mobil giriş, favori, push izni | Apple/Google/e-posta girişi → favori ekleme (iyimser) → ön açıklama ekranı sonrası push izni → tercihlerde "Fırsatlar ve sponsorlu öneriler" varsayılan kapalı. | MOB-003/006, KVK (ticari ileti) |
 | **E2E-023** | 2 | Mobil çevrimdışı | Çevrimdışıyken son görüntülenen listeleme önbellekten açılır; değerlendirme gönderimi kuyruğa alınır; bağlantı gelince gönderilir. | MOB-009/010 |
 | **E2E-024** | 2 | Mobil hesap silme | Profil → Hesap → Hesabımı sil uygulama içinden tamamlanır. | MOB-011 |
-| **E2E-025** | 3 | İşletme sahiplenme ve yanıt | İşletme temsilcisi sahiplenme talebi → belge yükleme → doğrulama personeli onayı → "Doğrulanmış işletme" rozeti → değerlendirmeye yanıt (moderasyonlu) → başka kuruluşun listelemesine erişim 404. | GUN-011, ISL-003, HSP-010 |
+| **E2E-025** | 3 | İşletme sahiplenme ve yanıt | İşletme temsilcisi sahiplenme talebi → belge yükleme → doğrulama personeli onayı → "Doğrulanmış işletme" rozeti → değerlendirmeye yanıt (moderasyonlu) → başka kuruluşun listelemesine erişim 404; işletme paketi atanmış listelemenin organik konumu ve değerlendirme sıralaması değişmez (REQ-ISL-005). | GUN-011, ISL-003, HSP-010 |
 | **E2E-026** | 3 | Reklamveren raporu | Reklamveren temsilcisi yalnızca kendi kampanyalarının gerçek olay verisini görür; veri tazeliği zaman damgası; dönüşüm verisi yoksa "Dönüşüm verisi yok". | ISL-004, SPN-011 |
 | **E2E-027** | 3 | Gerçek sağlayıcı sözleşme testi | Kimlik bilgisi sağlanan sağlayıcı adaptörü sözleşme testlerini sandbox'ta geçer; sağlanmayan `ENGELLİ/MOCK` kalır. | ENT-001 |
 
@@ -2055,6 +2060,7 @@ Hiçbiri henüz sağlanmamıştır. Her biri için İnsan'dan beklenen eylem C s
 | X-028 | Stok görsel lisansı (isteğe bağlı) ve fotoğraf çekimi | 1 | Placeholder sistemi |
 | X-029 | Eser meta veri kaynağı (film/kitap/oyun; lisanslı) | 4 | Tür kapalı |
 | X-030 | Marka tescili ve logo tasarımı | 1 | Geçici kelime işareti |
+| X-031 | Git uzak deposu + CI çalıştırıcısı (dal koruması dahil) | 0 | Yerel `pnpm ci:local` |
 
 
 ---
@@ -2082,7 +2088,7 @@ Hiçbiri henüz sağlanmamıştır. Her biri için İnsan'dan beklenen eylem C s
 17. **Mobil:** misafir modu, derin bağlantı, push ön izni ve ticari push ayrımı, konum minimizasyonu, mağaza gereksinimleri, OTA politikası, mobil E2E.
 18. **Kalite ve operasyon:** OWASP ASVS L2 hedefi, SSRF/dosya yükleme sertleştirmesi, Core Web Vitals ve Lighthouse bütçeleri, API p95 bütçeleri, RPO/RTO, geri yükleme tatbikatı, SLO'lar, runbook'lar, canlıya geçiş kontrol listesi.
 19. **E2E kataloğu** 8 senaryodan 27 senaryoya genişletildi.
-20. **Dış bağımlılık listesi** (30 madde) eklendi.
+20. **Dış bağımlılık listesi** (31 madde) eklendi.
 
 ## E2 — v1 bölümlerinin v2'deki karşılıkları (hiçbir v1 maddesi düşürülmedi)
 

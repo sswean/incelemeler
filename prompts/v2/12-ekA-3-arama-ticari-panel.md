@@ -29,7 +29,7 @@ Bu sorgular düz tam metin aramayla karşılanamaz; Faz 1'de **kural ve sözlük
 | REQ-ARA-004 | ZORUNLU · 1 | PostgreSQL `turkish` metin arama yapılandırmasının kullanılan sürümde varlığı doğrulanır (ADR); özel yapılandırma + `unaccent` (IMMUTABLE sarmalayıcıyla); ağırlıklar (başlık A, kategori/yer B, alt başlık C, gövde D); GIN indeks. Kök bulucunun sınırlılığına karşı "simple" vektörle birleştirme test korpusuyla değerlendirilir. |
 | REQ-ARA-005 | ZORUNLU · 1 | Yazım hatası toleransı: `pg_trgm` ile normalize ad ve yer adları üzerinde trigram indeks; tam metin sonucu az olduğunda (< 5) benzerlik geri dönüşü; eşik test korpusuyla ayarlanır. "Bunu mu demek istediniz?" önerisi. |
 | REQ-ARA-006 | ZORUNLU · 1 | **Sorgu korpusu:** `docs/requirements/ARA-sorgu-korpusu.json` içinde ≥ 50 sorgu (A7.1 örnekleri, Türkçe karakter varyantları, büyük/küçük harf, yazım hataları — "kapadoyka", eş anlamlılar, ekli yer adları) ve her biri için beklenen ilk 5 sonuç (demo veride). **Kabul:** recall@5 ≥ %90; sıfır sonuç yalnızca beklenen sorgularda. CI'da çalışır. |
-| REQ-ARA-007 | ZORUNLU · 1 | **Ortak filtreler:** konum (il/ilçe/yakınımda + yarıçap), kategori, listeleme türü/içerik türü, fiyat seviyesi/bütçe, kullanıcı puanı (≥ 3,5 / ≥ 4 / ≥ 4,5), özellikler (kategori şemasından `filterable`), açık şimdi (saatleri bilinenler), tarih (etkinlik; konaklama/araç kiralama için sağlayıcı yönlendirmesine parametre olarak), sıralama. Her içerik türü için uygun filtre seti şablonla tanımlanır. |
+| REQ-ARA-007 | ZORUNLU · 1 | **Ortak filtreler:** konum (il/ilçe; "yakınımda + yarıçap" İSTEĞE BAĞLI, §7.1), kategori, listeleme türü/içerik türü, fiyat seviyesi/bütçe, kullanıcı puanı (≥ 3,5 / ≥ 4 / ≥ 4,5), özellikler (kategori şemasından `filterable`), açık şimdi (saatleri bilinenler), tarih (etkinlik; konaklama/araç kiralama için sağlayıcı yönlendirmesine parametre olarak), sıralama. Her içerik türü için uygun filtre seti şablonla tanımlanır. |
 | REQ-ARA-008 | ZORUNLU · 1 | **Sıralama seçenekleri:** Önerilen (alaka + Bayes puanı + tazelik + mesafe; **ticari sinyal içermez**), Puana göre (Bayes), En çok değerlendirilen, En yakın (konum varsa), En yeni (içerik). "Önerilen" formülünün bileşenleri `/nasil-degerlendiriyoruz` sayfasında açıklanır. |
 | REQ-ARA-009 | ZORUNLU · 1 | **Organik sıralama değişmezliği testi:** aynı tohum veride arama ve kategori listesi sorgusu tüm kampanyalar aktifken ve hepsi silinmişken çalıştırılır; organik `data` dizisi iki durumda birebir aynıdır (AK-04). |
 | REQ-ARA-010 | ZORUNLU · 1 | Otomatik tamamlama: yer adları, kategoriler, listelemeler ve içerikler gruplu; klavye ile gezilebilir (ARIA combobox); son aramalar yalnızca cihazda (misafir) ya da rızayla hesapta. |
@@ -70,6 +70,7 @@ Sponsorlu içerik ve işletme tanıtımları önemli bir gelir kaynağıdır; bu
 | Sponsorlu yerleşim | **Sponsorlu** | "Neden bunu görüyorum?" → "{İşletme} bu alanda görünmek için ödeme yaptı. Sponsorluk puanları ve organik sıralamayı etkilemez." |
 | Ücretsiz ürün/konaklama/davet | **İş birliği** (hukuki incelemeyle "Reklam" olabilir) | "Bu inceleme için ürün/konaklama {Firma} tarafından ücretsiz sağlanmıştır." |
 | Affiliate | **Ortaklık bağlantısı** (CTA'nın hemen yanında) | "Bu bağlantı üzerinden yapılan alışverişlerden komisyon alabiliriz; bu, değerlendirmemizi etkilemez." ("Fiyat senin için değişmez" ifadesi yalnızca sağlayıcı sözleşmesiyle teyit edildiyse.) |
+| İşletmenin sağladığı bilgi/görsel | **İşletme tarafından sağlandı** | "Bu bilgi/görsel {İşletme} tarafından sağlanmış ve editör onayından geçmiştir." |
 | Display reklam (gelecek) | **Reklam** | — |
 
 > **Hukuki not (L-kaydı):** Türk reklam mevzuatındaki güncel düzenlemeler sponsorlu içerikte belirli bir ibarenin ("Reklam" gibi) zorunlu kullanılmasını gerektirebilir. Etiket sözlüğü hukuk incelemesiyle kesinleşene kadar yukarıdaki varsayılanlar kullanılır; değişiklik yalnızca yapılandırma güncellemesidir (Ek D1).
@@ -126,7 +127,7 @@ Her listeleme türünün izinli CTA seti Ek A4.4'tedir. Desteklenen eylem türle
 |---|---|---|
 | REQ-AFF-001 | ZORUNLU · 1 | Tüm ticari ve ticari olmayan dış bağlantılar merkezi kayıttadır: `outbound_links` (listeleme/içerik, entegrasyon sağlayıcısı, tür: affiliate/booking/purchase/website/phone/messaging/map/quote_request, hedef URL şablonu, alt kimlik (sub-ID) şablonu, `commercialRelation`, geçerlilik tarihleri, durum, oluşturan). |
 | REQ-AFF-002 | ZORUNLU · 1 | Yönlendirme uç noktası `GET /git/{linkId}?ctx={imzalı bağlam}` → 302. Hedef **yalnızca veritabanından** okunur; istekten gelen URL'ye yönlendirme YAPILMAZ (açık yönlendirme yok). Hedef alan adı sağlayıcının `allowedDomains` listesinde değilse yönlendirme yapılmaz ve alarm üretilir. **Kabul:** keyfi URL'ye yönlendirme denemeleri (parametre enjeksiyonu, `//evil.com`, `https:evil.com`, Unicode alan adları) başarısız olur (güvenlik testi). |
-| REQ-AFF-003 | ZORUNLU · 1 | Yanıt başlıkları: `Cache-Control: no-store`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Robots-Tag: noindex`; `/git/` robots.txt'de `Disallow`. Yönlendirme gecikmesi p95 < 50 ms; tıklama kaydı asenkron. |
+| REQ-AFF-003 | ZORUNLU · 1 | Yanıt başlıkları: `Cache-Control: no-store`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Robots-Tag: noindex`; `/git/` robots.txt'de `Disallow` (asıl mekanizma bağlantılardaki `rel="sponsored nofollow"`; Google Search Central güncel metniyle doğrulanır). Yönlendirme gecikmesi p95 < 50 ms; tıklama kaydı asenkron. |
 | REQ-AFF-004 | ZORUNLU · 1 | HTML'de ticari bağlantılar `rel="sponsored noopener"` (+ gerekirse `nofollow`); yeni sekmede açılıyorsa `noopener noreferrer`; affiliate CTA'nın hemen yanında "Ortaklık bağlantısı" açıklaması (A8.2). |
 | REQ-AFF-005 | ZORUNLU · 1 | `outbound_clicks`: zaman, bağlantı, yüzey, sayfa türü, yuva/yerleşim (varsa), günlük tuzlu oturum karması (ham IP saklanmaz), üye kimliği yalnızca rıza varsa, bot işareti, tekilleştirme anahtarı; aylık bölümlü. Aynı oturum + bağlantı için 30 sn içinde tek tıklama; önceden getirme (`Sec-Purpose: prefetch`) ve bot tıklamaları raporlara girmez. |
 | REQ-AFF-006 | ZORUNLU · 1 | Sağlayıcıya özel kampanya ve alt kimlik parametreleri şablonla eklenir (ör. `{subId}` = yerleşim/sayfa kodu; kişisel veri İÇERMEZ). |
@@ -145,7 +146,7 @@ Her listeleme türünün izinli CTA seti Ek A4.4'tedir. Desteklenen eylem türle
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|
 | REQ-ENT-001 | ZORUNLU · 1 | Her port için `MOCK` adaptör (yalnızca yerel/test; üretim derlemesinde YASAK, §12.8) ve **sözleşme testleri**; gerçek adaptörler Faz 3'te ve yalnızca kimlik bilgisi sağlanırsa. |
-| REQ-ENT-002 | ZORUNLU · 1 | Adaptörlerde zaman aşımı (varsayılan 3 sn), sınırlı yeniden deneme (üstel geri çekilme), devre kesici; hata durumunda kullanıcıya fiyat/müsaitlik **gösterilmez**, "Güncel fiyat ve müsaitlik için {Sağlayıcı}'ya bakın" yolu sunulur (E2E-008). |
+| REQ-ENT-002 | ZORUNLU · 1 | Adaptörlerde zaman aşımı (varsayılan 3 sn), sınırlı yeniden deneme (üstel geri çekilme), devre kesici; hata durumunda kullanıcıya fiyat/müsaitlik **gösterilmez**, "Güncel fiyat ve müsaitlik için {Sağlayıcı}'ya bak" yolu sunulur (tek i18n anahtarı; E2E-008 aynı anahtarı doğrular). |
 | REQ-ENT-003 | ZORUNLU · 3 | Sağlayıcı yanıtları ham olarak loglanmaz (kişisel veri/sözleşme kısıtları); yalnızca özet ve hata kodları. |
 
 ### A9.4 Fiyat ve müsaitlik gösterimi
@@ -186,7 +187,7 @@ WordPress yönetim paneli kullanılmaz; projeye özel arayüz geliştirilir (AK-
 
 ## A11 — İşletme ve reklamveren portalı (ISL)
 
-İlk sürümde (Faz 1) işletme ve sponsorluk kayıtları **yönetici/editör** tarafından oluşturulur; hesapsız başvuru formları vardır. İşletme ve reklamveren hesapları Faz 3'tedir; self-servis reklam satın alma ve ödeme **kapsam dışıdır** (ayrı İnsan kararı).
+İlk sürümde (Faz 1) işletme ve sponsorluk verileri **yönetici ya da Satış/Sponsorluk sorumlusu** tarafından oluşturulur (editör yalnızca sponsorlu içerik metnini yazar); hesapsız başvuru formları vardır. İşletme ve reklamveren hesapları Faz 3'tedir; self-servis reklam satın alma ve ödeme **kapsam dışıdır** (ayrı İnsan kararı).
 
 | ID | Düzey · Faz | Gereksinim |
 |---|---|---|

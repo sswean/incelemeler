@@ -5,12 +5,14 @@ import { createApp } from '../src/bootstrap.js';
 import { EnvSchema, type Env } from '../src/config/env.js';
 import { PrismaClient } from '../src/generated/prisma/client.js';
 import { MemoryEmailAdapter } from '../src/modules/notifications/email.port.js';
+import { MemoryStorageAdapter } from '../src/modules/media/storage.port.js';
 import { startDatabase } from './postgres.js';
 
 export interface TestContext {
   app: INestApplication;
   prisma: PrismaClient;
   mail: MemoryEmailAdapter;
+  storage: MemoryStorageAdapter;
   env: Env;
   container: StartedPostgreSqlContainer;
   close(): Promise<void>;
@@ -28,16 +30,19 @@ export async function startTestApp(
     CURSOR_SECRET: 't'.repeat(32),
     DATA_ENCRYPTION_KEY: 'b'.repeat(64),
     EMAIL_ADAPTER: 'memory',
+    STORAGE_ADAPTER: 'memory',
     ...extra,
   });
   const mail = new MemoryEmailAdapter();
   const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: url }) });
-  const app = await createApp(env, { emailPort: mail });
+  const storage = new MemoryStorageAdapter();
+  const app = await createApp(env, { emailPort: mail, storagePort: storage });
   await app.init();
   return {
     app,
     prisma,
     mail,
+    storage,
     env,
     container,
     async close() {

@@ -229,6 +229,7 @@ model User {
   version             Int                   @default(1)
   roles               StaffRoleAssignment[]
   sessions            Session[]
+  uploadedMedia       MediaAsset[]
   emailTokens         EmailToken[]
   mfaFactor           MfaFactor?
   recoveryCodes       RecoveryCode[]
@@ -547,4 +548,69 @@ model LegalApproval {
 
   @@index([categoryId])
   @@map("legal_approvals")
+}
+
+enum MediaStatus {
+  READY
+  REJECTED
+}
+
+/// Ek A14.6 kaynak türleri: editör çekimi, işletme (yazılı izinli), kullanıcı (lisans beyanlı), lisanslı stok.
+enum MediaSourceType {
+  EDITOR
+  OWNER
+  USER
+  STOCK
+}
+
+/// Medya varlığı (REQ-VER-014). EXIF/GPS silinmiş özgün dosya depoda; varyantlar teslimde üretilir (ADR-0007).
+model MediaAsset {
+  id                   String           @id @default(uuid(7)) @db.Uuid
+  storageKey           String           @unique @map("storage_key")
+  mime                 String
+  bytes                Int
+  width                Int
+  height               Int
+  /// Odak noktası (0–1), kırpma için
+  focalX               Decimal          @default(0.5) @map("focal_x") @db.Decimal(4, 3)
+  focalY               Decimal          @default(0.5) @map("focal_y") @db.Decimal(4, 3)
+  blurhash             String?
+  altText              String?          @map("alt_text")
+  status               MediaStatus      @default(READY)
+  exifStripped         Boolean          @default(false) @map("exif_stripped")
+  sha256               String
+  // Lisans alanları (Ek A14.6) — eksikse görsel yayımlanamaz
+  sourceType           MediaSourceType? @map("source_type")
+  rightsHolder         String?          @map("rights_holder")
+  licenseType          String?          @map("license_type")
+  permissionRef        String?          @map("permission_ref")
+  licenseExpiresAt     DateTime?        @map("license_expires_at") @db.Timestamptz(3)
+  modelPropertyRelease Boolean?         @map("model_property_release")
+  uploadedById         String           @map("uploaded_by_id") @db.Uuid
+  uploadedBy           User             @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  dataOrigin           DataOrigin       @map("data_origin")
+  createdAt            DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version              Int              @default(1)
+  usages               MediaUsage[]
+
+  @@index([uploadedById])
+  @@map("media_assets")
+}
+
+/// Medyanın kullanıldığı yerler (çoklu kullanım).
+model MediaUsage {
+  id         String     @id @default(uuid(7)) @db.Uuid
+  mediaId    String     @map("media_id") @db.Uuid
+  media      MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+  entityType String     @map("entity_type")
+  entityId   String     @map("entity_id") @db.Uuid
+  /// PRIMARY (kapak) ya da GALLERY
+  role       String
+  sortOrder  Int        @default(0) @map("sort_order")
+  createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@unique([mediaId, entityType, entityId])
+  @@index([entityType, entityId, sortOrder])
+  @@map("media_usages")
 }

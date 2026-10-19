@@ -381,12 +381,12 @@
       "title": "media_assets",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "media_assets (depolama anahtarı, MIME, boyut, en/boy, odak, blurhash, alt metin, lisans alanları, exifStripped, yükleyen, dataOrigin) + media_usages; lisansı eksik görselli listeleme yayımlanamaz (media.int, image.test, media.test, E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Varyantlar teslimde (D4); süresi dolan lisansın otomatik yayından kalkması zamanlanmış işle (D13)."
     },
     {
       "id": "REQ-VER-015",
@@ -2637,12 +2637,12 @@
       "title": "Dosya yükleme",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Dosya yükleme: tür sihirli baytlarla, ≤ 10 MB, kenar/piksel sınırı, meta veri silme, nosniff; yalnız personel (media.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Kötü amaçlı içerik taraması X-010; kullanıcı yüklemeleri D7."
     },
     {
       "id": "REQ-GUV-009",

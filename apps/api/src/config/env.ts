@@ -16,6 +16,13 @@ export const EnvSchema = z.object({
   EMAIL_FROM: z.string().email().default('noreply@incelemeler.local'),
   WEB_BASE_URL: z.string().url().default('http://localhost:3000'),
   ADMIN_BASE_URL: z.string().url().default('http://localhost:3001'),
+  /** Medya depolama: s3 (S3 uyumlu; yerelde SeaweedFS) ya da memory (yalnızca test). */
+  STORAGE_ADAPTER: z.enum(['s3', 'memory']).default('s3'),
+  S3_ENDPOINT: z.string().url().optional(),
+  S3_REGION: z.string().default('us-east-1'),
+  S3_BUCKET: z.string().min(3).default('incelemeler-media'),
+  S3_ACCESS_KEY_ID: z.string().optional(),
+  S3_SECRET_ACCESS_KEY: z.string().optional(),
   /** Express "trust proxy" (web/admin BFF'nin istemci IP'sini iletmesi için). */
   TRUST_PROXY: z.string().default('loopback'),
 });
@@ -35,6 +42,9 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     throw new EnvValidationError(
       'EMAIL_ADAPTER üretimde yalnızca gerçek sağlayıcı ya da disabled olabilir',
     );
+  }
+  if (parsed.data.APP_ENV === 'production' && parsed.data.STORAGE_ADAPTER === 'memory') {
+    throw new EnvValidationError('STORAGE_ADAPTER=memory üretimde kullanılamaz');
   }
   return parsed.data;
 }

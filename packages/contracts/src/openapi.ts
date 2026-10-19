@@ -61,7 +61,9 @@ export function buildOpenApiDocument(version: string): JsonObject {
         description: res.description,
         ...(res.schema
           ? { content: { 'application/json': { schema: toSchema(res.schema) } } }
-          : {}),
+          : ep.binaryResponse
+            ? { content: { [ep.binaryResponse]: { schema: { type: 'string', format: 'binary' } } } }
+            : {}),
       };
     }
     responses['default'] = {
@@ -82,7 +84,11 @@ export function buildOpenApiDocument(version: string): JsonObject {
         ? {
             requestBody: {
               required: true,
-              content: { 'application/json': { schema: toSchema(ep.body, 'input') } },
+              content: {
+                [ep.bodyType === 'multipart' ? 'multipart/form-data' : 'application/json']: {
+                  schema: toSchema(ep.body, 'input'),
+                },
+              },
             },
           }
         : {}),

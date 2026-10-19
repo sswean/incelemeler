@@ -19,6 +19,8 @@ export const ErrorCode = z.enum([
   'MFA_INVALID',
   'STEP_UP_REQUIRED',
   'EMAIL_NOT_VERIFIED',
+  'PAYLOAD_TOO_LARGE',
+  'UNSUPPORTED_MEDIA_TYPE',
 ]);
 export type ErrorCode = z.infer<typeof ErrorCode>;
 

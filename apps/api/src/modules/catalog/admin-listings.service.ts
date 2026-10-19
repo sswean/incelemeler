@@ -9,6 +9,7 @@ import {
   type ListingCreateBody,
   type ListingDetailsInput,
   type ListingKind,
+  type ListingMediaItem,
   type ListingStatus,
   type ListingStatusBody,
   type ListingUpdateBody,
@@ -26,6 +27,7 @@ import type { AuthContext } from '../identity/auth.context.js';
 import { OutboxService } from '../outbox/outbox.service.js';
 import { AuditService } from '../platform/audit.service.js';
 import { CategorySchemaService } from '../taxonomy/category-schema.service.js';
+import { toMediaDto } from '../media/media.service.js';
 import { type Issue, publishBlockers } from './publish-rules.js';
 
 type Tx = Prisma.TransactionClient;
@@ -63,6 +65,7 @@ const INCLUDE = {
   event: true,
   guide: true,
 } satisfies Prisma.ListingInclude;
+const MEDIA_ENTITY = 'listing';
 type ListingRow = Prisma.ListingGetPayload<{ include: typeof INCLUDE }>;
 
 function invalid(errors: FieldError[], title = 'Listeleme kuralları sağlanmadı'): ProblemException {
@@ -97,6 +100,7 @@ interface Draft {
   location: ListingCreateBody['location'] | null;
   serviceAreaProvinceIds: string[];
   details: ListingDetailsInput;
+  media: ListingMediaItem[];
   source: string;
   sourceVerifiedAt: string | null;
 }
@@ -205,6 +209,7 @@ export class AdminListingsService {
       location: body.location ?? null,
       serviceAreaProvinceIds: body.serviceAreaProvinceIds ?? [],
       details: body.details ?? {},
+      media: body.media ?? [],
       source: body.source,
       sourceVerifiedAt: body.sourceVerifiedAt ?? null,
     };
@@ -244,7 +249,10 @@ export class AdminListingsService {
     const current = await this.load(id);
     if (current.version !== body.version) throw versionConflict();
     this.assertAuthorMayEdit(ctx, current.status);
-    const before = this.toDraft(current);
+    const before = {
+      ...this.toDraft(current),
+      media: (await this.mediaOf(id)).map((m) => ({ mediaId: m.mediaId, role: m.role })),
+    };
     const draft: Draft = {
       ...before,
       ...stripUndefined({
@@ -261,6 +269,7 @@ export class AdminListingsService {
         location: body.location,
         serviceAreaProvinceIds: body.serviceAreaProvinceIds,
         details: body.details,
+        media: body.media,
         source: body.source,
         sourceVerifiedAt: body.sourceVerifiedAt,
       }),
@@ -433,6 +442,22 @@ export class AdminListingsService {
       }
     }
 
+    if (d.media.length) {
+      const ids = d.media.map((m) => m.mediaId);
+      if (new Set(ids).size !== ids.length) {
+        errors.push(fe('/media', 'media_duplicate', 'Aynı görsel iki kez eklenemez'));
+      }
+      if (d.media.filter((m) => m.role === 'PRIMARY').length > 1) {
+        errors.push(fe('/media', 'media_primary_multiple', 'En fazla bir kapak görseli olur'));
+      }
+      const found = await this.prisma.mediaAsset.count({
+        where: { id: { in: ids }, status: 'READY' },
+      });
+      if (found !== new Set(ids).size) {
+        errors.push(fe('/media', 'not_found', 'Görsel bulunamadı'));
+      }
+    }
+
     // REQ-VER-003: özellikler kategorinin etkin şemasına karşı (zorunluluk yayında denetlenir).
     const schema = await this.schemas.effective(d.primaryCategoryId);
     const parsed = attributeValuesSchema(
@@ -527,6 +552,27 @@ export class AdminListingsService {
       attributeDefs: schema.definitions,
       details: d.details,
       legal: await this.legal(schema.chain, l.dataOrigin),
+      media: await this.mediaOf(l.id),
+    });
+  }
+
+  private async mediaOf(listingId: string) {
+    const rows = await this.prisma.mediaUsage.findMany({
+      where: { entityType: MEDIA_ENTITY, entityId: listingId },
+      include: { media: true },
+      orderBy: { sortOrder: 'asc' },
+    });
+    return rows.map((u) => {
+      const m = toMediaDto(u.media);
+      return {
+        mediaId: m.id,
+        role: u.role as ListingMediaItem['role'],
+        width: m.width,
+        height: m.height,
+        blurhash: m.blurhash,
+        altText: m.altText,
+        licenseComplete: m.licenseComplete,
+      };
     });
   }
 
@@ -592,6 +638,20 @@ export class AdminListingsService {
           data: [...new Set(d.serviceAreaProvinceIds)].map((provinceId) => ({
             listingId: id,
             provinceId,
+          })),
+        });
+      }
+    }
+    if (all || body?.media !== undefined) {
+      await tx.mediaUsage.deleteMany({ where: { entityType: MEDIA_ENTITY, entityId: id } });
+      if (d.media.length) {
+        await tx.mediaUsage.createMany({
+          data: d.media.map((m, i) => ({
+            mediaId: m.mediaId,
+            entityType: MEDIA_ENTITY,
+            entityId: id,
+            role: m.role,
+            sortOrder: i,
           })),
         });
       }
@@ -724,6 +784,7 @@ export class AdminListingsService {
         : null,
       serviceAreaProvinceIds: l.serviceAreas.map((s) => s.provinceId),
       details: detailsOf(l),
+      media: [],
       source: l.source,
       sourceVerifiedAt: l.sourceVerifiedAt?.toISOString() ?? null,
     };
@@ -765,6 +826,7 @@ export class AdminListingsService {
         : null,
       serviceAreaProvinceIds: d.serviceAreaProvinceIds,
       details: d.details,
+      media: await this.mediaOf(l.id),
       dataOrigin: l.dataOrigin,
       source: l.source,
       sourceVerifiedAt: d.sourceVerifiedAt,

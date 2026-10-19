@@ -9,3 +9,10 @@ Yerelde **SeaweedFS** (`chrislusf/seaweedfs`, Apache-2.0) S3 ağ geçidiyle (833
 
 ## Sonuçlar
 Sağlayıcıdan bağımsız. Geri alma: Düşük.
+
+## Uygulama notları (Faz 1 dilim 3c)
+- S3 istemcisi: `@aws-sdk/client-s3` (Apache-2.0). Yerel SeaweedFS kimlik doğrulamasız çalışır (yalnız geliştirme); kova yerel/testte ilk yazımda oluşturulur, üretimde önceden hazırlanır.
+- `sharp` doğrudan bağımlılık olarak **eklenmedi** (libvips LGPL — Q-003, C sınıfı). Hat saf JS ve izin listesindeki lisanslarla: tür tespiti sihirli baytlarla; meta veri silme (JPEG APP1/APP13/COM, PNG eXIf/tEXt/zTXt/iTXt/tIME, WebP EXIF/XMP + VP8X bayrakları) kendi kodumuz; boyut `image-size` (MIT); blurhash `jpeg-js` (BSD-3) + `pngjs` (MIT) + `blurhash` (MIT). WebP için blurhash üretilmez.
+- Boyut/biçim varyantları (AVIF/WebP, `srcset`) teslimde Next.js görüntü iyileştiricisiyle üretilecek (D4); özgün dosya meta verisi silinmiş hâliyle saklanır.
+- Sıkıştırma bombası koruması: ≤ 10 MB, kenar ≤ 12 000 px, ≤ 50 MP (çözümlemeden önce başlıktan).
+- Kötü amaçlı içerik taraması yapılmıyor (X-010); HEIC desteklenmiyor (libheif LGPL).

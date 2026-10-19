@@ -17,6 +17,14 @@ import { OutboxService } from './modules/outbox/outbox.service.js';
 import { AdminListingsController } from './modules/catalog/admin-listings.controller.js';
 import { AdminListingsService } from './modules/catalog/admin-listings.service.js';
 import { AdminAreasController } from './modules/geo/admin-areas.controller.js';
+import { MediaController } from './modules/media/media.controller.js';
+import { MediaService } from './modules/media/media.service.js';
+import {
+  MemoryStorageAdapter,
+  S3StorageAdapter,
+  STORAGE_PORT,
+  type StoragePort,
+} from './modules/media/storage.port.js';
 import {
   AdminAccessController,
   AuthController,
@@ -34,6 +42,7 @@ import {
 
 export interface AppOverrides {
   emailPort?: EmailPort;
+  storagePort?: StoragePort;
 }
 
 function emailAdapter(env: Env): EmailPort {
@@ -58,6 +67,7 @@ export const CONTROLLERS = [
   CategorySchemaController,
   AdminAreasController,
   AdminListingsController,
+  MediaController,
 ];
 
 @Module({})
@@ -69,6 +79,14 @@ export class AppModule {
       providers: [
         { provide: ENV, useValue: env },
         { provide: EMAIL_PORT, useValue: overrides.emailPort ?? emailAdapter(env) },
+        {
+          provide: STORAGE_PORT,
+          useValue:
+            overrides.storagePort ??
+            (env.STORAGE_ADAPTER === 'memory'
+              ? new MemoryStorageAdapter()
+              : new S3StorageAdapter(env)),
+        },
         { provide: APP_FILTER, useClass: ProblemFilter },
         { provide: APP_GUARD, useClass: AuthGuard },
         PrismaService,
@@ -79,6 +97,7 @@ export class AppModule {
         AdminCategoriesService,
         CategorySchemaService,
         AdminListingsService,
+        MediaService,
         OutboxService,
       ],
     };

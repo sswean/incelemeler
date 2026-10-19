@@ -43,6 +43,8 @@ export function problemFor(status: number, instance: string, traceId: string): P
     404: ['NOT_FOUND', 'Kaynak bulunamadı'],
     409: ['CONFLICT', 'Çakışma'],
     412: ['PRECONDITION_FAILED', 'Sürüm uyuşmazlığı'],
+    413: ['PAYLOAD_TOO_LARGE', 'İstek gövdesi çok büyük'],
+    415: ['UNSUPPORTED_MEDIA_TYPE', 'Desteklenmeyen içerik türü'],
     429: ['RATE_LIMITED', 'Çok fazla istek'],
     503: ['SERVICE_UNAVAILABLE', 'Hizmet geçici olarak kullanılamıyor'],
   };

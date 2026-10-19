@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ListingMediaItem } from './media.js';
 import { ListingKind, PageInfo } from './taxonomy.js';
 
 export const ListingStatus = z.enum([
@@ -162,6 +163,8 @@ const editable = {
   location: ListingLocationInput.nullable(),
   serviceAreaProvinceIds: z.array(z.uuid()).max(81),
   details: ListingDetailsInput,
+  /** Görseller: en fazla 30, en fazla bir kapak (PRIMARY). */
+  media: z.array(ListingMediaItem).max(30),
   /** Bilginin kaynağı (§12.4): editör girişi, işletme beyanı, lisanslı veri… */
   source: z.string().trim().min(2).max(200),
   sourceVerifiedAt: z.iso.datetime().nullable(),
@@ -185,6 +188,7 @@ export const ListingCreateBody = z
     location: true,
     serviceAreaProvinceIds: true,
     details: true,
+    media: true,
     sourceVerifiedAt: true,
   })
   .strict()
@@ -239,6 +243,17 @@ export const AdminListing = z
       .nullable(),
     serviceAreaProvinceIds: z.array(z.string()),
     details: ListingDetailsInput,
+    media: z.array(
+      z.object({
+        mediaId: z.string(),
+        role: z.enum(['PRIMARY', 'GALLERY']),
+        width: z.number().int(),
+        height: z.number().int(),
+        blurhash: z.string().nullable(),
+        altText: z.string().nullable(),
+        licenseComplete: z.boolean(),
+      }),
+    ),
     dataOrigin: z.string(),
     source: z.string(),
     sourceVerifiedAt: z.iso.datetime().nullable(),

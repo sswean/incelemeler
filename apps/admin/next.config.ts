@@ -3,6 +3,8 @@ import type { NextConfig } from 'next';
 const config: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  // Görsel yükleme sunucu eylemiyle API'ye iletilir; API sınırı 10 MB (MEDIA_LIMITS).
+  experimental: { serverActions: { bodySizeLimit: '11mb' } },
   async headers() {
     return [
       {

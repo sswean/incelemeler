@@ -30,4 +30,9 @@ describe('[REQ-MIM-018] üretim koruması', () => {
       EnvValidationError,
     );
   });
+  it('üretimde bellek depolama adaptörü reddedilir (§12.8)', () => {
+    expect(() => loadEnv({ ...valid, APP_ENV: 'production', STORAGE_ADAPTER: 'memory' })).toThrow(
+      EnvValidationError,
+    );
+  });
 });

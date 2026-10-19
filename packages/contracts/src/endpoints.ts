@@ -28,6 +28,7 @@ import {
   ListingStatusBody,
   ListingUpdateBody,
 } from './listings.js';
+import { MediaAsset, MediaUpdateBody, MediaUploadForm } from './media.js';
 import {
   Accepted,
   CurrentUser,
@@ -55,6 +56,10 @@ export interface EndpointDef {
   responses: Record<number, { description: string; schema?: z.ZodType }>;
   /** Oturum gerektirir (Bearer). `staff-mfa`: 2FA doğrulanmış personel oturumu. */
   auth?: 'session' | 'staff-mfa';
+  /** Gövde biçimi; varsayılan application/json. */
+  bodyType?: 'json' | 'multipart';
+  /** Yanıt JSON değil (ör. görsel baytları). */
+  binaryResponse?: string;
 }
 
 const ok = (description: string, schema?: z.ZodType) => ({
@@ -380,5 +385,46 @@ export const endpoints: EndpointDef[] = [
     summary: 'Durum geçişi (yayın için zorunlu alanlar ve hukuki kapı denetlenir)',
     body: ListingStatusBody,
     responses: { 200: ok('Güncellendi', AdminListing) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/media',
+    operationId: 'adminUploadMedia',
+    tags: ['admin', 'media'],
+    auth: 'staff-mfa',
+    summary:
+      'Görsel yükler: tür doğrulama, EXIF/GPS silme, boyut, blurhash (JPEG/PNG/WebP, ≤ 10 MB)',
+    body: MediaUploadForm,
+    bodyType: 'multipart',
+    responses: { 201: ok('Yüklendi', MediaAsset) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/media/{id}',
+    operationId: 'adminGetMedia',
+    tags: ['admin', 'media'],
+    auth: 'staff-mfa',
+    summary: 'Medya ayrıntısı ve lisans durumu',
+    responses: { 200: ok('Medya', MediaAsset) },
+  },
+  {
+    method: 'patch',
+    path: '/v1/admin/media/{id}',
+    operationId: 'adminUpdateMedia',
+    tags: ['admin', 'media'],
+    auth: 'staff-mfa',
+    summary: 'Alt metin, odak noktası ve lisans alanlarını günceller',
+    body: MediaUpdateBody,
+    responses: { 200: ok('Güncellendi', MediaAsset) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/media/{id}/content',
+    operationId: 'adminGetMediaContent',
+    tags: ['admin', 'media'],
+    auth: 'staff-mfa',
+    summary: 'Görsel baytları (meta verisi silinmiş özgün)',
+    binaryResponse: 'image/*',
+    responses: { 200: ok('Görsel') },
   },
 ];

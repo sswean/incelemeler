@@ -82,6 +82,18 @@ describe('[REQ-LST-001] yayın için zorunlu alanlar (Ek A4.4)', () => {
     ).toEqual(['category_not_published', 'demo_in_production', 'attribute_required']);
   });
 
+  it('[REQ-VER-014] lisansı eksik ya da alt metni olmayan görsel yayını engeller', () => {
+    expect(
+      codes({
+        media: [
+          { licenseComplete: false, altText: 'Salon' },
+          { licenseComplete: true, altText: null },
+        ],
+      }),
+    ).toEqual(['media_license_incomplete', 'media_alt_required']);
+    expect(codes({ media: [{ licenseComplete: true, altText: 'Salon' }] })).toEqual([]);
+  });
+
   it('eser türü Faz 4 — yayımlanamaz', () => {
     expect(codes({ kind: 'WORK', location: null, contacts: {} })).toEqual(['kind_not_available']);
   });

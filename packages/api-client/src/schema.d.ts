@@ -469,6 +469,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Görsel yükler: tür doğrulama, EXIF/GPS silme, boyut, blurhash (JPEG/PNG/WebP, ≤ 10 MB) */
+        post: operations["adminUploadMedia"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/media/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Medya ayrıntısı ve lisans durumu */
+        get: operations["adminGetMedia"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Alt metin, odak noktası ve lisans alanlarını günceller */
+        patch: operations["adminUpdateMedia"];
+        trace?: never;
+    };
+    "/v1/admin/media/{id}/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Görsel baytları (meta verisi silinmiş özgün) */
+        get: operations["adminGetMediaContent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -480,7 +532,7 @@ export interface components {
             detail?: string;
             instance?: string;
             /** @enum {string} */
-            code: "VALIDATION_FAILED" | "NOT_FOUND" | "UNAUTHENTICATED" | "FORBIDDEN" | "MFA_REQUIRED" | "CONFLICT" | "PRECONDITION_FAILED" | "RATE_LIMITED" | "INTERNAL_ERROR" | "SERVICE_UNAVAILABLE" | "INVALID_CREDENTIALS" | "INVALID_TOKEN" | "WEAK_PASSWORD" | "ACCOUNT_SUSPENDED" | "MFA_INVALID" | "STEP_UP_REQUIRED" | "EMAIL_NOT_VERIFIED";
+            code: "VALIDATION_FAILED" | "NOT_FOUND" | "UNAUTHENTICATED" | "FORBIDDEN" | "MFA_REQUIRED" | "CONFLICT" | "PRECONDITION_FAILED" | "RATE_LIMITED" | "INTERNAL_ERROR" | "SERVICE_UNAVAILABLE" | "INVALID_CREDENTIALS" | "INVALID_TOKEN" | "WEAK_PASSWORD" | "ACCOUNT_SUSPENDED" | "MFA_INVALID" | "STEP_UP_REQUIRED" | "EMAIL_NOT_VERIFIED" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE";
             traceId: string;
             errors?: {
                 pointer: string;
@@ -689,6 +741,47 @@ export interface components {
                 name: string;
             } | null;
         };
+        MediaAsset: {
+            id: string;
+            mime: string;
+            bytes: number;
+            width: number;
+            height: number;
+            focalX: number;
+            focalY: number;
+            blurhash: string | null;
+            altText: string | null;
+            /** @enum {string} */
+            status: "READY" | "REJECTED";
+            exifStripped: boolean;
+            /** @enum {string|null} */
+            sourceType: "EDITOR" | "OWNER" | "USER" | "STOCK" | null;
+            rightsHolder: string | null;
+            licenseType: string | null;
+            permissionRef: string | null;
+            /** Format: date-time */
+            licenseExpiresAt: string | null;
+            modelPropertyRelease: boolean | null;
+            licenseComplete: boolean;
+            dataOrigin: string;
+            /** Format: date-time */
+            createdAt: string;
+            version: number;
+        };
+        MediaUpdateBody: {
+            version: number;
+            altText?: string | null;
+            focalX?: number;
+            focalY?: number;
+            /** @enum {string|null} */
+            sourceType?: "EDITOR" | "OWNER" | "USER" | "STOCK" | null;
+            rightsHolder?: string | null;
+            licenseType?: string | null;
+            permissionRef?: string | null;
+            /** Format: date-time */
+            licenseExpiresAt?: string | null;
+            modelPropertyRelease?: boolean | null;
+        };
         AdminArea: {
             id: string;
             /** @enum {string} */
@@ -785,6 +878,12 @@ export interface components {
             location?: components["schemas"]["ListingLocationInput"] | null;
             serviceAreaProvinceIds?: string[];
             details?: components["schemas"]["ListingDetailsInput"];
+            media?: {
+                /** Format: uuid */
+                mediaId: string;
+                /** @enum {string} */
+                role: "PRIMARY" | "GALLERY";
+            }[];
             source: string;
             /** Format: date-time */
             sourceVerifiedAt?: string | null;
@@ -812,6 +911,12 @@ export interface components {
             location?: components["schemas"]["ListingLocationInput"] | null;
             serviceAreaProvinceIds?: string[];
             details?: components["schemas"]["ListingDetailsInput"];
+            media?: {
+                /** Format: uuid */
+                mediaId: string;
+                /** @enum {string} */
+                role: "PRIMARY" | "GALLERY";
+            }[];
             source?: string;
             /** Format: date-time */
             sourceVerifiedAt?: string | null;
@@ -861,6 +966,16 @@ export interface components {
             } | null;
             serviceAreaProvinceIds: string[];
             details: components["schemas"]["ListingDetailsInput"];
+            media: {
+                mediaId: string;
+                /** @enum {string} */
+                role: "PRIMARY" | "GALLERY";
+                width: number;
+                height: number;
+                blurhash: string | null;
+                altText: string | null;
+                licenseComplete: boolean;
+            }[];
             dataOrigin: string;
             source: string;
             /** Format: date-time */
@@ -2098,6 +2213,12 @@ export interface operations {
                             consentAt?: string | null;
                         };
                     };
+                    media?: {
+                        /** Format: uuid */
+                        mediaId: string;
+                        /** @enum {string} */
+                        role: "PRIMARY" | "GALLERY";
+                    }[];
                     source: string;
                     /** Format: date-time */
                     sourceVerifiedAt?: string | null;
@@ -2242,6 +2363,12 @@ export interface operations {
                             consentAt?: string | null;
                         };
                     };
+                    media?: {
+                        /** Format: uuid */
+                        mediaId: string;
+                        /** @enum {string} */
+                        role: "PRIMARY" | "GALLERY";
+                    }[];
                     source?: string;
                     /** Format: date-time */
                     sourceVerifiedAt?: string | null;
@@ -2295,6 +2422,153 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminListing"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUploadMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                    altText?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Yüklendi */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaAsset"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Medya */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaAsset"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    altText?: string | null;
+                    focalX?: number;
+                    focalY?: number;
+                    /** @enum {string|null} */
+                    sourceType?: "EDITOR" | "OWNER" | "USER" | "STOCK" | null;
+                    rightsHolder?: string | null;
+                    licenseType?: string | null;
+                    permissionRef?: string | null;
+                    /** Format: date-time */
+                    licenseExpiresAt?: string | null;
+                    modelPropertyRelease?: boolean | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaAsset"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetMediaContent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Görsel */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/*": string;
                 };
             };
             /** @description Hata (RFC 9457) */

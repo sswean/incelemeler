@@ -24,6 +24,8 @@ export interface PublishInput {
   details: ListingDetailsInput;
   /** Hukuki kapı: kategori (ya da üstü) lisanslı/YMYL ise onay gerekir (REQ-KAT-004). */
   legal: { required: boolean; approved: boolean };
+  /** Bağlı görseller: lisans alanları eksik görsel yayımlanamaz (REQ-VER-014, Ek A14.6). */
+  media?: ReadonlyArray<{ licenseComplete: boolean; altText: string | null }>;
 }
 
 const hasContact = (c: Record<string, unknown>) =>
@@ -41,6 +43,8 @@ export function publishBlockers(l: PublishInput): Issue[] {
   if (l.legal.required && !l.legal.approved) add('/primaryCategoryId', 'legal_gate_closed');
   if (l.dataOrigin === 'DEMO' && l.appEnv === 'production')
     add('/dataOrigin', 'demo_in_production');
+  if (l.media?.some((m) => !m.licenseComplete)) add('/media', 'media_license_incomplete');
+  if (l.media?.some((m) => !m.altText)) add('/media', 'media_alt_required');
   for (const d of l.attributeDefs) {
     const v = l.attributes[d.key];
     if (d.required && (v === undefined || v === null || v === '')) {

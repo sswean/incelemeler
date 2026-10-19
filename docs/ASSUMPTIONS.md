@@ -45,3 +45,7 @@ Biçim: Ek C-4. "Yüksek" geri alma maliyetli varsayımlar OPEN-QUESTIONS'ta da 
 ## A-011: YMYL ve lisanslı kategorilerde sponsorluk Faz 1'de kapalı tutulur; yayımlanmış kategorinin slug'ı değişmez
 - Tarih: 2026-10-19 · Faz 1 · Gerekçe: REQ-KAT-004 "sponsorluk varsayılan kapalı" der; açma yolu hukuki kapı (C sınıfı) olduğundan API ve veritabanı (CHECK) bu kategorilerde sponsorluğu reddeder. Slug değişikliği SEO yönlendirme kaydı gerektirir (D4); o zamana dek kilitli.
 - Etkilediği REQ'ler: REQ-KAT-003/004, REQ-SPN-* · Geri alma maliyeti: Düşük · Durum: AÇIK
+
+## A-012: Görsel lisans tamlığı kuralı
+- Tarih: 2026-10-19 · Faz 1 · Gerekçe: Ek A14.6 alanları; kaynak türü, hak sahibi ve lisans türü her görselde; işletme ve stok görsellerinde yazılı izin belgesi; süresi dolan lisans geçersiz. Model/mülk izni "gerekiyorsa" — otomatik çıkarılamadığından yalnızca kaydedilir. Yayımlanmış listelemeye sonradan eklenen lisanssız görsel herkese açık sayfada gösterilmez (D4 filtresi).
+- Etkilediği REQ'ler: REQ-VER-014 · Geri alma maliyeti: Düşük · Durum: AÇIK

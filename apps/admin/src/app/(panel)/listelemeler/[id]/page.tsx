@@ -7,6 +7,7 @@ import { api, requireStaff } from '../../../../lib/session';
 import { setListingStatusAction } from '../actions';
 import { blockerMessage, UI_TRANSITIONS } from '../messages';
 import { ListingEditForm } from './edit-form';
+import { MediaSection } from './media-section';
 
 export const metadata: Metadata = { title: tr.listings.title };
 export const dynamic = 'force-dynamic';
@@ -82,6 +83,8 @@ export default async function ListingPage({
           ))}
         </div>
       </section>
+
+      <MediaSection listing={listing} />
 
       <ListingEditForm
         listing={listing}

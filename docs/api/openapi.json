@@ -2232,6 +2232,32 @@
                     },
                     "additionalProperties": false
                   },
+                  "media": {
+                    "maxItems": 30,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "PRIMARY",
+                            "GALLERY"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "role"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
                   "source": {
                     "type": "string",
                     "minLength": 2,
@@ -2645,6 +2671,32 @@
                     },
                     "additionalProperties": false
                   },
+                  "media": {
+                    "maxItems": 30,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "PRIMARY",
+                            "GALLERY"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "role"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
                   "source": {
                     "type": "string",
                     "minLength": 2,
@@ -2768,6 +2820,282 @@
           }
         }
       }
+    },
+    "/v1/admin/media": {
+      "post": {
+        "operationId": "adminUploadMedia",
+        "summary": "Görsel yükler: tür doğrulama, EXIF/GPS silme, boyut, blurhash (JPEG/PNG/WebP, ≤ 10 MB)",
+        "tags": [
+          "admin",
+          "media"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "contentEncoding": "binary"
+                  },
+                  "altText": {
+                    "type": "string",
+                    "maxLength": 300
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Yüklendi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaAsset"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/media/{id}": {
+      "get": {
+        "operationId": "adminGetMedia",
+        "summary": "Medya ayrıntısı ve lisans durumu",
+        "tags": [
+          "admin",
+          "media"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Medya",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaAsset"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "adminUpdateMedia",
+        "summary": "Alt metin, odak noktası ve lisans alanlarını günceller",
+        "tags": [
+          "admin",
+          "media"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "altText": {
+                    "nullable": true,
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300
+                  },
+                  "focalX": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "focalY": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "sourceType": {
+                    "nullable": true,
+                    "type": "string",
+                    "enum": [
+                      "EDITOR",
+                      "OWNER",
+                      "USER",
+                      "STOCK"
+                    ]
+                  },
+                  "rightsHolder": {
+                    "nullable": true,
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 200
+                  },
+                  "licenseType": {
+                    "nullable": true,
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 100
+                  },
+                  "permissionRef": {
+                    "nullable": true,
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 500
+                  },
+                  "licenseExpiresAt": {
+                    "nullable": true,
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                  },
+                  "modelPropertyRelease": {
+                    "nullable": true,
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "version"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Güncellendi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaAsset"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/media/{id}/content": {
+      "get": {
+        "operationId": "adminGetMediaContent",
+        "summary": "Görsel baytları (meta verisi silinmiş özgün)",
+        "tags": [
+          "admin",
+          "media"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Görsel",
+            "content": {
+              "image/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2811,7 +3139,9 @@
               "ACCOUNT_SUSPENDED",
               "MFA_INVALID",
               "STEP_UP_REQUIRED",
-              "EMAIL_NOT_VERIFIED"
+              "EMAIL_NOT_VERIFIED",
+              "PAYLOAD_TOO_LARGE",
+              "UNSUPPORTED_MEDIA_TYPE"
             ]
           },
           "traceId": {
@@ -3810,6 +4140,196 @@
         ],
         "additionalProperties": false
       },
+      "MediaAsset": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "mime": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "width": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "height": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "focalX": {
+            "type": "number"
+          },
+          "focalY": {
+            "type": "number"
+          },
+          "blurhash": {
+            "nullable": true,
+            "type": "string"
+          },
+          "altText": {
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "READY",
+              "REJECTED"
+            ]
+          },
+          "exifStripped": {
+            "type": "boolean"
+          },
+          "sourceType": {
+            "nullable": true,
+            "type": "string",
+            "enum": [
+              "EDITOR",
+              "OWNER",
+              "USER",
+              "STOCK"
+            ]
+          },
+          "rightsHolder": {
+            "nullable": true,
+            "type": "string"
+          },
+          "licenseType": {
+            "nullable": true,
+            "type": "string"
+          },
+          "permissionRef": {
+            "nullable": true,
+            "type": "string"
+          },
+          "licenseExpiresAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "modelPropertyRelease": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "licenseComplete": {
+            "type": "boolean"
+          },
+          "dataOrigin": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "mime",
+          "bytes",
+          "width",
+          "height",
+          "focalX",
+          "focalY",
+          "blurhash",
+          "altText",
+          "status",
+          "exifStripped",
+          "sourceType",
+          "rightsHolder",
+          "licenseType",
+          "permissionRef",
+          "licenseExpiresAt",
+          "modelPropertyRelease",
+          "licenseComplete",
+          "dataOrigin",
+          "createdAt",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "MediaUpdateBody": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "altText": {
+            "nullable": true,
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "focalX": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "focalY": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "sourceType": {
+            "nullable": true,
+            "type": "string",
+            "enum": [
+              "EDITOR",
+              "OWNER",
+              "USER",
+              "STOCK"
+            ]
+          },
+          "rightsHolder": {
+            "nullable": true,
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          },
+          "licenseType": {
+            "nullable": true,
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "permissionRef": {
+            "nullable": true,
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 500
+          },
+          "licenseExpiresAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "modelPropertyRelease": {
+            "nullable": true,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "additionalProperties": false
+      },
       "AdminArea": {
         "type": "object",
         "properties": {
@@ -4191,6 +4711,32 @@
               }
             ]
           },
+          "media": {
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "mediaId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "PRIMARY",
+                    "GALLERY"
+                  ]
+                }
+              },
+              "required": [
+                "mediaId",
+                "role"
+              ],
+              "additionalProperties": false
+            }
+          },
           "source": {
             "type": "string",
             "minLength": 2,
@@ -4322,6 +4868,32 @@
                 "$ref": "#/components/schemas/ListingDetailsInput"
               }
             ]
+          },
+          "media": {
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "mediaId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "PRIMARY",
+                    "GALLERY"
+                  ]
+                }
+              },
+              "required": [
+                "mediaId",
+                "role"
+              ],
+              "additionalProperties": false
+            }
           },
           "source": {
             "type": "string",
@@ -4543,6 +5115,55 @@
           "details": {
             "$ref": "#/components/schemas/ListingDetailsInput"
           },
+          "media": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "mediaId": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "PRIMARY",
+                    "GALLERY"
+                  ]
+                },
+                "width": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "height": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "blurhash": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "altText": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "licenseComplete": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "mediaId",
+                "role",
+                "width",
+                "height",
+                "blurhash",
+                "altText",
+                "licenseComplete"
+              ],
+              "additionalProperties": false
+            }
+          },
           "dataOrigin": {
             "type": "string"
           },
@@ -4609,6 +5230,7 @@
           "location",
           "serviceAreaProvinceIds",
           "details",
+          "media",
           "dataOrigin",
           "source",
           "sourceVerifiedAt",

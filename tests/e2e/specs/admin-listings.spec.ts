@@ -2,6 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import type { Page } from '@playwright/test';
 import { expect, test } from '../support/fixtures.js';
 import { admin, loginWithMfaSetup } from '../support/admin.js';
+import { testPatternJpeg } from '../support/image.js';
 
 async function seriousViolations(page: Page) {
   const results = await new AxeBuilder({ page }).analyze();
@@ -46,6 +47,33 @@ test.describe('Faz 1 · listeleme yönetimi (panel)', () => {
     await form.getByLabel('Enlem').fill('40,990123');
     await form.getByLabel('Boylam').fill('29.0289');
     await form.getByRole('button', { name: 'Kaydet' }).click();
+    await expect(page.getByText('Yayın için gerekli bilgiler tamam.')).toBeVisible();
+
+    // REQ-VER-014: görsel yüklenir; lisans bilgisi tamamlanmadan yayın engellenir.
+    const upload = page.getByRole('form', { name: 'Görsel yükle' });
+    await upload.getByLabel('Dosya').setInputFiles({
+      name: 'desen.jpg',
+      mimeType: 'image/jpeg',
+      buffer: testPatternJpeg(),
+    });
+    await upload.getByLabel('Alternatif metin').fill('Test deseni');
+    await upload.getByRole('button', { name: 'Görsel yükle' }).click();
+    const media = page.getByTestId('listing-media');
+    await expect(media).toContainText('Kapak');
+    await expect(media).toContainText('Lisans eksik');
+    await expect(page.getByTestId('publish-blockers')).toContainText(
+      'Lisans bilgileri eksik görsel var.',
+    );
+    const preview = media.getByRole('img', { name: 'Test deseni' });
+    await expect(preview).toBeVisible();
+    expect(await preview.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(320);
+
+    await media.getByRole('link', { name: 'Lisans bilgileri' }).click();
+    await page.getByLabel('Kaynak türü').selectOption({ label: 'Editör çekimi' });
+    await page.getByLabel('Hak sahibi / atıf').fill('İncelemeler editör ekibi');
+    await page.getByLabel('Lisans türü').fill('Kurum içi çekim');
+    await page.getByRole('button', { name: 'Kaydet' }).click();
+    await expect(page.getByTestId('listing-media')).toContainText('Lisans tamam');
     await expect(page.getByText('Yayın için gerekli bilgiler tamam.')).toBeVisible();
 
     await page.getByRole('button', { name: 'Yayımla' }).click();

@@ -34,6 +34,8 @@ export default defineConfig({
         // Yalnızca E2E: sabit, gerçek olmayan test anahtarı (her koşuda sıfırlanan veritabanı).
         DATA_ENCRYPTION_KEY: 'e2'.repeat(32),
         EMAIL_ADAPTER: 'mailpit',
+        S3_ENDPOINT: process.env.E2E_S3_ENDPOINT ?? 'http://localhost:8333',
+        S3_BUCKET: 'incelemeler-e2e',
         MAILPIT_URL,
         WEB_BASE_URL: `http://localhost:${WEB_PORT}`,
         ADMIN_BASE_URL: `http://localhost:${ADMIN_PORT}`,

@@ -16,3 +16,4 @@ export * from './rich-text.js';
 export * from './search.js';
 export * from './hubs.js';
 export * from './reviews.js';
+export * from './outbound.js';

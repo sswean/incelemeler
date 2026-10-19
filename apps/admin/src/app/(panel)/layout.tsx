@@ -66,6 +66,14 @@ export default async function PanelLayout({ children }: { children: ReactNode })
               {tr.admin.nav.thresholds}
             </Link>
           ) : null}
+          {user.permissions.some((x) => x === 'outbound.add' || x === 'affiliate.manage') ? (
+            <Link
+              href="/entegrasyonlar"
+              className="min-h-11 content-center text-brand-default underline"
+            >
+              {tr.admin.nav.integrations}
+            </Link>
+          ) : null}
         </nav>
         <div className="flex flex-wrap items-center gap-4">
           <p>

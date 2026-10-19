@@ -1140,6 +1140,126 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/outbound/{id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dış yönlendirme hedefi (yalnızca kayıtlı bağlantı + izinli alan adı); tıklamayı kaydeder — /git/ işleyicisi kullanır */
+        get: operations["resolveOutbound"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/integration-providers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Entegrasyon sağlayıcıları (durum, izinli alan adları) */
+        get: operations["adminListProviders"];
+        put?: never;
+        /** Sağlayıcı kaydı (API varsayılmaz; LINK_ONLY) */
+        post: operations["adminCreateProvider"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/integration-providers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Sağlayıcıyı günceller (sürüm denetimli) */
+        patch: operations["adminUpdateProvider"];
+        trace?: never;
+    };
+    "/v1/admin/listings/{id}/outbound-links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listelemenin dış bağlantıları (sağlık durumu, 30 günlük tıklama) */
+        get: operations["adminListOutboundLinks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/outbound-links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dış bağlantı ekler (CTA kuralları, izinli alan adı, ticari ilişki) */
+        post: operations["adminCreateOutboundLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/outbound-links/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Dış bağlantıyı günceller ya da devre dışı bırakır */
+        patch: operations["adminUpdateOutboundLink"];
+        trace?: never;
+    };
+    "/v1/admin/outbound-links/{id}/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bağlantı sağlığını şimdi denetler (SSRF korumalı) */
+        post: operations["adminCheckOutboundLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2310,6 +2430,69 @@ export interface components {
                 lastmod: string;
             }[];
         };
+        OutboundResolve: {
+            url: string;
+        };
+        Provider: {
+            key: string;
+            name: string;
+            /**
+             * @default LINK_ONLY
+             * @enum {string}
+             */
+            integrationStatus: "LINK_ONLY" | "SANDBOX" | "LIVE" | "DISABLED";
+            /** Format: uri */
+            docsUrl?: string | null;
+            /** Format: uri */
+            termsUrl?: string | null;
+            /** Format: date-time */
+            termsVerifiedAt?: string | null;
+            allowedDomains: string[];
+            /** @default [] */
+            credentialEnvNames: string[];
+            id: string;
+            version: number;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        ProviderList: {
+            data: components["schemas"]["Provider"][];
+        };
+        OutboundLink: {
+            id: string;
+            listingId: string | null;
+            provider: {
+                id: string;
+                name: string;
+                /** @enum {string} */
+                integrationStatus: "LINK_ONLY" | "SANDBOX" | "LIVE" | "DISABLED";
+            } | null;
+            /** @enum {string} */
+            kind: "AFFILIATE" | "BOOKING" | "PURCHASE" | "WEBSITE" | "PHONE" | "MESSAGING" | "MAP" | "QUOTE_REQUEST";
+            /** @enum {string} */
+            ctaType: "WEBSITE" | "OFFICIAL_SITE" | "RESERVATION" | "PROVIDER_PRICES" | "PROVIDER_DATES" | "SELLER" | "TICKETS" | "APPOINTMENT" | "CAR_RENTAL" | "BUY" | "WATCH";
+            label: string | null;
+            urlTemplate: string;
+            allowedDomain: string | null;
+            /** @enum {string} */
+            commercialRelation: "NONE" | "GIFTED" | "SPONSORED" | "AFFILIATE";
+            /** @enum {string} */
+            source: "MANUAL" | "CONTACTS";
+            /** Format: date-time */
+            validFrom: string | null;
+            /** Format: date-time */
+            validUntil: string | null;
+            /** @enum {string} */
+            status: "ACTIVE" | "DISABLED" | "BROKEN" | "EXPIRED";
+            /** Format: date-time */
+            lastCheckedAt: string | null;
+            lastCheckStatus: string | null;
+            clicks30d: number;
+            version: number;
+        };
+        OutboundLinkList: {
+            data: components["schemas"]["OutboundLink"][];
+        };
         ReviewDraft: {
             listingId: string;
             data: {
@@ -2634,6 +2817,18 @@ export interface components {
                 credit: string;
             }[];
             reviewCount: number;
+            outbound: {
+                id: string;
+                /** @enum {string} */
+                kind: "AFFILIATE" | "BOOKING" | "PURCHASE" | "WEBSITE" | "PHONE" | "MESSAGING" | "MAP" | "QUOTE_REQUEST";
+                /** @enum {string} */
+                ctaType: "WEBSITE" | "OFFICIAL_SITE" | "RESERVATION" | "PROVIDER_PRICES" | "PROVIDER_DATES" | "SELLER" | "TICKETS" | "APPOINTMENT" | "CAR_RENTAL" | "BUY" | "WATCH";
+                label: string | null;
+                /** @enum {string} */
+                commercialRelation: "NONE" | "GIFTED" | "SPONSORED" | "AFFILIATE";
+                providerName: string | null;
+                href: string;
+            }[];
             dataOrigin: string;
             /** Format: date-time */
             sourceVerifiedAt: string | null;
@@ -5863,6 +6058,326 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DecisionAck"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    resolveOutbound: {
+        parameters: {
+            query?: {
+                ctx?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Hedef */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OutboundResolve"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListProviders: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sağlayıcılar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProviderList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateProvider: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    key: string;
+                    name: string;
+                    /**
+                     * @default LINK_ONLY
+                     * @enum {string}
+                     */
+                    integrationStatus?: "LINK_ONLY" | "SANDBOX" | "LIVE" | "DISABLED";
+                    /** Format: uri */
+                    docsUrl?: string | null;
+                    /** Format: uri */
+                    termsUrl?: string | null;
+                    /** Format: date-time */
+                    termsVerifiedAt?: string | null;
+                    allowedDomains: string[];
+                    /** @default [] */
+                    credentialEnvNames?: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Provider"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateProvider: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    key?: string;
+                    name?: string;
+                    /**
+                     * @default LINK_ONLY
+                     * @enum {string}
+                     */
+                    integrationStatus?: "LINK_ONLY" | "SANDBOX" | "LIVE" | "DISABLED";
+                    /** Format: uri */
+                    docsUrl?: string | null;
+                    /** Format: uri */
+                    termsUrl?: string | null;
+                    /** Format: date-time */
+                    termsVerifiedAt?: string | null;
+                    allowedDomains?: string[];
+                    /** @default [] */
+                    credentialEnvNames?: string[];
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Provider"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListOutboundLinks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Bağlantılar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OutboundLinkList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateOutboundLink: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: uuid */
+                    listingId: string;
+                    /** Format: uuid */
+                    providerId?: string | null;
+                    /** @enum {string} */
+                    kind: "AFFILIATE" | "BOOKING" | "PURCHASE" | "WEBSITE" | "PHONE" | "MESSAGING" | "MAP" | "QUOTE_REQUEST";
+                    /** @enum {string} */
+                    ctaType: "WEBSITE" | "OFFICIAL_SITE" | "RESERVATION" | "PROVIDER_PRICES" | "PROVIDER_DATES" | "SELLER" | "TICKETS" | "APPOINTMENT" | "CAR_RENTAL" | "BUY" | "WATCH";
+                    label?: string | null;
+                    urlTemplate: string;
+                    /** @enum {string} */
+                    commercialRelation: "NONE" | "GIFTED" | "SPONSORED" | "AFFILIATE";
+                    /** Format: date-time */
+                    validFrom?: string | null;
+                    /** Format: date-time */
+                    validUntil?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OutboundLink"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateOutboundLink: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    status?: "ACTIVE" | "DISABLED";
+                    label?: string | null;
+                    urlTemplate?: string;
+                    /** Format: date-time */
+                    validUntil?: string | null;
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OutboundLink"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCheckOutboundLink: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Durum */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OutboundLink"];
                 };
             };
             /** @description Hata (RFC 9457) */

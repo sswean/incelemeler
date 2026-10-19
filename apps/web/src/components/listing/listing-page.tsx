@@ -7,6 +7,7 @@ import {
   type CtaType,
   type ListingKind,
   type PublicListing,
+  type PublicOutbound,
 } from '@incelemeler/contracts';
 import { tr } from '@incelemeler/i18n';
 import { listingPath } from '@incelemeler/routes';
@@ -91,7 +92,25 @@ export async function listingMetadata(props: Props): Promise<Metadata> {
   };
 }
 
-function ctaHref(type: CtaType, l: PublicListing): string | null {
+/** Ticari bağlantı: ilişki etiketi ve rel="sponsored" zorunlu (REQ-AFF-004, AK-05). */
+function commercial(o: PublicOutbound | undefined): 'AFFILIATE' | 'SPONSORED' | null {
+  if (!o) return null;
+  if (o.commercialRelation === 'AFFILIATE' || o.kind === 'AFFILIATE') return 'AFFILIATE';
+  if (o.commercialRelation === 'SPONSORED' || o.commercialRelation === 'GIFTED') return 'SPONSORED';
+  return null;
+}
+
+function ctaLabel(type: CtaType, o: PublicOutbound | undefined): string {
+  const provider = o?.providerName ? withCase(o.providerName, 'locative') : null;
+  if (provider && type === 'PROVIDER_PRICES')
+    return T.providerPrices.replace('{provider}', provider);
+  if (provider && type === 'PROVIDER_DATES') return T.providerDates.replace('{provider}', provider);
+  return T.cta[type as keyof typeof T.cta] ?? type;
+}
+
+function ctaHref(type: CtaType, l: PublicListing, o: PublicOutbound | undefined): string | null {
+  // Kayıtlı dış bağlantı varsa yönlendirme `/git/` üzerinden (REQ-AFF-002/005).
+  if (o) return o.href;
   const loc = l.location;
   switch (type) {
     case 'DIRECTIONS':
@@ -151,7 +170,10 @@ export async function ListingPage(
     phone: l.contacts.phone,
     website: l.contacts.website,
     reservationUrl: l.contacts.reservationUrl,
+    linked: l.outbound.map((o) => o.ctaType),
   });
+  const outboundFor = (t: CtaType) => l.outbound.find((o) => o.ctaType === t);
+  const anyCommercial = ctas.some((c) => commercial(outboundFor(c)));
   const primary = l.media.find((m) => m.role === 'PRIMARY') ?? l.media[0];
   const gallery = l.media.filter((m) => m !== primary);
   const restaurant = l.categoryPath.some((c) => c.slug === RESTAURANT_ROOT);
@@ -251,27 +273,52 @@ export async function ListingPage(
         {ctas.length ? (
           <ul className="flex flex-wrap gap-3 pt-2" data-testid="listing-ctas">
             {ctas.map((c, i) => {
-              const href = ctaHref(c, l);
+              const o = outboundFor(c);
+              const href = ctaHref(c, l, o);
               if (!href) return null;
-              const external = href.startsWith('http');
+              const external = !!o || href.startsWith('http');
+              const relation = commercial(o);
               return (
-                <li key={c}>
+                <li key={c} className="flex flex-col items-start gap-1">
                   <a
                     href={href}
-                    {...(external ? { target: '_blank', rel: 'nofollow noopener noreferrer' } : {})}
+                    {...(external
+                      ? {
+                          target: '_blank',
+                          rel: relation
+                            ? 'sponsored nofollow noopener noreferrer'
+                            : 'nofollow noopener noreferrer',
+                        }
+                      : {})}
                     className={
                       i === 0
                         ? 'inline-flex min-h-11 items-center rounded-md bg-brand-default px-5 py-2 font-medium text-on-brand'
                         : 'inline-flex min-h-11 items-center rounded-md border border-border-strong px-5 py-2'
                     }
                   >
-                    {T.cta[c as keyof typeof T.cta] ?? c}
+                    {ctaLabel(c, o)}
                     {external ? <span className="sr-only"> {T.externalNote}</span> : null}
                   </a>
+                  {relation ? (
+                    <span
+                      className="rounded-sm border border-border-strong px-1.5 text-xs font-medium"
+                      data-testid="commercial-label"
+                    >
+                      {relation === 'AFFILIATE' ? T.affiliateLabel : T.sponsoredLabel}
+                    </span>
+                  ) : null}
                 </li>
               );
             })}
           </ul>
+        ) : null}
+        {anyCommercial ? (
+          <p className="text-sm text-text-secondary">
+            {T.commercialNote}{' '}
+            <Link href="/sponsorlu-icerik-politikasi" className="underline">
+              {T.commercialPolicy}
+            </Link>
+          </p>
         ) : null}
       </header>
 

@@ -186,6 +186,7 @@ model Listing {
   guide               ListingGuide?
   reviews             Review[]
   ratingStats         ListingRatingStats?
+  outboundLinks       OutboundLink[]
   reviewDrafts        ReviewDraft[]
 
   @@index([kind, status, primaryCategoryId])
@@ -252,6 +253,7 @@ model User {
   reports             ContentReport[]       @relation("ReportReporter")
   decidedReports      ContentReport[]       @relation("ReportDecider")
   appeals             ModerationAppeal[]    @relation("AppealAppellant")
+  outboundLinks       OutboundLink[]
   decidedAppeals      ModerationAppeal[]    @relation("AppealDecider")
 
   @@index([status])
@@ -1075,4 +1077,108 @@ model ModerationAppeal {
   @@unique([reportId, appellantId])
   @@index([status, createdAt])
   @@map("moderation_appeals")
+}
+
+// ── Dış yönlendirme ve entegrasyon kaydı (REQ-AFF-001…007, Ek A9.3) ──
+
+enum IntegrationStatus {
+  LINK_ONLY
+  SANDBOX
+  LIVE
+  DISABLED
+}
+
+enum OutboundKind {
+  AFFILIATE
+  BOOKING
+  PURCHASE
+  WEBSITE
+  PHONE
+  MESSAGING
+  MAP
+  QUOTE_REQUEST
+}
+
+enum OutboundStatus {
+  ACTIVE
+  DISABLED
+  BROKEN
+  EXPIRED
+}
+
+/// Sağlayıcı kaydı: API varsayılmaz; doğrulanmamışsa LINK_ONLY (AK-06). Kimlik bilgisi değil, yalnızca değişken ADLARI.
+model IntegrationProvider {
+  id                 String            @id @default(uuid(7)) @db.Uuid
+  key                String            @unique
+  name               String
+  integrationStatus  IntegrationStatus @default(LINK_ONLY) @map("integration_status")
+  docsUrl            String?           @map("docs_url")
+  termsUrl           String?           @map("terms_url")
+  termsVerifiedAt    DateTime?         @map("terms_verified_at") @db.Timestamptz(3)
+  /// Yönlendirmeye izin verilen alan adları (punycode, küçük harf).
+  allowedDomains     String[]          @map("allowed_domains")
+  cacheTtlSeconds    Int?              @map("cache_ttl_seconds")
+  credentialEnvNames String[]          @map("credential_env_names")
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version            Int               @default(1)
+  links              OutboundLink[]
+
+  @@map("integration_providers")
+}
+
+/// Merkezi dış bağlantı kaydı. Hedef yalnızca buradan okunur (açık yönlendirme yok).
+model OutboundLink {
+  id                 String               @id @default(uuid(7)) @db.Uuid
+  listingId          String?              @map("listing_id") @db.Uuid
+  listing            Listing?             @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  providerId         String?              @map("provider_id") @db.Uuid
+  provider           IntegrationProvider? @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  kind               OutboundKind
+  /// Sayfadaki eylem türü (CTA_RULES ile doğrulanır).
+  ctaType            String               @map("cta_type")
+  label              String?
+  /// Hedef URL şablonu: yalnızca {subId} ve {surface} yer tutucuları.
+  urlTemplate        String               @map("url_template")
+  /// Sağlayıcısız bağlantıda izinli tek alan adı (kayıtta URL'den türetilir).
+  allowedDomain      String?              @map("allowed_domain")
+  commercialRelation CommercialRelation   @map("commercial_relation")
+  /// İletişim bilgilerinden otomatik eşitlenen bağlantı (web sitesi, rezervasyon).
+  source             String               @default("MANUAL")
+  validFrom          DateTime?            @map("valid_from") @db.Timestamptz(3)
+  validUntil         DateTime?            @map("valid_until") @db.Timestamptz(3)
+  status             OutboundStatus       @default(ACTIVE)
+  lastCheckedAt      DateTime?            @map("last_checked_at") @db.Timestamptz(3)
+  lastCheckStatus    String?              @map("last_check_status")
+  createdById        String?              @map("created_by") @db.Uuid
+  createdBy          User?                @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt          DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version            Int                  @default(1)
+  clicks             OutboundClick[]
+
+  @@index([listingId, status])
+  @@index([status, lastCheckedAt])
+  @@map("outbound_links")
+}
+
+/// Tıklama olayı (REQ-AFF-005): ham IP yok; günlük tuzlu oturum karması; bot/önceden getirme işaretli.
+/// Aylık bölümleme veri hacmi gerektiğinde (A-020).
+model OutboundClick {
+  id          BigInt       @id @default(autoincrement())
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  linkId      String       @map("link_id") @db.Uuid
+  link        OutboundLink @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  surface     String
+  pageType    String       @map("page_type")
+  placementId String?      @map("placement_id")
+  sessionHash String       @map("session_hash")
+  bot         Boolean
+  prefetch    Boolean
+  /// 30 sn içinde aynı oturum + bağlantı tekrarı raporlara girmez.
+  counted     Boolean
+
+  @@index([linkId, createdAt])
+  @@index([sessionHash, linkId, createdAt])
+  @@map("outbound_clicks")
 }

@@ -8,6 +8,7 @@ import { setListingStatusAction } from '../actions';
 import { blockerMessage, UI_TRANSITIONS } from '../messages';
 import { ListingEditForm } from './edit-form';
 import { MediaSection } from './media-section';
+import { OutboundSection } from './outbound-section';
 
 export const metadata: Metadata = { title: tr.listings.title };
 export const dynamic = 'force-dynamic';
@@ -17,23 +18,31 @@ export default async function ListingPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ durum?: string; hata?: string }>;
+  searchParams: Promise<{ durum?: string; hata?: string; baglanti?: string }>;
 }) {
   const { token, user } = await requireStaff();
   const { id } = await params;
-  const { durum, hata } = await searchParams;
+  const { durum, hata, baglanti } = await searchParams;
   const client = await api(token);
   const { data: listing } = await client.GET('/v1/admin/listings/{id}', {
     params: { path: { id } },
   });
   if (!listing) notFound();
-  const [{ data: schema }, { data: provinces }, { data: districts }] = await Promise.all([
-    client.GET('/v1/admin/categories/{id}/schema', {
-      params: { path: { id: listing.primaryCategory.id } },
-    }),
-    client.GET('/v1/admin-areas', { params: { query: { level: 'PROVINCE' } } }),
-    client.GET('/v1/admin-areas', { params: { query: { level: 'DISTRICT' } } }),
-  ]);
+  const canLinks = user.permissions.some((p) => p === 'outbound.add' || p === 'affiliate.manage');
+  const [{ data: schema }, { data: provinces }, { data: districts }, links, providers] =
+    await Promise.all([
+      client.GET('/v1/admin/categories/{id}/schema', {
+        params: { path: { id: listing.primaryCategory.id } },
+      }),
+      client.GET('/v1/admin-areas', { params: { query: { level: 'PROVINCE' } } }),
+      client.GET('/v1/admin-areas', { params: { query: { level: 'DISTRICT' } } }),
+      canLinks
+        ? client.GET('/v1/admin/listings/{id}/outbound-links', { params: { path: { id } } })
+        : Promise.resolve({ data: undefined }),
+      canLinks
+        ? client.GET('/v1/admin/integration-providers')
+        : Promise.resolve({ data: undefined }),
+    ]);
   const canPublish = user.permissions.includes('listings.write');
   const transitions = UI_TRANSITIONS[listing.status].filter(
     (s) => canPublish || s === 'DRAFT' || s === 'IN_REVIEW',
@@ -52,7 +61,7 @@ export default async function ListingPage({
       {durum === 'kaydedildi' || durum === 'olusturuldu' ? (
         <Alert kind="success">{tr.admin.saved}</Alert>
       ) : null}
-      {hata ? <Alert kind="error">{errorMessage(hata)}</Alert> : null}
+      {hata && !baglanti ? <Alert kind="error">{errorMessage(hata)}</Alert> : null}
 
       <section aria-labelledby="yayin" className="space-y-3">
         <h2 id="yayin" className="text-lg font-semibold">
@@ -85,6 +94,18 @@ export default async function ListingPage({
       </section>
 
       <MediaSection listing={listing} />
+
+      {links.data ? (
+        <OutboundSection
+          listingId={listing.id}
+          kind={listing.kind}
+          links={links.data.data}
+          providers={providers.data?.data ?? []}
+          canCommercial={user.permissions.includes('affiliate.manage')}
+          {...(durum ? { notice: durum } : {})}
+          {...(baglanti ? { linkError: baglanti } : {})}
+        />
+      ) : null}
 
       <ListingEditForm
         listing={listing}

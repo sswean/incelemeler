@@ -39,6 +39,34 @@ describe('[REQ-LST-001] CTA tablosu (Ek A4.4)', () => {
     ).toEqual([]);
   });
 
+  it('[REQ-AFF-001] kayıtlı dış bağlantı eylemi açar; yasak eylem kayıtla da açılmaz', () => {
+    expect(
+      ctasFor({
+        kind: 'LODGING',
+        status: 'PUBLISHED',
+        hasCoordinates: false,
+        linked: ['PROVIDER_PRICES'],
+      }),
+    ).toEqual(['PROVIDER_PRICES']);
+    expect(
+      ctasFor({
+        kind: 'PLACE',
+        status: 'PUBLISHED',
+        hasCoordinates: false,
+        linked: ['BUY', 'SELLER'],
+      }),
+    ).toEqual([]);
+    expect(
+      ctasFor({
+        kind: 'EVENT',
+        status: 'PUBLISHED',
+        hasCoordinates: false,
+        linked: ['TICKETS'],
+        ended: true,
+      }),
+    ).toEqual([]);
+  });
+
   it('[REQ-LST-006] kapalı listelemede CTA yok', () => {
     expect(
       ctasFor({ kind: 'PLACE', status: 'CLOSED_PERMANENTLY', hasCoordinates: true, phone: '1' }),

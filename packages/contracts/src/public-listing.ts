@@ -1,3 +1,4 @@
+import { PublicOutbound } from './outbound.js';
 import { z } from 'zod';
 import { ListingContacts, ListingDetailsInput, ListingStatus } from './listings.js';
 import { ListingKind } from './taxonomy.js';
@@ -59,6 +60,8 @@ export const PublicListing = z
     ),
     /** Kullanıcı değerlendirmesi özeti (Ek A6.2) — Faz 1 dilim 7'ye kadar her zaman 0. */
     reviewCount: z.number().int(),
+    /** Kayıtlı dış eylemler (affiliate, rezervasyon, web sitesi) — `/git/` üzerinden (REQ-AFF-001/002). */
+    outbound: z.array(PublicOutbound),
     dataOrigin: z.string(),
     sourceVerifiedAt: z.iso.datetime().nullable(),
     publishedAt: z.iso.datetime().nullable(),

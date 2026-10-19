@@ -75,6 +75,8 @@ export interface CtaContext {
   reservationUrl?: string | null;
   /** Etkinlik bitti mi (bitmiş etkinlikte bilet CTA'sı yok). */
   ended?: boolean;
+  /** Etkin dış bağlantısı kayıtlı eylemler (affiliate/rezervasyon sağlayıcısı vb. — REQ-AFF-001). */
+  linked?: readonly CtaType[];
 }
 
 /**
@@ -93,6 +95,7 @@ export function ctasFor(c: CtaContext): CtaType[] {
     CONTACT: !!c.phone,
     APPOINTMENT: !!c.reservationUrl,
   };
+  for (const t of c.linked ?? []) if (!(c.ended && t === 'TICKETS')) available[t] = true;
   const rules = CTA_RULES[c.kind];
   const out = rules.allowed.filter((t) => available[t] && !rules.forbidden.includes(t));
   // Aynı bağlantıya giden iki eylem gösterilmez (WEBSITE ve OFFICIAL_SITE).

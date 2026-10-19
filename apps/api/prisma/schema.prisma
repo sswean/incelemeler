@@ -27,6 +27,16 @@ enum ListingKind {
   WORK
 }
 
+enum AttributeType {
+  BOOL
+  ENUM
+  MULTI_ENUM
+  INT
+  DECIMAL
+  TEXT
+  DATE
+}
+
 enum CategoryStatus {
   DRAFT
   HIDDEN
@@ -45,27 +55,32 @@ enum DataOrigin {
 
 /// Kategori = veri (REQ-VER-002). Ağaç: parentId (Faz 1'de closure/ltree değerlendirilir).
 model Category {
-  id                   String         @id @default(uuid(7)) @db.Uuid
-  slug                 String         @unique
-  name                 String
-  parentId             String?        @map("parent_id") @db.Uuid
-  parent               Category?      @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
-  children             Category[]     @relation("CategoryTree")
-  allowedKinds         ListingKind[]  @map("allowed_kinds")
-  status               CategoryStatus @default(DRAFT)
-  sortOrder            Int            @default(0) @map("sort_order")
-  ymyl                 Boolean        @default(false)
-  requiresExpertReview Boolean        @default(false) @map("requires_expert_review")
-  ugcEnabled           Boolean        @default(true) @map("ugc_enabled")
-  sponsorshipAllowed   Boolean        @default(true) @map("sponsorship_allowed")
-  requiresLicense      Boolean        @default(false) @map("requires_license")
-  dataOrigin           DataOrigin     @default(EDITORIAL) @map("data_origin")
+  id                     String                  @id @default(uuid(7)) @db.Uuid
+  slug                   String                  @unique
+  name                   String
+  parentId               String?                 @map("parent_id") @db.Uuid
+  parent                 Category?               @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children               Category[]              @relation("CategoryTree")
+  allowedKinds           ListingKind[]           @map("allowed_kinds")
+  status                 CategoryStatus          @default(DRAFT)
+  sortOrder              Int                     @default(0) @map("sort_order")
+  ymyl                   Boolean                 @default(false)
+  requiresExpertReview   Boolean                 @default(false) @map("requires_expert_review")
+  ugcEnabled             Boolean                 @default(true) @map("ugc_enabled")
+  sponsorshipAllowed     Boolean                 @default(true) @map("sponsorship_allowed")
+  requiresLicense        Boolean                 @default(false) @map("requires_license")
+  dataOrigin             DataOrigin              @default(EDITORIAL) @map("data_origin")
   /// İlk yayın anı; yayımlanmış kategorinin slug'ı değişmez (A-011).
-  firstPublishedAt     DateTime?      @map("first_published_at") @db.Timestamptz(3)
-  createdAt            DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt            DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
-  version              Int            @default(1)
-  listings             Listing[]
+  firstPublishedAt       DateTime?               @map("first_published_at") @db.Timestamptz(3)
+  /// Geçerli (kendi + devralınan) özellik şemasının sürümü; her şema değişikliğinde artar (REQ-VER-003).
+  attributeSchemaVersion Int                     @default(0) @map("attribute_schema_version")
+  createdAt              DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt              DateTime                @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version                Int                     @default(1)
+  listings               Listing[]
+  attributes             AttributeDefinition[]
+  criteria               ReviewCriterion[]
+  schemaVersions         CategorySchemaVersion[]
 
   @@index([status, sortOrder, id])
   @@index([parentId])
@@ -306,4 +321,63 @@ model OutboxEvent {
 
   @@index([aggregateType, aggregateId])
   @@map("outbox_events")
+}
+
+/// Kategoriye bağlı tipli özellik (REQ-VER-003). Anahtar ve tip değişmez; silme yerine arşiv.
+model AttributeDefinition {
+  id         String        @id @default(uuid(7)) @db.Uuid
+  categoryId String        @map("category_id") @db.Uuid
+  category   Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  key        String
+  label      String
+  type       AttributeType
+  /// ENUM/MULTI_ENUM seçenekleri: [{ value, label }]
+  options    Json          @default("[]")
+  unit       String?
+  filterable Boolean       @default(false)
+  showOnCard Boolean       @default(false) @map("show_on_card")
+  required   Boolean       @default(false)
+  /// { min?, max?, maxLength? }
+  validation Json          @default("{}")
+  sortOrder  Int           @default(0) @map("sort_order")
+  archivedAt DateTime?     @map("archived_at") @db.Timestamptz(3)
+  createdAt  DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version    Int           @default(1)
+
+  @@unique([categoryId, key])
+  @@map("attribute_definitions")
+}
+
+/// Kategorinin geçerli özellik şemasının değişmez anlık görüntüsü (REQ-VER-003).
+model CategorySchemaVersion {
+  categoryId  String   @map("category_id") @db.Uuid
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  version     Int
+  /// Etkin tanımlar (kendi + üstler): [{ key, label, type, options, unit, required, validation, … }]
+  definitions Json
+  createdBy   String?  @map("created_by") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@id([categoryId, version])
+  @@map("category_schema_versions")
+}
+
+/// Değerlendirme kriteri (Ek A6.3): kategori düğümü başına en fazla 6 etkin kriter.
+model ReviewCriterion {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  categoryId  String    @map("category_id") @db.Uuid
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  key         String
+  name        String
+  description String?
+  required    Boolean   @default(false)
+  sortOrder   Int       @default(0) @map("sort_order")
+  archivedAt  DateTime? @map("archived_at") @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version     Int       @default(1)
+
+  @@unique([categoryId, key])
+  @@map("review_criteria")
 }

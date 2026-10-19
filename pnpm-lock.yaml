@@ -59,6 +59,9 @@ importers:
       '@incelemeler/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
+      '@incelemeler/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       next:
         specifier: 16.4.2
         version: 16.4.2(@playwright/test@1.56.1)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)

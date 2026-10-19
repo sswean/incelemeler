@@ -312,6 +312,93 @@ export interface paths {
         patch: operations["adminUpdateCategory"];
         trace?: never;
     };
+    "/v1/admin/categories/{id}/schema": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kategorinin geçerli özellik şeması ve değerlendirme kriterleri */
+        get: operations["adminGetCategorySchema"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/categories/{id}/attributes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Özellik tanımı ekler (şema sürümü artar) */
+        post: operations["adminCreateAttribute"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/categories/{id}/attributes/{attributeId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Özelliği arşivler (anahtar ayrılmış kalır, eski veri yorumlanabilir) */
+        delete: operations["adminArchiveAttribute"];
+        options?: never;
+        head?: never;
+        /** Özellik tanımını günceller (anahtar ve tip değişmez) */
+        patch: operations["adminUpdateAttribute"];
+        trace?: never;
+    };
+    "/v1/admin/categories/{id}/criteria": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Değerlendirme kriteri ekler (en fazla 6) */
+        post: operations["adminCreateCriterion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/categories/{id}/criteria/{criterionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Değerlendirme kriterini arşivler */
+        delete: operations["adminArchiveCriterion"];
+        options?: never;
+        head?: never;
+        /** Değerlendirme kriterini günceller */
+        patch: operations["adminUpdateCriterion"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -408,6 +495,129 @@ export interface components {
             ugcEnabled?: boolean;
             sponsorshipAllowed?: boolean;
             requiresLicense?: boolean;
+        };
+        AttributeDefinition: {
+            id: string;
+            categoryId: string;
+            key: string;
+            label: string;
+            /** @enum {string} */
+            type: "BOOL" | "ENUM" | "MULTI_ENUM" | "INT" | "DECIMAL" | "TEXT" | "DATE";
+            options: {
+                value: string;
+                label: string;
+            }[];
+            unit: string | null;
+            filterable: boolean;
+            showOnCard: boolean;
+            required: boolean;
+            validation: {
+                min?: number;
+                max?: number;
+                maxLength?: number;
+            };
+            sortOrder: number;
+            archived: boolean;
+            version: number;
+        };
+        AttributeCreateBody: {
+            key: string;
+            /** @enum {string} */
+            type: "BOOL" | "ENUM" | "MULTI_ENUM" | "INT" | "DECIMAL" | "TEXT" | "DATE";
+            label: string;
+            options?: {
+                value: string;
+                label: string;
+            }[];
+            unit?: string | null;
+            filterable?: boolean;
+            showOnCard?: boolean;
+            required?: boolean;
+            validation?: {
+                min?: number;
+                max?: number;
+                maxLength?: number;
+            };
+            sortOrder?: number;
+        };
+        AttributeUpdateBody: {
+            version: number;
+            label?: string;
+            options?: {
+                value: string;
+                label: string;
+            }[];
+            unit?: string | null;
+            filterable?: boolean;
+            showOnCard?: boolean;
+            required?: boolean;
+            validation?: {
+                min?: number;
+                max?: number;
+                maxLength?: number;
+            };
+            sortOrder?: number;
+        };
+        ReviewCriterion: {
+            id: string;
+            categoryId: string;
+            key: string;
+            name: string;
+            description: string | null;
+            required: boolean;
+            sortOrder: number;
+            version: number;
+        };
+        CriterionCreateBody: {
+            name: string;
+            description?: string | null;
+            required?: boolean;
+            sortOrder?: number;
+        };
+        CriterionUpdateBody: {
+            version: number;
+            name?: string;
+            description?: string | null;
+            required?: boolean;
+            sortOrder?: number;
+        };
+        CategorySchema: {
+            categoryId: string;
+            schemaVersion: number;
+            attributes: {
+                id: string;
+                categoryId: string;
+                key: string;
+                label: string;
+                /** @enum {string} */
+                type: "BOOL" | "ENUM" | "MULTI_ENUM" | "INT" | "DECIMAL" | "TEXT" | "DATE";
+                options: {
+                    value: string;
+                    label: string;
+                }[];
+                unit: string | null;
+                filterable: boolean;
+                showOnCard: boolean;
+                required: boolean;
+                validation: {
+                    min?: number;
+                    max?: number;
+                    maxLength?: number;
+                };
+                sortOrder: number;
+                archived: boolean;
+                version: number;
+                inheritedFrom: {
+                    id: string;
+                    name: string;
+                } | null;
+            }[];
+            archivedAttributes: components["schemas"]["AttributeDefinition"][];
+            criteria: components["schemas"]["ReviewCriterion"][];
+            criteriaInheritedFrom: {
+                id: string;
+                name: string;
+            } | null;
         };
         RegisterBody: {
             email: unknown;
@@ -1163,6 +1373,286 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminCategory"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetCategorySchema: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Şema */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategorySchema"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateAttribute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    key: string;
+                    /** @enum {string} */
+                    type: "BOOL" | "ENUM" | "MULTI_ENUM" | "INT" | "DECIMAL" | "TEXT" | "DATE";
+                    label: string;
+                    options?: {
+                        value: string;
+                        label: string;
+                    }[];
+                    unit?: string | null;
+                    filterable?: boolean;
+                    showOnCard?: boolean;
+                    required?: boolean;
+                    validation?: {
+                        min?: number;
+                        max?: number;
+                        maxLength?: number;
+                    };
+                    sortOrder?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeDefinition"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminArchiveAttribute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                attributeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Arşivlendi */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateAttribute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                attributeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    label?: string;
+                    options?: {
+                        value: string;
+                        label: string;
+                    }[];
+                    unit?: string | null;
+                    filterable?: boolean;
+                    showOnCard?: boolean;
+                    required?: boolean;
+                    validation?: {
+                        min?: number;
+                        max?: number;
+                        maxLength?: number;
+                    };
+                    sortOrder?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttributeDefinition"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateCriterion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    description?: string | null;
+                    required?: boolean;
+                    sortOrder?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewCriterion"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminArchiveCriterion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                criterionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Arşivlendi */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateCriterion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                criterionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    name?: string;
+                    description?: string | null;
+                    required?: boolean;
+                    sortOrder?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewCriterion"];
                 };
             };
             /** @description Hata (RFC 9457) */

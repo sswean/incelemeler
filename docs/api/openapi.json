@@ -1134,6 +1134,607 @@
           }
         }
       }
+    },
+    "/v1/admin/categories/{id}/schema": {
+      "get": {
+        "operationId": "adminGetCategorySchema",
+        "summary": "Kategorinin geçerli özellik şeması ve değerlendirme kriterleri",
+        "tags": [
+          "admin",
+          "taxonomy"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Şema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategorySchema"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/categories/{id}/attributes": {
+      "post": {
+        "operationId": "adminCreateAttribute",
+        "summary": "Özellik tanımı ekler (şema sürümü artar)",
+        "tags": [
+          "admin",
+          "taxonomy"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-zA-Z0-9]{1,39}$"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "BOOL",
+                      "ENUM",
+                      "MULTI_ENUM",
+                      "INT",
+                      "DECIMAL",
+                      "TEXT",
+                      "DATE"
+                    ]
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "options": {
+                    "maxItems": 50,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "string",
+                          "maxLength": 40,
+                          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        }
+                      },
+                      "required": [
+                        "value",
+                        "label"
+                      ]
+                    }
+                  },
+                  "unit": {
+                    "nullable": true,
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 12
+                  },
+                  "filterable": {
+                    "type": "boolean"
+                  },
+                  "showOnCard": {
+                    "type": "boolean"
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "validation": {
+                    "type": "object",
+                    "properties": {
+                      "min": {
+                        "type": "number"
+                      },
+                      "max": {
+                        "type": "number"
+                      },
+                      "maxLength": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 2000
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "sortOrder": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  }
+                },
+                "required": [
+                  "key",
+                  "type",
+                  "label"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Oluşturuldu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttributeDefinition"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/categories/{id}/attributes/{attributeId}": {
+      "patch": {
+        "operationId": "adminUpdateAttribute",
+        "summary": "Özellik tanımını günceller (anahtar ve tip değişmez)",
+        "tags": [
+          "admin",
+          "taxonomy"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "attributeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "options": {
+                    "maxItems": 50,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "string",
+                          "maxLength": 40,
+                          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        }
+                      },
+                      "required": [
+                        "value",
+                        "label"
+                      ]
+                    }
+                  },
+                  "unit": {
+                    "nullable": true,
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 12
+                  },
+                  "filterable": {
+                    "type": "boolean"
+                  },
+                  "showOnCard": {
+                    "type": "boolean"
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "validation": {
+                    "type": "object",
+                    "properties": {
+                      "min": {
+                        "type": "number"
+                      },
+                      "max": {
+                        "type": "number"
+                      },
+                      "maxLength": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 2000
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "sortOrder": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  }
+                },
+                "required": [
+                  "version"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Güncellendi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttributeDefinition"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "adminArchiveAttribute",
+        "summary": "Özelliği arşivler (anahtar ayrılmış kalır, eski veri yorumlanabilir)",
+        "tags": [
+          "admin",
+          "taxonomy"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "attributeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Arşivlendi"
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/categories/{id}/criteria": {
+      "post": {
+        "operationId": "adminCreateCriterion",
+        "summary": "Değerlendirme kriteri ekler (en fazla 6)",
+        "tags": [
+          "admin",
+          "taxonomy"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 40
+                  },
+                  "description": {
+                    "nullable": true,
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "sortOrder": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Oluşturuldu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewCriterion"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/categories/{id}/criteria/{criterionId}": {
+      "patch": {
+        "operationId": "adminUpdateCriterion",
+        "summary": "Değerlendirme kriterini günceller",
+        "tags": [
+          "admin",
+          "taxonomy"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "criterionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 40
+                  },
+                  "description": {
+                    "nullable": true,
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "sortOrder": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  }
+                },
+                "required": [
+                  "version"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Güncellendi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewCriterion"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "adminArchiveCriterion",
+        "summary": "Değerlendirme kriterini arşivler",
+        "tags": [
+          "admin",
+          "taxonomy"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "criterionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Arşivlendi"
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1600,6 +2201,579 @@
         },
         "required": [
           "version"
+        ],
+        "additionalProperties": false
+      },
+      "AttributeDefinition": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "BOOL",
+              "ENUM",
+              "MULTI_ENUM",
+              "INT",
+              "DECIMAL",
+              "TEXT",
+              "DATE"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "maxLength": 40,
+                  "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                }
+              },
+              "required": [
+                "value",
+                "label"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "unit": {
+            "nullable": true,
+            "type": "string"
+          },
+          "filterable": {
+            "type": "boolean"
+          },
+          "showOnCard": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "validation": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              },
+              "maxLength": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2000
+              }
+            },
+            "additionalProperties": false
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "archived": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "categoryId",
+          "key",
+          "label",
+          "type",
+          "options",
+          "unit",
+          "filterable",
+          "showOnCard",
+          "required",
+          "validation",
+          "sortOrder",
+          "archived",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "AttributeCreateBody": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[a-z][a-zA-Z0-9]{1,39}$"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "BOOL",
+              "ENUM",
+              "MULTI_ENUM",
+              "INT",
+              "DECIMAL",
+              "TEXT",
+              "DATE"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "options": {
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "maxLength": 40,
+                  "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                }
+              },
+              "required": [
+                "value",
+                "label"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "unit": {
+            "nullable": true,
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 12
+          },
+          "filterable": {
+            "type": "boolean"
+          },
+          "showOnCard": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "validation": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              },
+              "maxLength": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2000
+              }
+            },
+            "additionalProperties": false
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "required": [
+          "key",
+          "type",
+          "label"
+        ],
+        "additionalProperties": false
+      },
+      "AttributeUpdateBody": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "options": {
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "maxLength": 40,
+                  "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                }
+              },
+              "required": [
+                "value",
+                "label"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "unit": {
+            "nullable": true,
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 12
+          },
+          "filterable": {
+            "type": "boolean"
+          },
+          "showOnCard": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "validation": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              },
+              "maxLength": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2000
+              }
+            },
+            "additionalProperties": false
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "ReviewCriterion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "nullable": true,
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "version": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "categoryId",
+          "key",
+          "name",
+          "description",
+          "required",
+          "sortOrder",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "CriterionCreateBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 40
+          },
+          "description": {
+            "nullable": true,
+            "type": "string",
+            "maxLength": 200
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "CriterionUpdateBody": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 40
+          },
+          "description": {
+            "nullable": true,
+            "type": "string",
+            "maxLength": 200
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "CategorySchema": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "string"
+          },
+          "schemaVersion": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "categoryId": {
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "BOOL",
+                    "ENUM",
+                    "MULTI_ENUM",
+                    "INT",
+                    "DECIMAL",
+                    "TEXT",
+                    "DATE"
+                  ]
+                },
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "maxLength": 40,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60
+                      }
+                    },
+                    "required": [
+                      "value",
+                      "label"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "unit": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "filterable": {
+                  "type": "boolean"
+                },
+                "showOnCard": {
+                  "type": "boolean"
+                },
+                "required": {
+                  "type": "boolean"
+                },
+                "validation": {
+                  "type": "object",
+                  "properties": {
+                    "min": {
+                      "type": "number"
+                    },
+                    "max": {
+                      "type": "number"
+                    },
+                    "maxLength": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2000
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "sortOrder": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "archived": {
+                  "type": "boolean"
+                },
+                "version": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "inheritedFrom": {
+                  "nullable": true,
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "id",
+                "categoryId",
+                "key",
+                "label",
+                "type",
+                "options",
+                "unit",
+                "filterable",
+                "showOnCard",
+                "required",
+                "validation",
+                "sortOrder",
+                "archived",
+                "version",
+                "inheritedFrom"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "archivedAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeDefinition"
+            }
+          },
+          "criteria": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewCriterion"
+            }
+          },
+          "criteriaInheritedFrom": {
+            "nullable": true,
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "categoryId",
+          "schemaVersion",
+          "attributes",
+          "archivedAttributes",
+          "criteria",
+          "criteriaInheritedFrom"
         ],
         "additionalProperties": false
       },

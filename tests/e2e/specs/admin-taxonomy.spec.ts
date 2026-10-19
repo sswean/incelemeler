@@ -62,5 +62,49 @@ test.describe('Faz 1 · taksonomi yönetimi (panel)', () => {
     expect(await publicSlugs()).toContain(slug);
     // Yayımlanmış kategorinin adresi kilitlenir.
     await expect(page.getByLabel('Adres (slug)')).toHaveAttribute('readonly', '');
+
+    // Özellik şeması (REQ-VER-003): üç tipli özellik, deploy olmadan.
+    const attrForm = page.getByRole('form', { name: 'Özellik ekle' });
+    const addAttribute = async (
+      key: string,
+      label: string,
+      type: string,
+      extra?: () => Promise<void>,
+    ) => {
+      await attrForm.getByLabel('Anahtar').fill(key);
+      await attrForm.getByLabel('Etiket').fill(label);
+      await attrForm.getByLabel('Tip').selectOption({ label: type });
+      await extra?.();
+      await attrForm.getByLabel('Filtrelenebilir').check();
+      await attrForm.getByRole('button', { name: 'Özellik ekle' }).click();
+      await expect(page.getByTestId('attribute-list')).toContainText(label);
+    };
+    await addAttribute('hasPrivateBathroom', 'Özel banyo', 'Evet/Hayır');
+    await addAttribute('tentType', 'Çadır tipi', 'Tek seçim', async () => {
+      await attrForm.getByLabel('Seçenekler').fill('Safari çadırı\nBalon çadır');
+    });
+    await addAttribute('maxGuests', 'En fazla kişi', 'Tam sayı', async () => {
+      await attrForm.getByLabel('Birim').fill('kişi');
+      await attrForm.getByLabel('En küçük değer').fill('1');
+      await attrForm.getByLabel('En büyük değer').fill('12');
+    });
+    await expect(page.getByTestId('attribute-list')).toContainText('Safari çadırı, Balon çadır');
+    // Aynı anahtar ikinci kez eklenemez; alan hatası gösterilir.
+    await attrForm.getByLabel('Anahtar').fill('maxGuests');
+    await attrForm.getByLabel('Etiket').fill('Tekrar');
+    await attrForm.getByRole('button', { name: 'Özellik ekle' }).click();
+    await expect(attrForm).toContainText('Bu anahtar bu kategori dalında zaten kullanılıyor.');
+
+    // Değerlendirme kriterleri: önce Konaklama'dan devralınır, kendi kriteri eklenince devralma biter.
+    await expect(
+      page.getByText('Bu kategorinin kendi kriteri yok; şu kategorininkiler kullanılıyor:'),
+    ).toBeVisible();
+    await expect(page.getByTestId('criteria-list')).toContainText('Oda konforu');
+    const critForm = page.getByRole('form', { name: 'Kriter ekle' });
+    await critForm.getByLabel('Kriter adı').fill('Doğa ile uyum');
+    await critForm.getByRole('button', { name: 'Kriter ekle' }).click();
+    await expect(page.getByTestId('criteria-list')).toHaveText(/Doğa ile uyum/);
+    await expect(page.getByTestId('criteria-list')).not.toContainText('Oda konforu');
+    expect(await seriousViolations(page)).toEqual([]);
   });
 });

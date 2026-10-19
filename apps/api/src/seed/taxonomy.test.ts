@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { slugifyTr } from '@incelemeler/utils';
 import { flattenTaxonomy } from './taxonomy.js';
 
 describe('[REQ-KAT-002] başlangıç taksonomisi', () => {
@@ -27,6 +28,14 @@ describe('[REQ-KAT-002] başlangıç taksonomisi', () => {
       if (c.ymyl) expect(c.requiresExpertReview, c.slug).toBe(true);
     }
     expect(flat.find((c) => c.slug === 'konaklama')?.sponsorshipAllowed).toBe(false);
+  });
+
+  it('başlangıç kriterleri (Ek A6.3): kategori başına en fazla 6, anahtarları benzersiz', () => {
+    for (const c of flat) {
+      expect(c.criteria.length, c.slug).toBeLessThanOrEqual(6);
+      expect(new Set(c.criteria.map((n) => slugifyTr(n))).size, c.slug).toBe(c.criteria.length);
+    }
+    expect(flat.find((c) => c.slug === 'konaklama')?.criteria).toContain('Konum');
   });
 
   it('her çocuğun izinli türleri ebeveynin türleri içinde', () => {

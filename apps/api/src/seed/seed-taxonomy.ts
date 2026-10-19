@@ -1,3 +1,4 @@
+import { slugifyTr } from '@incelemeler/utils';
 import type { PrismaClient } from '../generated/prisma/client.js';
 import { flattenTaxonomy } from './taxonomy.js';
 
@@ -29,6 +30,20 @@ export async function seedTaxonomy(prisma: PrismaClient): Promise<number> {
       update: {},
     });
     idBySlug.set(c.slug, row.id);
+    // Kriterler yalnızca hiç yapılandırılmamış kategoriye yüklenir (panel değişiklikleri korunur).
+    if (
+      c.criteria.length &&
+      (await prisma.reviewCriterion.count({ where: { categoryId: row.id } })) === 0
+    ) {
+      await prisma.reviewCriterion.createMany({
+        data: c.criteria.map((name, i) => ({
+          categoryId: row.id,
+          key: slugifyTr(name),
+          name,
+          sortOrder: (i + 1) * 10,
+        })),
+      });
+    }
   }
   return flat.length;
 }

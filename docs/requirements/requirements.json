@@ -249,12 +249,12 @@
       "title": "attribute_definitions",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "attribute_definitions (BOOL/ENUM/MULTI_ENUM/INT/DECIMAL/TEXT/DATE, seçenek, birim, doğrulama, filtrelenebilir/kartta/zorunlu); kategoriye bağlı, üstten devralınan, her değişiklikte değişmez anlık görüntülü sürüm; `attributeValuesSchema` ile şemaya karşı doğrulama (birim testi).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "listings.attributes yazımında doğrulama ve attributeSchemaVersion kaydı listeleme CRUD ile (D3)."
     },
     {
       "id": "REQ-VER-004",
@@ -695,10 +695,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "Panelden kategori/alt kategori ekleme, sıralama, gizleme/yayımlama (E2E admin-taxonomy; entegrasyon taxonomy.int).",
+      "acceptance": "Panelden kategori/alt kategori, tipli özellik (Glamping: hasPrivateBathroom BOOL, tentType ENUM, maxGuests INT) ve değerlendirme kriteri ekleme/kaldırma, sıralama, gizleme/yayımlama — deploy yok (E2E admin-taxonomy; entegrasyon taxonomy.int, category-schema.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Özellik şeması ve değerlendirme kriterleri dilim 2b; koleksiyon sayfaları ve \"Glamping\" uçtan uca kabulü listeleme (D3) ve filtreler (D6) ile."
+      "notes": "Koleksiyon sayfaları (D6) ve kabulün \"listeleme ekler, yayımlar, filtreler\" adımları listeleme (D3) ve arama/filtre (D6) dilimleriyle tamamlanacak."
     },
     {
       "id": "REQ-KAT-002",

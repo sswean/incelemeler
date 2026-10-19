@@ -7,6 +7,7 @@ import { tr } from '@incelemeler/i18n';
 import { Alert, SubmitButton } from '../../../components/ui';
 import { errorMessage } from '../../../lib/errors';
 import { type CategoryFormState, saveCategoryAction } from './actions';
+import { fieldErrorMessage } from './field-errors';
 
 const KINDS = Object.keys(tr.taxonomy.kindLabels) as Array<keyof typeof tr.taxonomy.kindLabels>;
 const FLAGS = [
@@ -17,14 +18,6 @@ const FLAGS = [
   'requiresLicense',
 ] as const;
 type FlagKey = (typeof FLAGS)[number];
-type FieldErrorCode = keyof typeof tr.taxonomy.fieldErrors;
-
-function fieldError(code: string | undefined): string | null {
-  if (!code) return null;
-  return code in tr.taxonomy.fieldErrors
-    ? tr.taxonomy.fieldErrors[code as FieldErrorCode]
-    : tr.errors.VALIDATION_FAILED;
-}
 
 const inputClass =
   'block w-full rounded-md border border-border-strong bg-bg-default px-3 py-2 text-base';
@@ -49,7 +42,7 @@ export function CategoryForm({
   const [parentId, setParentId] = useState(category?.parentId ?? '');
   const fe = state.fieldErrors ?? {};
   const err = (key: string) => {
-    const msg = fieldError(fe[key]);
+    const msg = fieldErrorMessage(fe[key]);
     return msg ? (
       <p id={`${key}-hata`} className="text-sm text-danger-text">
         {msg}

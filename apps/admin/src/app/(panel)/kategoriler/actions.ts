@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { ListingKind } from '@incelemeler/contracts';
 import { problemCode } from '../../../lib/errors';
 import { api, getSessionToken } from '../../../lib/session';
+import { fieldErrorsOf } from './field-errors';
 
 export type CategoryFormState = {
   error?: string;
@@ -22,14 +23,6 @@ const STATUSES = ['DRAFT', 'HIDDEN', 'PUBLISHED'] as const;
 function text(form: FormData, key: string): string {
   const v = form.get(key);
   return typeof v === 'string' ? v.trim() : '';
-}
-
-function fieldErrorsOf(error: unknown): Record<string, string> {
-  const out: Record<string, string> = {};
-  const errors = (error as { errors?: Array<{ pointer: string; code: string }> } | undefined)
-    ?.errors;
-  for (const e of errors ?? []) out[e.pointer.replace(/^\//, '') || 'form'] = e.code;
-  return out;
 }
 
 /** Kategori oluşturma/güncelleme (REQ-KAT-001). Yetki ve kurallar API'de denetlenir. */

@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 2b — özellik şeması + değerlendirme kriterleri (2a: kategori yönetimi + outbox tamamlandı)
+- Aktif dilim: Faz 1 dilim 3 — listeleme CRUD + tür uzantıları + medya + içe aktarma (dilim 2 taksonomi tamamlandı)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 

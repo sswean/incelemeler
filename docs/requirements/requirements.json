@@ -2769,21 +2769,21 @@
       "title": "Açık rıza yalnızca başka hukuki sebebin bulunmadığı işlemelerde istenir ve üyelik, değe…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Üyelik ve değerlendirme rıza istemez; tümünü reddeden kullanıcı siteyi aynen kullanır (consent.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Açık rıza gerektiren işleme (pazarlama iletisi vb.) henüz yok; eklendiğinde ayrı onay kutusu + E2E."
     },
     {
       "id": "REQ-KVK-003",
       "title": "consent_records",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "consent_records: anonim kimlik/üye, amaç, metin sürümü, kanal, durum, zaman, IP karması; geri alma tercih merkezinde tek eylem (consent.test, account.int, consent.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -2805,9 +2805,9 @@
       "title": "Kategoriler",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Zorunlu, işlevsel, analitik, pazarlama kategorileri; yalnızca zorunlu onaysız (consent.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -2817,9 +2817,9 @@
       "title": "İlk ziyaret bandında \"Tümünü kabul et\", \"Tümünü reddet\", \"Tercihleri yönet\" aynı boyut,…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "İlk ziyaret bandında üç eşit düğme; kategoriler işaretsiz; çerez duvarı yok (consent.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -2829,21 +2829,21 @@
       "title": "Onay alınana kadar hiçbir analitik/pazarlama script'i, pikseli ya da SDK'sı yüklenmez (…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Onaysız hiçbir analitik/pazarlama betiği yok (ConsentGate); geri almada zorunlu olmayan çerezler silinir; tercih merkezi footer'dan tek tık (consent.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Uygulama ayarları yolu Faz 2."
     },
     {
       "id": "REQ-KVK-013",
       "title": "Sponsorluk ve dış yönlendirme sayımları için birinci taraf, sunucu tarafı, çerezsiz ve …",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Sponsorluk ve dış yönlendirme sayaçları çerezsiz, sunucu tarafı, ham IP'siz (outbound.int, sponsorship.int).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -2853,12 +2853,12 @@
       "title": "Kabul testleri (E2E-016)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": "(a) temiz profilde ilk yüklemede yalnızca zorunlu çerezler ve üçüncü taraf analitik isteği yok; (b) \"Tümünü reddet\" sonrası 3 sayfa gezinmede aynı; (c) yalnızca \"Analitik\" kabulünde yalnızca analitik istekleri başlar; (d) geri almada çerezler silinir.",
+      "acceptance": "E2E-016 (a) temiz profil, (b) reddet + 3 sayfa, (d) geri almada silme (consent.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "(c) yalnızca analitik kabulünde analitik isteklerinin başlaması: analitik aracı seçilince (D12, A-023)."
     },
     {
       "id": "REQ-KVK-020",

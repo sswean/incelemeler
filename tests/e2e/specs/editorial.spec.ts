@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import type { Page } from '@playwright/test';
 import { WEB_PORT } from '../env.js';
-import { expect, test } from '../support/fixtures.js';
+import { expect, test, withConsent } from '../support/fixtures.js';
 import { admin, loginWithMfaSetup } from '../support/admin.js';
 
 const web = `http://localhost:${WEB_PORT}`;
@@ -88,6 +88,7 @@ test.describe('Faz 1 · editoryal içerik', () => {
     const editorContext = await browser.newContext({
       extraHTTPHeaders: { 'X-Forwarded-For': `10.250.${p === 'mobile-390' ? 1 : 2}.7` },
     });
+    await withConsent(editorContext);
     const ed = await editorContext.newPage();
     await loginWithMfaSetup(ed, `e2e-editor-${p}@example.test`);
     await ed.goto(editorUrl);

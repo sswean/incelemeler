@@ -42,6 +42,7 @@ import {
   ProviderList,
   ProviderUpdateBody,
 } from './outbound.js';
+import { ConsentBody } from './consent.js';
 import {
   AccountDeletionBody,
   AccountDeletionPublicBody,
@@ -1256,6 +1257,16 @@ export const endpoints: EndpointDef[] = [
     tags: ['account'],
     summary: 'Geri alma penceresinde silmeyi iptal eder (hesap yeniden etkin)',
     body: TokenBody,
+    responses: { 202: ok('Kabul edildi', Accepted) },
+  },
+  {
+    method: 'post',
+    path: '/v1/consents',
+    operationId: 'recordConsent',
+    tags: ['account'],
+    summary:
+      'Çerez/rıza tercihi kaydı (REQ-KVK-003): kategori başına bir kayıt; oturum varsa üyeye bağlanır; IP saklanmaz',
+    body: ConsentBody,
     responses: { 202: ok('Kabul edildi', Accepted) },
   },
 ];

@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import type { Browser, Page } from '@playwright/test';
 import { E2E_STAFF_PASSWORD, WEB_PORT } from '../env.js';
-import { expect, test } from '../support/fixtures.js';
+import { expect, test, withConsent } from '../support/fixtures.js';
 import { admin, loginWithMfaSetup } from '../support/admin.js';
 
 const web = `http://localhost:${WEB_PORT}`;
@@ -109,6 +109,7 @@ test.describe('Faz 1 · kullanıcı değerlendirmeleri ve moderasyon', () => {
     const guest = await browser.newContext({
       extraHTTPHeaders: { 'X-Forwarded-For': `10.253.${p === 'mobile-390' ? 1 : 2}.9` },
     });
+    await withConsent(guest);
     const gp = await guest.newPage();
     await gp.goto(listUrl);
     const review = gp.getByTestId('review').first();

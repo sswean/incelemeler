@@ -46,6 +46,39 @@ afterAll(async () => {
 });
 
 describe('hesap (REQ-HSP-011/012, REQ-KVK-020/021)', () => {
+  it('[REQ-KVK-003] rıza kaydı: kategori başına satır, geçmiş korunur, ham IP yok; oturum varsa üyeye bağlanır', async () => {
+    const anonymousId = '0b6f3c1e-5d2a-4f7b-9c8e-1a2b3c4d5e6f';
+    const send = (body: Record<string, unknown>, headers: Record<string, string> = {}) =>
+      http()
+        .post('/v1/consents')
+        .set({ 'X-Forwarded-For': '198.51.100.7', ...headers })
+        .send({ anonymousId, textVersion: '2026-10-taslak', ...body });
+    await send({ functional: false, analytics: true, marketing: false }).expect(202);
+    await send({ functional: false, analytics: false, marketing: false }).expect(202);
+    await send({ functional: 'evet', analytics: false, marketing: false }).expect(422);
+    await send({
+      anonymousId: 'kimlik',
+      functional: false,
+      analytics: false,
+      marketing: false,
+    }).expect(422);
+    const rows = await t.prisma.consentRecord.findMany({
+      where: { anonymousId, purpose: 'ANALYTICS' },
+      orderBy: { id: 'asc' },
+    });
+    expect(rows.map((r) => r.granted)).toEqual([true, false]);
+    expect(rows.every((r) => r.channel === 'WEB' && r.userId === null)).toBe(true);
+    expect(JSON.stringify(rows, (_k, v: unknown) => (typeof v === 'bigint' ? 0 : v))).not.toContain(
+      '198.51.100',
+    );
+    const m = await memberToken(t, 'riza@example.com');
+    await send(
+      { functional: true, analytics: false, marketing: false },
+      { Authorization: `Bearer ${m.token}` },
+    ).expect(202);
+    expect(await t.prisma.consentRecord.count({ where: { userId: m.userId } })).toBe(3);
+  });
+
   it('[REQ-HSP-012] kaydedilenler ve makine tarafından okunabilir dışa aktarma (gizli alan yok)', async () => {
     const m = await memberToken(t, 'favori@example.com');
     await http().put(`/v1/me/favorites/${listingId}`).set(as(m.token)).expect(200, { saved: true });

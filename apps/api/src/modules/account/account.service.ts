@@ -342,6 +342,7 @@ export class AccountService {
           where: { reporterId: u.id },
           data: { reporterId: null, reporterEmail: null },
         });
+        await tx.consentRecord.updateMany({ where: { userId: u.id }, data: { userId: null } });
         await tx.session.deleteMany({ where: { userId: u.id } });
         await tx.emailToken.deleteMany({ where: { userId: u.id } });
         await tx.user.update({

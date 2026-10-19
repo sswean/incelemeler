@@ -1359,3 +1359,23 @@ model Favorite {
   @@index([userId, createdAt(sort: Desc)])
   @@map("favorites")
 }
+
+/// Rıza kayıtları (REQ-KVK-003): yalnızca eklenir; IP yerine anahtarlı karma; rıza verildiği kadar kolay geri alınır.
+model ConsentRecord {
+  id          BigInt   @id @default(autoincrement())
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  /// Oturum açıksa üye; hesap silinince ayrılır.
+  userId      String?  @map("user_id") @db.Uuid
+  anonymousId String   @map("anonymous_id") @db.Uuid
+  /// FUNCTIONAL | ANALYTICS | MARKETING
+  purpose     String
+  granted     Boolean
+  textVersion String   @map("text_version")
+  /// WEB | IOS | ANDROID
+  channel     String
+  ipHash      String?  @map("ip_hash")
+
+  @@index([anonymousId, createdAt])
+  @@index([userId])
+  @@map("consent_records")
+}

@@ -50,7 +50,10 @@
 - API: `/v1/me/favorites` (+ `/{listingId}` GET/PUT/DELETE), `/v1/me/export`, `/v1/me/deletion`, `/v1/account-deletion/request|confirm|cancel`; worker silme işi.
 - Web: listeleme sayfasında Kaydet, `/hesabim/kaydedilenler`, `/hesabim/verilerim` (JSON), `/hesabim/hesabi-sil`, `/hesap-silme` (+ `/onay`, `/iptal`).
 
+## Dilim 10b özeti (çerez onayı)
+- Web: alt bant (üç eşit düğme), `/cerez-tercihleri` tercih merkezi (footer), `ConsentGate`; API `/v1/consents` (`consent_records`).
+
 ## Sonraki 3 adım (Faz 1, §9.3 önerilen sıra)
-1. Dilim 10b/10c — CMP (çerez bandı + tercih merkezi + consent_records), hukuki belge sürümleri, KVKK başvuruları (data_subject_requests), saklama/imha işi.
+1. Dilim 10c — Hukuki belge sürümleri + yeniden kabul, KVKK başvuruları (data_subject_requests), saklama/imha işi, ihlal planı (TASLAK).
 2. Dilim 11 — Ana sayfa modülleri (sponsorlu ana sayfa yuvası dahil).
 3. Dilim 7 kalanları — değerlendirme fotoğrafları/EXIF, hukuki talepler, yaptırımlar (D13 öncesi).

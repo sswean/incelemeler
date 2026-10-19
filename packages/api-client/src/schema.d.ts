@@ -1639,6 +1639,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/consents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Çerez/rıza tercihi kaydı (REQ-KVK-003): kategori başına bir kayıt; oturum varsa üyeye bağlanır; IP saklanmaz */
+        post: operations["recordConsent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -8007,6 +8024,50 @@ export interface operations {
             content: {
                 "application/json": {
                     token: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Kabul edildi */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    recordConsent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    anonymousId: string;
+                    functional: boolean;
+                    analytics: boolean;
+                    marketing: boolean;
+                    textVersion: string;
+                    /**
+                     * @default WEB
+                     * @enum {string}
+                     */
+                    channel?: "WEB" | "IOS" | "ANDROID";
                 };
             };
         };

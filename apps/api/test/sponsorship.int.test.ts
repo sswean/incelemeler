@@ -303,7 +303,7 @@ describe('sponsorluk (REQ-SPN-001…013)', () => {
     expect(own.data).toEqual([]);
   });
 
-  it('[REQ-SPN-009] [REQ-SPN-010] [REQ-SPN-011] yalnızca gerçek olaylar sayılır; rapor görüntülenen gösterimi esas alır', async () => {
+  it('[REQ-SPN-009] [REQ-SPN-010] [REQ-SPN-011] [REQ-KVK-013] yalnızca gerçek olaylar sayılır; rapor görüntülenen gösterimi esas alır', async () => {
     const s = (await search()).sponsored[0]!;
     const view = (headers: Record<string, string>, automated = false) =>
       http()

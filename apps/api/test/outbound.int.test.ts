@@ -143,7 +143,7 @@ describe('dış yönlendirme (REQ-AFF-001…007)', () => {
       .expect(400);
   });
 
-  it('[REQ-AFF-005] tıklama: ham IP yok, 30 sn tekilleştirme, bot ve önceden getirme sayılmaz', async () => {
+  it('[REQ-AFF-005] [REQ-KVK-013] tıklama (çerezsiz, sunucu tarafı): ham IP yok, 30 sn tekilleştirme, bot ve önceden getirme sayılmaz', async () => {
     await t.prisma.outboundClick.deleteMany();
     const hit = (headers: Record<string, string>) =>
       http()

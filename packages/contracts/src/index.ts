@@ -19,3 +19,4 @@ export * from './reviews.js';
 export * from './outbound.js';
 export * from './sponsorship.js';
 export * from './account.js';
+export * from './consent.js';

@@ -357,6 +357,29 @@ export const tr = {
     cancelButton: 'Silmeyi iptal et',
     cancelled: 'Silme talebin iptal edildi; hesabın yeniden etkin. Giriş yapabilirsin.',
   },
+  consent: {
+    bannerLabel: 'Çerez tercihleri',
+    bannerText:
+      'Sitenin çalışması için gerekli çerezleri her zaman kullanırız. İşlevsel, analitik ve pazarlama çerezleri yalnızca izin verirsen kullanılır; kararını istediğin zaman değiştirebilirsin.',
+    acceptAll: 'Tümünü kabul et',
+    rejectAll: 'Tümünü reddet',
+    manage: 'Tercihleri yönet',
+    title: 'Çerez tercihleri',
+    intro:
+      'Zorunlu çerezler sitenin çalışması için gereklidir ve kapatılamaz. Diğer kategoriler yalnızca onay verirsen etkinleşir. Onayı geri aldığında ilgili çerezler silinir.',
+    necessary: 'Zorunlu',
+    necessaryDesc: 'Oturum, güvenlik ve bu tercihin kendisi. Her zaman açık.',
+    functional: 'İşlevsel',
+    functionalDesc: 'Tercihlerini hatırlamak gibi isteğe bağlı kolaylıklar.',
+    analytics: 'Analitik',
+    analyticsDesc:
+      'Siteyi nasıl kullandığını toplu olarak ölçmek. Şu an analitik aracı kullanılmıyor.',
+    marketing: 'Pazarlama ve kişiselleştirme',
+    marketingDesc: 'İlgi alanına göre içerik ya da reklam. Şu an kullanılmıyor.',
+    save: 'Tercihlerimi kaydet',
+    saved: 'Tercihlerin kaydedildi.',
+    policyNote: 'Ayrıntılar için KVKK aydınlatma metnine bakabilirsin (TASLAK).',
+  },
   sponsored: {
     /** Sabit etiket sözlüğü (Ek A8.2; hukuki incelemeyle `compliance_config` üzerinden güncellenir — TASLAK). */
     label: 'Sponsorlu',
@@ -1241,6 +1264,7 @@ export const tr = {
     corrections: 'Düzeltme politikası',
     terms: 'Kullanım koşulları',
     privacy: 'KVKK aydınlatma metni',
+    cookies: 'Çerez tercihleri',
   },
   /** Editoryal metodoloji sayfaları (REQ-ICR-012) — TASLAK; kurallar Ek A6/A8'den. */
   methodology: {

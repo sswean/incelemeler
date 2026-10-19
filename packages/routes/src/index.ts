@@ -140,6 +140,7 @@ export const RESERVED_SEGMENTS: ReadonlySet<string> = new Set([
   'kullanici',
   'git',
   'olay',
+  'cerez-tercihleri',
   'hesap-silme',
   'kaydedilenler',
   'bildirimler',

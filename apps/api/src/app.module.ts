@@ -31,6 +31,7 @@ import { OutboundController } from './modules/outbound/outbound.controller.js';
 import { OutboundService } from './modules/outbound/outbound.service.js';
 import { AccountController } from './modules/account/account.controller.js';
 import { AccountService } from './modules/account/account.service.js';
+import { ConsentService } from './modules/account/consent.service.js';
 import { CampaignsService } from './modules/sponsorship/campaigns.service.js';
 import { SponsoredServingService } from './modules/sponsorship/sponsored-serving.service.js';
 import { SponsorshipController } from './modules/sponsorship/sponsorship.controller.js';
@@ -160,6 +161,7 @@ export class AppModule {
         SponsoredServingService,
         CampaignsService,
         AccountService,
+        ConsentService,
       ],
     };
   }

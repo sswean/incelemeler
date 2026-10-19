@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 16b — hukuki talepler ve yaptırımlar (dilim 16a: `docs/status-log/F1-D16a.md`)
+- Aktif dilim: Faz 1 dilim 16c — hukuki talepler (dilim 16b: `docs/status-log/F1-D16b.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -73,6 +73,6 @@
 - Web `/isletmeni-ekle`, `/reklam-ve-sponsorluk` (+ `/dogrula`); API `/v1/applications` (+ `/verify`), `/v1/admin/applications`; panel `/basvurular` (onay → listeleme taslağı, gerekçeli ret).
 
 ## Sonraki 3 adım
-1. Dilim 16b — Hukuki talepler (GUN-005), yaptırım basamakları (GUN-007). (16a tamam: hız sınırı sınıfları, step-up kapsamı, veritabanı rolleri.)
+1. Dilim 16c — Hukuki talepler ve bildirim-kaldırma (GUN-005). (16a: hız sınırı/step-up/DB rolleri; 16b: yaptırımlar — tamam.)
 2. Dilim 17 — Operasyon: runbook'lar, yedek/geri yükleme tatbikatı, bakım ve özellik anahtarları, kapsam eşikleri.
 3. D18–D22 (plan `docs/status-log/F1-D14.md`); Faz 1→2 geçişi yalnızca çıkış ölçütleri sağlanınca ve İnsan onayıyla (C).

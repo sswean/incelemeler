@@ -24,3 +24,4 @@ export * from './privacy.js';
 export * from './home.js';
 export * from './analytics.js';
 export * from './applications.js';
+export * from './sanctions.js';

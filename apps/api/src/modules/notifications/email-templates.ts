@@ -103,3 +103,25 @@ export const applicationEmails = {
     text: `Merhaba,\n\n"${name}" için yaptığın başvuruyu şu gerekçeyle kabul edemedik: ${reason}${note ? `\nAçıklama: ${note}` : ''}\n\nEksikleri tamamlayıp yeniden başvurabilirsin.`,
   }),
 };
+
+/** Hesap yaptırımı bildirimleri (REQ-GUN-007; TASLAK metinler). */
+export const sanctionEmails = {
+  issued: (
+    level: string,
+    reason: string,
+    note: string,
+    until: string | null,
+    appealLink: string,
+  ) => ({
+    subject: 'Hesabınla ilgili bir karar',
+    text: `Merhaba,\n\nTopluluk kurallarımız nedeniyle hesabına şu yaptırım uygulandı: ${level}${until ? ` (${until} tarihine kadar)` : ''}.\nGerekçe: ${reason}\nAçıklama: ${note}\n\nBu karara 14 gün içinde bir kez itiraz edebilirsin; itirazını kararı verenden farklı bir moderatör inceler:\n${appealLink}`,
+  }),
+  appealDecided: (overturned: boolean, note: string) => ({
+    subject: 'Yaptırım itirazın sonuçlandı',
+    text: `Merhaba,\n\nİtirazın incelendi. ${overturned ? 'Yaptırım kaldırıldı.' : 'Yaptırım sürüyor.'}\nAçıklama: ${note}`,
+  }),
+  revoked: () => ({
+    subject: 'Hesabındaki yaptırım kaldırıldı',
+    text: 'Merhaba,\n\nHesabına uygulanan yaptırım kaldırıldı.',
+  }),
+};

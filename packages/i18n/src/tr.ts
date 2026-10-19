@@ -81,6 +81,7 @@ export const errors = {
   NOT_FOUND: 'Aradığın kayıt bulunamadı.',
   PAYLOAD_TOO_LARGE: 'Dosya çok büyük. En fazla 10 MB yükleyebilirsin.',
   UNSUPPORTED_MEDIA_TYPE: 'Bu dosya türü desteklenmiyor. JPEG, PNG ya da WebP yükle.',
+  ACCOUNT_RESTRICTED: 'Değerlendirme yazma hakkın geçici olarak kısıtlandı.',
   STEP_UP_REQUIRED: 'Bu işlem için iki adımlı doğrulama kodunu yeniden girmen gerekiyor.',
   EMAIL_NOT_VERIFIED: 'Bu işlem için önce e-posta adresini doğrula.',
   UNKNOWN: 'Beklenmeyen bir hata oluştu. Yeniden dene.',
@@ -143,6 +144,7 @@ export const admin = {
     slots: 'Sponsorlu yuvalar',
     dataRequests: 'KVKK başvuruları',
     applications: 'Başvurular',
+    sanctions: 'Yaptırımlar',
     homeEditor: 'Ana sayfa',
     analytics: 'Analitik',
     revenue: 'Gelir raporu',
@@ -1486,6 +1488,66 @@ export const author = {
   noArticles: 'Henüz yayımlanmış içerik yok.',
 } as const;
 
+/** Hesap yaptırımları ve değerlendirme bütünlüğü (REQ-GUN-007). Metinler TASLAK. */
+export const sanctions = {
+  levels: {
+    WARNING: 'Uyarı',
+    REVIEW_RESTRICTION: 'Değerlendirme hakkının geçici kısıtlanması',
+    SUSPENSION: 'Hesabın askıya alınması',
+    PERMANENT_BAN: 'Hesabın kalıcı olarak kapatılması',
+  },
+  reasons: {
+    FAKE_REVIEWS: 'Sahte ya da koordineli değerlendirme',
+    UNDECLARED_INCENTIVE: 'Beyan edilmemiş teşvikli değerlendirme',
+    HATE_OR_HARASSMENT: 'Nefret söylemi ya da taciz',
+    THREAT: 'Tehdit',
+    PERSONAL_DATA: 'Başkasının kişisel verilerini paylaşma',
+    SPAM: 'Reklam ya da istenmeyen içerik',
+    REPEATED_VIOLATIONS: 'Tekrarlanan kural ihlali',
+    BAN_EVASION: 'Yaptırımdan kaçınma (yeni hesap)',
+  },
+  integrityNotice:
+    'Bu sayfada olağan dışı değerlendirme etkinliği tespit edildi; şüpheli değerlendirmeler kaldırıldı ({date}).',
+  appealTitle: 'Yaptırıma itiraz',
+  appealIntro:
+    'Hesabına uygulanan yaptırıma bir kez itiraz edebilirsin. İtirazını, yaptırımı uygulayan kişiden farklı bir moderatör inceler.',
+  appealStatement: 'İtiraz gerekçen',
+  appealSubmit: 'İtirazı gönder',
+  appealSent: 'İtirazını aldık; sonucu e-postayla bildireceğiz.',
+  // Panel
+  adminTitle: 'Yaptırımlar',
+  adminIntro:
+    'Basamaklar: uyarı → değerlendirme kısıtlaması → askı → kalıcı kapatma. Her yaptırım gerekçeli ve itiraz edilebilir; basamak atlama yalnızca ağır ihlalde ve notta gerekçeyle.',
+  issueTitle: 'Yaptırım uygula',
+  email: 'Kullanıcının e-posta adresi',
+  level: 'Basamak',
+  reason: 'Gerekçe',
+  note: 'Açıklama (kullanıcıya gönderilir)',
+  duration: 'Süre (gün; kısıtlama ve askıda)',
+  skipLevel: 'Önerilen basamak atlanıyor (ağır ihlal)',
+  issue: 'Uygula',
+  issued: 'Yaptırım uygulandı. Önerilen basamak: {level}.',
+  activeTitle: 'Etkin yaptırımlar',
+  appealsTitle: 'Bekleyen itirazlar',
+  noActive: 'Etkin yaptırım yok.',
+  noAppeals: 'Bekleyen itiraz yok.',
+  until: '{date} tarihine kadar',
+  permanent: 'Süresiz',
+  revoke: 'Kaldır',
+  revokeNote: 'Kaldırma gerekçesi',
+  uphold: 'Yaptırımı sürdür',
+  overturn: 'Yaptırımı kaldır',
+  decisionNote: 'Karar notu',
+  saved: 'Kaydedildi.',
+  integrityTitle: 'Olağan dışı değerlendirme etkinliği',
+  integrityIntro:
+    'Koordineli sahte değerlendirmeler tespit edildiğinde seçilen değerlendirmeler kaldırılır, ortalamadan çıkar ve listelemede tarihli bildirim gösterilir. Yazarlar kaldırmaya itiraz edebilir.',
+  integrityListing: 'Listeleme adresi (slug)',
+  integrityReviewIds: 'Değerlendirme kimlikleri (her satıra bir tane)',
+  integrityApply: 'Temizliği uygula',
+  integrityDone: '{n} değerlendirme kaldırıldı; bildirim eklendi.',
+} as const;
+
 /** Hesapsız başvurular (REQ-ISL-001/002). Hukuki metinler TASLAK (AK-12). */
 export const applications = {
   kinds: { BUSINESS: 'İşletme', ADVERTISING: 'Reklam ve sponsorluk' },
@@ -1736,6 +1798,7 @@ export const tr = {
   hub,
   reviews,
   author,
+  sanctions,
   applications,
   footer,
   methodology,

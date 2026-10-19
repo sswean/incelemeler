@@ -1176,12 +1176,16 @@
       "title": "Hesap yaptırım basamakları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": [
+        "apps/api/test/sanctions.int.test.ts",
+        "packages/contracts/src/sanctions.test.ts",
+        "tests/e2e/specs/sanctions.spec.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": "Yaptırım basamakları yok; yalnız SUSPENDED girişi engeller."
+      "notes": "Uyarı → değerlendirme kısıtlaması → askı → kalıcı kapatma; gerekçe kodu + not zorunlu, basamak önerisi ve gerekçeli atlama, e-postayla imzalı itiraz bağlantısı, farklı moderatör kararı (CHECK), askıda oturum kapatma/giriş engeli ve süre sonunda kaldırma; toplu sahte değerlendirme temizliği ortalamadan çıkarır ve listelemede tarihli bildirim (A-030)."
     },
     {
       "id": "REQ-GUN-008",

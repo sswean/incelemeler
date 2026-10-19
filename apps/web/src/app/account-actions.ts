@@ -81,3 +81,16 @@ export async function verifyDataRequestAction(form: FormData): Promise<void> {
   ).POST('/v1/data-requests/verify', { body: { token: str(form, 'belirtec') } });
   redirect(error ? `/kvkk-basvuru?hata=${problemCode(error)}` : '/kvkk-basvuru?durum=dogrulandi');
 }
+
+/** Yaptırıma itiraz (REQ-GUN-007): e-postadaki imzalı bağlantıyla. */
+export async function sanctionAppealAction(form: FormData): Promise<void> {
+  const token = str(form, 'belirtec');
+  const { error } = await (
+    await api()
+  ).POST('/v1/sanction-appeals', { body: { token, statement: str(form, 'statement') } });
+  redirect(
+    error
+      ? `/itiraz/yaptirim?belirtec=${encodeURIComponent(token)}&hata=${problemCode(error)}`
+      : '/itiraz/yaptirim?durum=gonderildi',
+  );
+}

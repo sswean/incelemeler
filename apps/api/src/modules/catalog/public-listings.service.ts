@@ -29,7 +29,10 @@ const INCLUDE = {
   event: true,
   guide: true,
   ratingStats: { select: { count: true } },
+  integrityNotices: { orderBy: { detectedAt: 'desc' as const }, take: 1 },
 } satisfies Prisma.ListingInclude;
+/** Bütünlük bildiriminin görünme süresi (A-030). */
+const INTEGRITY_NOTICE_MS = 180 * 86_400_000;
 
 /**
  * Herkese açık listeleme okuma (REQ-SEO-001/012, REQ-LST-002/006, REQ-VER-013).
@@ -201,6 +204,7 @@ export class PublicListingsService {
       },
       media,
       reviewCount: l.ratingStats?.count ?? 0,
+      integrityNotice: integrityNotice(l.integrityNotices[0]),
       dataOrigin: l.dataOrigin,
       sourceVerifiedAt: l.sourceVerifiedAt?.toISOString() ?? null,
       publishedAt: l.publishedAt?.toISOString() ?? null,
@@ -296,4 +300,9 @@ function display(value: unknown, options: AttributeOption[], unit: string | null
     return unit ? `${n} ${unit}` : n;
   }
   return label(value);
+}
+
+function integrityNotice(n: { detectedAt: Date; removedCount: number } | undefined) {
+  if (!n || Date.now() - n.detectedAt.getTime() > INTEGRITY_NOTICE_MS) return null;
+  return { detectedAt: n.detectedAt.toISOString(), removedCount: n.removedCount };
 }

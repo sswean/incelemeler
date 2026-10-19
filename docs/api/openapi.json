@@ -9424,6 +9424,432 @@
         }
       }
     },
+    "/v1/admin/sanctions": {
+      "get": {
+        "operationId": "adminListSanctions",
+        "summary": "Etkin yaptırımlar ve karar bekleyen yaptırım itirazları",
+        "tags": [
+          "admin",
+          "moderation"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Yaptırımlar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSanctionList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "adminCreateSanction",
+        "summary": "Gerekçeli yaptırım (basamak önerisi; atlama gerekçeli; kalıcı kapatma step-up); e-postayla itiraz bağlantısı",
+        "tags": [
+          "admin",
+          "moderation"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "level": {
+                    "type": "string",
+                    "enum": [
+                      "WARNING",
+                      "REVIEW_RESTRICTION",
+                      "SUSPENSION",
+                      "PERMANENT_BAN"
+                    ]
+                  },
+                  "reasonCode": {
+                    "type": "string",
+                    "enum": [
+                      "FAKE_REVIEWS",
+                      "UNDECLARED_INCENTIVE",
+                      "HATE_OR_HARASSMENT",
+                      "THREAT",
+                      "PERSONAL_DATA",
+                      "SPAM",
+                      "REPEATED_VIOLATIONS",
+                      "BAN_EVASION"
+                    ]
+                  },
+                  "note": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  },
+                  "durationDays": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 90
+                  },
+                  "skipLevel": {
+                    "default": false,
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "email",
+                  "level",
+                  "reasonCode",
+                  "note"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Oluşturuldu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SanctionCreated"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/sanctions/{id}/revoke": {
+      "post": {
+        "operationId": "adminRevokeSanction",
+        "summary": "Yaptırımı kaldırır (gerekçeli; denetim kaydı)",
+        "tags": [
+          "admin",
+          "moderation"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "note": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "version",
+                  "note"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kaldırıldı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSanction"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/sanctions/{id}/appeal-decision": {
+      "post": {
+        "operationId": "adminDecideSanctionAppeal",
+        "summary": "Yaptırım itirazı kararı (yaptırımı verenden farklı moderatör)",
+        "tags": [
+          "admin",
+          "moderation"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "outcome": {
+                    "type": "string",
+                    "enum": [
+                      "UPHELD",
+                      "OVERTURNED"
+                    ]
+                  },
+                  "note": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "version",
+                  "outcome",
+                  "note"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Karar verildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSanction"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sanction-appeals": {
+      "post": {
+        "operationId": "appealSanction",
+        "summary": "Yaptırıma itiraz: e-postadaki imzalı bağlantıyla (askıdaki hesap giriş yapamaz)",
+        "tags": [
+          "moderation"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 400
+                  },
+                  "statement": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 2000
+                  }
+                },
+                "required": [
+                  "token",
+                  "statement"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Kabul edildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/listings/{id}/review-integrity": {
+      "post": {
+        "operationId": "adminReviewIntegrity",
+        "summary": "Toplu sahte değerlendirme temizliği: değerlendirmeler kaldırılır (itiraz edilebilir), ortalamadan çıkar, listelemede tarihli bildirim",
+        "tags": [
+          "admin",
+          "moderation"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reviewIds": {
+                    "minItems": 1,
+                    "maxItems": 200,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    }
+                  },
+                  "note": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "reviewIds",
+                  "note"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Uygulandı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrityActionResult"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/me/legal-acceptances/pending": {
       "get": {
         "operationId": "pendingLegalAcceptances",
@@ -10396,6 +10822,7 @@
               "WEAK_PASSWORD",
               "ACCOUNT_SUSPENDED",
               "ACCOUNT_PENDING_DELETION",
+              "ACCOUNT_RESTRICTED",
               "MFA_INVALID",
               "STEP_UP_REQUIRED",
               "EMAIL_NOT_VERIFIED",
@@ -16530,6 +16957,329 @@
         ],
         "additionalProperties": false
       },
+      "SanctionCreateBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "WARNING",
+              "REVIEW_RESTRICTION",
+              "SUSPENSION",
+              "PERMANENT_BAN"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "FAKE_REVIEWS",
+              "UNDECLARED_INCENTIVE",
+              "HATE_OR_HARASSMENT",
+              "THREAT",
+              "PERSONAL_DATA",
+              "SPAM",
+              "REPEATED_VIOLATIONS",
+              "BAN_EVASION"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000
+          },
+          "durationDays": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 90
+          },
+          "skipLevel": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "email",
+          "level",
+          "reasonCode",
+          "note",
+          "skipLevel"
+        ],
+        "additionalProperties": false
+      },
+      "AdminSanction": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "displayName": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "displayName",
+              "email"
+            ],
+            "additionalProperties": false
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "WARNING",
+              "REVIEW_RESTRICTION",
+              "SUSPENSION",
+              "PERMANENT_BAN"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "FAKE_REVIEWS",
+              "UNDECLARED_INCENTIVE",
+              "HATE_OR_HARASSMENT",
+              "THREAT",
+              "PERSONAL_DATA",
+              "SPAM",
+              "REPEATED_VIOLATIONS",
+              "BAN_EVASION"
+            ]
+          },
+          "note": {
+            "type": "string"
+          },
+          "skippedLevel": {
+            "type": "boolean"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "endsAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "issuedById": {
+            "type": "string"
+          },
+          "revokedAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "appeal": {
+            "nullable": true,
+            "type": "object",
+            "properties": {
+              "statement": {
+                "type": "string"
+              },
+              "appealedAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              },
+              "outcome": {
+                "nullable": true,
+                "type": "string",
+                "enum": [
+                  "UPHELD",
+                  "OVERTURNED"
+                ]
+              },
+              "note": {
+                "nullable": true,
+                "type": "string"
+              }
+            },
+            "required": [
+              "statement",
+              "appealedAt",
+              "outcome",
+              "note"
+            ],
+            "additionalProperties": false
+          },
+          "version": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "user",
+          "level",
+          "reasonCode",
+          "note",
+          "skippedLevel",
+          "startsAt",
+          "endsAt",
+          "active",
+          "issuedById",
+          "revokedAt",
+          "appeal",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "AdminSanctionList": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminSanction"
+            }
+          },
+          "appeals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminSanction"
+            }
+          }
+        },
+        "required": [
+          "active",
+          "appeals"
+        ],
+        "additionalProperties": false
+      },
+      "SanctionCreated": {
+        "type": "object",
+        "properties": {
+          "sanction": {
+            "$ref": "#/components/schemas/AdminSanction"
+          },
+          "suggestedLevel": {
+            "type": "string",
+            "enum": [
+              "WARNING",
+              "REVIEW_RESTRICTION",
+              "SUSPENSION",
+              "PERMANENT_BAN"
+            ]
+          }
+        },
+        "required": [
+          "sanction",
+          "suggestedLevel"
+        ],
+        "additionalProperties": false
+      },
+      "SanctionAppealBody": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "token",
+          "statement"
+        ],
+        "additionalProperties": false
+      },
+      "SanctionAppealDecisionBody": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "UPHELD",
+              "OVERTURNED"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "version",
+          "outcome",
+          "note"
+        ],
+        "additionalProperties": false
+      },
+      "IntegrityActionBody": {
+        "type": "object",
+        "properties": {
+          "reviewIds": {
+            "minItems": 1,
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          },
+          "note": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "reviewIds",
+          "note"
+        ],
+        "additionalProperties": false
+      },
+      "IntegrityActionResult": {
+        "type": "object",
+        "properties": {
+          "removed": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "noticeId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "removed",
+          "noticeId"
+        ],
+        "additionalProperties": false
+      },
       "BusinessApplicationBody": {
         "type": "object",
         "properties": {
@@ -21041,6 +21791,27 @@
             "minimum": -9007199254740991,
             "maximum": 9007199254740991
           },
+          "integrityNotice": {
+            "nullable": true,
+            "type": "object",
+            "properties": {
+              "detectedAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              },
+              "removedCount": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "detectedAt",
+              "removedCount"
+            ],
+            "additionalProperties": false
+          },
           "outbound": {
             "type": "array",
             "items": {
@@ -21150,6 +21921,7 @@
           "details",
           "media",
           "reviewCount",
+          "integrityNotice",
           "outbound",
           "dataOrigin",
           "sourceVerifiedAt",

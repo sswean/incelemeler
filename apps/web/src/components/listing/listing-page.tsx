@@ -450,6 +450,18 @@ export async function ListingPage(
             {tr.reviews.write}
           </Link>
         </div>
+        {l.integrityNotice ? (
+          <p
+            role="note"
+            className="rounded-md border border-border-default bg-bg-subtle px-4 py-3 text-sm"
+            data-testid="integrity-notice"
+          >
+            {tr.sanctions.integrityNotice.replace(
+              '{date}',
+              formatLongDate(new Date(l.integrityNotice.detectedAt)),
+            )}
+          </p>
+        ) : null}
         {reviews ? (
           <>
             <RatingSummaryView summary={reviews.summary} writeHref={writeHref} />

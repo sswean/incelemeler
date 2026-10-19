@@ -142,6 +142,14 @@ export class AuthService {
       throw await fail();
     }
     if (!(await verifyPassword(user.passwordHash, password))) throw await fail();
+    // Süresi dolmuş askı girişte kalkar (işçiyi beklemeden — REQ-GUN-007).
+    if (user.status === 'SUSPENDED' && !(await this.hasBlockingSanction(user.id))) {
+      await this.prisma.user.updateMany({
+        where: { id: user.id, status: 'SUSPENDED' },
+        data: { status: 'ACTIVE' },
+      });
+      user.status = 'ACTIVE';
+    }
     if (user.status === 'SUSPENDED') {
       throw new ProblemException(
         HttpStatus.FORBIDDEN,
@@ -194,6 +202,21 @@ export class AuthService {
   }
 
   /** Bearer token'ı doğrular; geçerliyse kayan süreyi uzatır (en çok dakikada bir yazar). */
+  /** Etkin askı ya da kalıcı kapatma var mı (yaptırım kayıtları yalnızca okunur). */
+  private async hasBlockingSanction(userId: string): Promise<boolean> {
+    const now = new Date();
+    return (
+      (await this.prisma.accountSanction.count({
+        where: {
+          userId,
+          revokedAt: null,
+          level: { in: ['SUSPENSION', 'PERMANENT_BAN'] },
+          OR: [{ endsAt: null }, { endsAt: { gt: now } }],
+        },
+      })) > 0
+    );
+  }
+
   async resolveSession(token: string): Promise<AuthContext | null> {
     const session = await this.prisma.session.findUnique({
       where: { tokenHash: sha256(token) },

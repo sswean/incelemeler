@@ -24,6 +24,8 @@ import { AdminArticlesController } from './modules/editorial/admin-articles.cont
 import { AdminArticlesService } from './modules/editorial/admin-articles.service.js';
 import { ModerationSettingsService } from './modules/reviews/moderation-settings.service.js';
 import { ModerationService } from './modules/reviews/moderation.service.js';
+import { SanctionsController } from './modules/reviews/sanctions.controller.js';
+import { SanctionsService } from './modules/reviews/sanctions.service.js';
 import { RatingStatsService } from './modules/reviews/rating-stats.service.js';
 import { ReviewsController } from './modules/reviews/reviews.controller.js';
 import { ReviewsService } from './modules/reviews/reviews.service.js';
@@ -126,6 +128,7 @@ export const CONTROLLERS = [
   AccountController,
   PrivacyController,
   ApplicationsController,
+  SanctionsController,
   HomeController,
   AnalyticsController,
 ];
@@ -186,6 +189,7 @@ export class AppModule {
         LegalService,
         PrivacyService,
         ApplicationsService,
+        SanctionsService,
         RetentionService,
         HomeService,
         AnalyticsService,

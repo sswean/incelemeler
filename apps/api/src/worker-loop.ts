@@ -5,6 +5,7 @@ import { AdminArticlesService } from './modules/editorial/admin-articles.service
 import { OutboundService } from './modules/outbound/outbound.service.js';
 import { OutboxService } from './modules/outbox/outbox.service.js';
 import { RetentionService } from './modules/privacy/retention.service.js';
+import { SanctionsService } from './modules/reviews/sanctions.service.js';
 import { CampaignsService } from './modules/sponsorship/campaigns.service.js';
 
 /** Outbox + zamanlanmış yayın döngüsü (ADR-0010); `isRunning` false olunca durur. */
@@ -18,6 +19,7 @@ export async function runWorkerLoop(
   const campaigns = app.get(CampaignsService);
   const account = app.get(AccountService);
   const retention = app.get(RetentionService);
+  const sanctions = app.get(SanctionsService);
   let nextRetention = 0;
   let nextHealthCheck = 0;
   let nextCampaignTick = 0;
@@ -44,6 +46,10 @@ export async function runWorkerLoop(
       nextHealthCheck = Date.now() + 10 * 60_000;
       await outbound.checkDue().catch((e: unknown) => {
         logger.error(JSON.stringify({ event: 'worker.outbound_error', message: String(e) }));
+      });
+      // Süresi dolan askılar (REQ-GUN-007); girişte de ayrıca kontrol edilir.
+      await sanctions.liftExpired().catch((e: unknown) => {
+        logger.error(JSON.stringify({ event: 'worker.sanctions_error', message: String(e) }));
       });
       // Geri alma penceresi dolan hesap silmeleri (REQ-KVK-021).
       await account.purgeDue().catch((e: unknown) => {

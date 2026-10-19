@@ -58,6 +58,14 @@ export default async function PanelLayout({ children }: { children: ReactNode })
               {tr.admin.nav.moderation}
             </Link>
           ) : null}
+          {user.permissions.includes('reviews.moderate') ? (
+            <Link
+              href="/yaptirimlar"
+              className="min-h-11 content-center text-brand-default underline"
+            >
+              {tr.admin.nav.sanctions}
+            </Link>
+          ) : null}
           {user.permissions.includes('taxonomy.manage') ? (
             <Link
               href="/ayarlar/esikler"

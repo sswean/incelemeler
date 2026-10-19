@@ -1758,6 +1758,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/sanctions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Etkin yaptırımlar ve karar bekleyen yaptırım itirazları */
+        get: operations["adminListSanctions"];
+        put?: never;
+        /** Gerekçeli yaptırım (basamak önerisi; atlama gerekçeli; kalıcı kapatma step-up); e-postayla itiraz bağlantısı */
+        post: operations["adminCreateSanction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/sanctions/{id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Yaptırımı kaldırır (gerekçeli; denetim kaydı) */
+        post: operations["adminRevokeSanction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/sanctions/{id}/appeal-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Yaptırım itirazı kararı (yaptırımı verenden farklı moderatör) */
+        post: operations["adminDecideSanctionAppeal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sanction-appeals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Yaptırıma itiraz: e-postadaki imzalı bağlantıyla (askıdaki hesap giriş yapamaz) */
+        post: operations["appealSanction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/listings/{id}/review-integrity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Toplu sahte değerlendirme temizliği: değerlendirmeler kaldırılır (itiraz edilebilir), ortalamadan çıkar, listelemede tarihli bildirim */
+        post: operations["adminReviewIntegrity"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/me/legal-acceptances/pending": {
         parameters: {
             query?: never;
@@ -1992,7 +2078,7 @@ export interface components {
             detail?: string;
             instance?: string;
             /** @enum {string} */
-            code: "VALIDATION_FAILED" | "NOT_FOUND" | "UNAUTHENTICATED" | "FORBIDDEN" | "MFA_REQUIRED" | "CONFLICT" | "PRECONDITION_FAILED" | "RATE_LIMITED" | "INTERNAL_ERROR" | "SERVICE_UNAVAILABLE" | "INVALID_CREDENTIALS" | "INVALID_TOKEN" | "WEAK_PASSWORD" | "ACCOUNT_SUSPENDED" | "ACCOUNT_PENDING_DELETION" | "MFA_INVALID" | "STEP_UP_REQUIRED" | "EMAIL_NOT_VERIFIED" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE";
+            code: "VALIDATION_FAILED" | "NOT_FOUND" | "UNAUTHENTICATED" | "FORBIDDEN" | "MFA_REQUIRED" | "CONFLICT" | "PRECONDITION_FAILED" | "RATE_LIMITED" | "INTERNAL_ERROR" | "SERVICE_UNAVAILABLE" | "INVALID_CREDENTIALS" | "INVALID_TOKEN" | "WEAK_PASSWORD" | "ACCOUNT_SUSPENDED" | "ACCOUNT_PENDING_DELETION" | "ACCOUNT_RESTRICTED" | "MFA_INVALID" | "STEP_UP_REQUIRED" | "EMAIL_NOT_VERIFIED" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE";
             traceId: string;
             errors?: {
                 pointer: string;
@@ -3269,6 +3355,76 @@ export interface components {
         OutboundLinkList: {
             data: components["schemas"]["OutboundLink"][];
         };
+        SanctionCreateBody: {
+            /** Format: email */
+            email: string;
+            /** @enum {string} */
+            level: "WARNING" | "REVIEW_RESTRICTION" | "SUSPENSION" | "PERMANENT_BAN";
+            /** @enum {string} */
+            reasonCode: "FAKE_REVIEWS" | "UNDECLARED_INCENTIVE" | "HATE_OR_HARASSMENT" | "THREAT" | "PERSONAL_DATA" | "SPAM" | "REPEATED_VIOLATIONS" | "BAN_EVASION";
+            note: string;
+            durationDays?: number;
+            /** @default false */
+            skipLevel: boolean;
+        };
+        AdminSanction: {
+            id: string;
+            user: {
+                id: string;
+                displayName: string;
+                email: string;
+            };
+            /** @enum {string} */
+            level: "WARNING" | "REVIEW_RESTRICTION" | "SUSPENSION" | "PERMANENT_BAN";
+            /** @enum {string} */
+            reasonCode: "FAKE_REVIEWS" | "UNDECLARED_INCENTIVE" | "HATE_OR_HARASSMENT" | "THREAT" | "PERSONAL_DATA" | "SPAM" | "REPEATED_VIOLATIONS" | "BAN_EVASION";
+            note: string;
+            skippedLevel: boolean;
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt: string | null;
+            active: boolean;
+            issuedById: string;
+            /** Format: date-time */
+            revokedAt: string | null;
+            appeal: {
+                statement: string;
+                /** Format: date-time */
+                appealedAt: string;
+                /** @enum {string|null} */
+                outcome: "UPHELD" | "OVERTURNED" | null;
+                note: string | null;
+            } | null;
+            version: number;
+        };
+        AdminSanctionList: {
+            active: components["schemas"]["AdminSanction"][];
+            appeals: components["schemas"]["AdminSanction"][];
+        };
+        SanctionCreated: {
+            sanction: components["schemas"]["AdminSanction"];
+            /** @enum {string} */
+            suggestedLevel: "WARNING" | "REVIEW_RESTRICTION" | "SUSPENSION" | "PERMANENT_BAN";
+        };
+        SanctionAppealBody: {
+            token: string;
+            statement: string;
+        };
+        SanctionAppealDecisionBody: {
+            version: number;
+            /** @enum {string} */
+            outcome: "UPHELD" | "OVERTURNED";
+            note: string;
+        };
+        IntegrityActionBody: {
+            reviewIds: string[];
+            note: string;
+        };
+        IntegrityActionResult: {
+            removed: number;
+            noticeId: string;
+        };
         BusinessApplicationBody: {
             /** @enum {string} */
             type: "BUSINESS";
@@ -4227,6 +4383,11 @@ export interface components {
                 credit: string;
             }[];
             reviewCount: number;
+            integrityNotice: {
+                /** Format: date-time */
+                detectedAt: string;
+                removedCount: number;
+            } | null;
             outbound: {
                 id: string;
                 /** @enum {string} */
@@ -9037,6 +9198,231 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminApplication"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListSanctions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Yaptırımlar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSanctionList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateSanction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: email */
+                    email: string;
+                    /** @enum {string} */
+                    level: "WARNING" | "REVIEW_RESTRICTION" | "SUSPENSION" | "PERMANENT_BAN";
+                    /** @enum {string} */
+                    reasonCode: "FAKE_REVIEWS" | "UNDECLARED_INCENTIVE" | "HATE_OR_HARASSMENT" | "THREAT" | "PERSONAL_DATA" | "SPAM" | "REPEATED_VIOLATIONS" | "BAN_EVASION";
+                    note: string;
+                    durationDays?: number;
+                    /** @default false */
+                    skipLevel?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SanctionCreated"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminRevokeSanction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    note: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Kaldırıldı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSanction"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminDecideSanctionAppeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    /** @enum {string} */
+                    outcome: "UPHELD" | "OVERTURNED";
+                    note: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Karar verildi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSanction"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    appealSanction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    token: string;
+                    statement: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Kabul edildi */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminReviewIntegrity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    reviewIds: string[];
+                    note: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Uygulandı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntegrityActionResult"];
                 };
             };
             /** @description Hata (RFC 9457) */

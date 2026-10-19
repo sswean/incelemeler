@@ -52,6 +52,8 @@ const extraStaff = [
   ...PROJECTS.map((p) => [`e2e-analitik-${p}@example.test`, 'E2E Analitik']),
   ...PROJECTS.map((p) => [`e2e-basvuru-${p}@example.test`, 'E2E Başvuru Editörü', 'EDITOR']),
   ...PROJECTS.map((p) => [`e2e-basvuru-satis-${p}@example.test`, 'E2E Başvuru Satış', 'SALES']),
+  ...PROJECTS.map((p) => [`e2e-yaptirim-a-${p}@example.test`, 'E2E Yaptırım A', 'MODERATOR']),
+  ...PROJECTS.map((p) => [`e2e-yaptirim-b-${p}@example.test`, 'E2E Yaptırım B', 'MODERATOR']),
   ...PROJECTS.map((p) => [`e2e-spn-editor-${p}@example.test`, 'E2E Sponsorluk Editörü', 'EDITOR']),
 ];
 for (const [email, name, role = 'ADMIN'] of extraStaff) {
@@ -74,6 +76,7 @@ for (const p of PROJECTS) {
   for (const [email, name] of [
     [`e2e-hesap-${p}@example.test`, `Hesap Testi ${p}`],
     [`e2e-silme-${p}@example.test`, `Silme Testi ${p}`],
+    [`e2e-yaptirim-uye-${p}@example.test`, `Yaptırım Testi ${p}`],
   ]) {
     await db.query(
       `INSERT INTO users (id, email, email_verified_at, password_hash, display_name, age_confirmed_at, terms_version, updated_at)

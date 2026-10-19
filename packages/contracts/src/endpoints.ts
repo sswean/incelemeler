@@ -44,6 +44,16 @@ import {
 } from './outbound.js';
 import { ConsentBody } from './consent.js';
 import {
+  AdminSanction,
+  AdminSanctionList,
+  IntegrityActionBody,
+  IntegrityActionResult,
+  SanctionAppealBody,
+  SanctionAppealDecisionBody,
+  SanctionCreated,
+  SanctionCreateBody,
+} from './sanctions.js';
+import {
   AdminApplication,
   AdminApplicationList,
   AdminApplicationQuery,
@@ -1367,6 +1377,66 @@ export const endpoints: EndpointDef[] = [
       'Onay (işletme başvurusunda listeleme taslağı oluşturur) ya da gerekçeli ret; başvurana e-posta, denetim kaydı',
     body: ApplicationDecisionBody,
     responses: { 200: ok('Karar verildi', AdminApplication) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/sanctions',
+    operationId: 'adminListSanctions',
+    tags: ['admin', 'moderation'],
+    auth: 'staff-mfa',
+    summary: 'Etkin yaptırımlar ve karar bekleyen yaptırım itirazları',
+    responses: { 200: ok('Yaptırımlar', AdminSanctionList) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/sanctions',
+    operationId: 'adminCreateSanction',
+    tags: ['admin', 'moderation'],
+    auth: 'staff-mfa',
+    summary:
+      'Gerekçeli yaptırım (basamak önerisi; atlama gerekçeli; kalıcı kapatma step-up); e-postayla itiraz bağlantısı',
+    body: SanctionCreateBody,
+    responses: { 201: ok('Oluşturuldu', SanctionCreated) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/sanctions/{id}/revoke',
+    operationId: 'adminRevokeSanction',
+    tags: ['admin', 'moderation'],
+    auth: 'staff-mfa',
+    summary: 'Yaptırımı kaldırır (gerekçeli; denetim kaydı)',
+    body: SanctionAppealDecisionBody.pick({ version: true, note: true }),
+    responses: { 200: ok('Kaldırıldı', AdminSanction) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/sanctions/{id}/appeal-decision',
+    operationId: 'adminDecideSanctionAppeal',
+    tags: ['admin', 'moderation'],
+    auth: 'staff-mfa',
+    summary: 'Yaptırım itirazı kararı (yaptırımı verenden farklı moderatör)',
+    body: SanctionAppealDecisionBody,
+    responses: { 200: ok('Karar verildi', AdminSanction) },
+  },
+  {
+    method: 'post',
+    path: '/v1/sanction-appeals',
+    operationId: 'appealSanction',
+    tags: ['moderation'],
+    summary: 'Yaptırıma itiraz: e-postadaki imzalı bağlantıyla (askıdaki hesap giriş yapamaz)',
+    body: SanctionAppealBody,
+    responses: { 202: ok('Kabul edildi', Accepted) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/listings/{id}/review-integrity',
+    operationId: 'adminReviewIntegrity',
+    tags: ['admin', 'moderation'],
+    auth: 'staff-mfa',
+    summary:
+      'Toplu sahte değerlendirme temizliği: değerlendirmeler kaldırılır (itiraz edilebilir), ortalamadan çıkar, listelemede tarihli bildirim',
+    body: IntegrityActionBody,
+    responses: { 200: ok('Uygulandı', IntegrityActionResult) },
   },
   {
     method: 'get',

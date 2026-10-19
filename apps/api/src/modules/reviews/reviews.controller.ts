@@ -63,18 +63,21 @@ export class ReviewsController {
   @Post('reviews')
   @HttpCode(201)
   @RequireAuth({ level: 'session' })
-  create(@Auth() ctx: AuthContext, @Body() body: unknown, @Req() req: Request) {
+  async create(@Auth() ctx: AuthContext, @Body() body: unknown, @Req() req: Request) {
+    // Yetki (yaptırım) denetimi gövde doğrulamasından önce.
+    await this.reviews.assertNotRestricted(ctx.userId);
     return this.reviews.create(ctx, parseBody(ReviewCreateBody, body), requestMeta(req));
   }
 
   @Patch('reviews/:id')
   @RequireAuth({ level: 'session' })
-  update(
+  async update(
     @Auth() ctx: AuthContext,
     @Param('id') id: string,
     @Body() body: unknown,
     @Req() req: Request,
   ) {
+    await this.reviews.assertNotRestricted(ctx.userId);
     return this.reviews.update(
       ctx,
       parseId(id),

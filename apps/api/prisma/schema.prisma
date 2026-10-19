@@ -194,6 +194,8 @@ model Listing {
 
   applications Application[]
 
+  integrityNotices ListingIntegrityNotice[]
+
   @@index([kind, status, primaryCategoryId])
   @@index([organizationId])
   @@index([importBatchId])
@@ -264,6 +266,9 @@ model User {
   favorites           Favorite[]
   legalAcceptances    LegalAcceptance[]
   dataRequests        DataSubjectRequest[]  @relation("DsrRequester")
+
+  sanctions       AccountSanction[] @relation("SanctionTarget")
+  sanctionsIssued AccountSanction[] @relation("SanctionIssuer")
 
   @@index([status])
   @@map("users")
@@ -1599,4 +1604,60 @@ model Application {
 
   @@index([type, status, createdAt])
   @@map("applications")
+}
+
+// ── Hesap yaptırımları ve değerlendirme bütünlüğü (REQ-GUN-007, A-030) ──
+
+enum SanctionLevel {
+  WARNING
+  REVIEW_RESTRICTION
+  SUSPENSION
+  PERMANENT_BAN
+}
+
+model AccountSanction {
+  id                String        @id @default(uuid(7)) @db.Uuid
+  userId            String        @map("user_id") @db.Uuid
+  user              User          @relation("SanctionTarget", fields: [userId], references: [id], onDelete: Cascade)
+  level             SanctionLevel
+  reasonCode        String        @map("reason_code")
+  note              String
+  /// Basamak atlandıysa (ağır ihlal) işaretlenir; gerekçe notta.
+  skippedLevel      Boolean       @default(false) @map("skipped_level")
+  startsAt          DateTime      @default(now()) @map("starts_at") @db.Timestamptz(3)
+  /// Yalnızca süreli basamaklarda (kısıtlama, askı).
+  endsAt            DateTime?     @map("ends_at") @db.Timestamptz(3)
+  issuedById        String        @map("issued_by") @db.Uuid
+  issuedBy          User          @relation("SanctionIssuer", fields: [issuedById], references: [id], onDelete: Restrict)
+  revokedAt         DateTime?     @map("revoked_at") @db.Timestamptz(3)
+  revokedById       String?       @map("revoked_by") @db.Uuid
+  revokeReason      String?       @map("revoke_reason")
+  appealStatement   String?       @map("appeal_statement")
+  appealedAt        DateTime?     @map("appealed_at") @db.Timestamptz(3)
+  /// UPHELD | OVERTURNED — yaptırımı verenden farklı moderatör karar verir (REQ-GUN-003).
+  appealOutcome     String?       @map("appeal_outcome")
+  appealDecidedById String?       @map("appeal_decided_by") @db.Uuid
+  appealDecidedAt   DateTime?     @map("appeal_decided_at") @db.Timestamptz(3)
+  appealNote        String?       @map("appeal_note")
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  version           Int           @default(1)
+
+  @@index([userId, revokedAt])
+  @@index([appealedAt, appealOutcome])
+  @@map("account_sanctions")
+}
+
+/// Toplu sahte değerlendirme temizliği sonrası listelemede gösterilen tarihli bildirim (REQ-GUN-007).
+model ListingIntegrityNotice {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  listingId    String   @map("listing_id") @db.Uuid
+  listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  detectedAt   DateTime @default(now()) @map("detected_at") @db.Timestamptz(3)
+  removedCount Int      @map("removed_count")
+  note         String?
+  createdById  String   @map("created_by") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([listingId, detectedAt(sort: Desc)])
+  @@map("listing_integrity_notices")
 }

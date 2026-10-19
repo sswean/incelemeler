@@ -79,6 +79,7 @@ export class ReviewsService {
         'Değerlendirme yazmak için e-posta adresini doğrula',
       );
     }
+    await this.assertNotRestricted(ctx.userId);
     await this.rateLimit.enforce(`review:user:${ctx.userId}`, 5, 3600);
     const listing = await this.loadListing(body.listingId);
     await this.validate(listing, body);
@@ -137,6 +138,7 @@ export class ReviewsService {
       throw new ProblemException(HttpStatus.CONFLICT, 'CONFLICT', 'Bu değerlendirme düzenlenemez');
     }
     if (current.version !== body.version) throw versionConflict();
+    await this.assertNotRestricted(ctx.userId);
     await this.rateLimit.enforce(`review:edit:${ctx.userId}`, 20, 3600);
     const listing = await this.loadListing(current.listingId);
     await this.validate(listing, body);
@@ -401,6 +403,26 @@ export class ReviewsService {
   }
 
   /** Durum değişikliği: puan istatistiği + arama + bildirim outbox ile (aynı işlemde). */
+  /** Etkin değerlendirme kısıtı (yaptırım basamağı — REQ-GUN-007) varsa yeni değerlendirme yazılamaz. */
+  async assertNotRestricted(userId: string): Promise<void> {
+    const now = new Date();
+    const restricted = await this.prisma.accountSanction.count({
+      where: {
+        userId,
+        revokedAt: null,
+        level: { in: ['REVIEW_RESTRICTION', 'SUSPENSION', 'PERMANENT_BAN'] },
+        OR: [{ endsAt: null }, { endsAt: { gt: now } }],
+      },
+    });
+    if (restricted) {
+      throw new ProblemException(
+        HttpStatus.FORBIDDEN,
+        'ACCOUNT_RESTRICTED',
+        'Değerlendirme yazma hakkın geçici olarak kısıtlandı',
+      );
+    }
+  }
+
   async changed(tx: Tx, r: Review, from: string | null): Promise<void> {
     await this.outbox.enqueue(tx, {
       type: 'reviews.review.changed',

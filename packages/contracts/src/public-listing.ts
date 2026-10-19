@@ -60,6 +60,10 @@ export const PublicListing = z
     ),
     /** Kullanıcı değerlendirmesi özeti (Ek A6.2) — Faz 1 dilim 7'ye kadar her zaman 0. */
     reviewCount: z.number().int(),
+    /** Toplu sahte değerlendirme temizliği bildirimi (son 180 gün; REQ-GUN-007). */
+    integrityNotice: z
+      .object({ detectedAt: z.iso.datetime(), removedCount: z.number().int() })
+      .nullable(),
     /** Kayıtlı dış eylemler (affiliate, rezervasyon, web sitesi) — `/git/` üzerinden (REQ-AFF-001/002). */
     outbound: z.array(PublicOutbound),
     dataOrigin: z.string(),

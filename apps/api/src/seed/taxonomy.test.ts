@@ -21,6 +21,14 @@ describe('[REQ-KAT-002] başlangıç taksonomisi', () => {
     expect(bySlug.get('oteller')?.requiresLicense).toBe(true);
   });
 
+  it('[REQ-KAT-004] YMYL ve lisanslı kategoriler sponsorluğa kapalı; YMYL uzman incelemesi ister', () => {
+    for (const c of flat) {
+      if (c.ymyl || c.requiresLicense) expect(c.sponsorshipAllowed, c.slug).toBe(false);
+      if (c.ymyl) expect(c.requiresExpertReview, c.slug).toBe(true);
+    }
+    expect(flat.find((c) => c.slug === 'konaklama')?.sponsorshipAllowed).toBe(false);
+  });
+
   it('her çocuğun izinli türleri ebeveynin türleri içinde', () => {
     const bySlug = new Map(flat.map((c) => [c.slug, c]));
     for (const c of flat) {

@@ -7,6 +7,7 @@ import type {
   StaffRole,
 } from '@incelemeler/contracts';
 import { ENV, type EnvToken } from '../../config/env.provider.js';
+import { permissionsOf } from '../access/permissions.js';
 import { ProblemException } from '../../common/problem.js';
 import type { RequestMeta } from '../../common/request-meta.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -526,6 +527,7 @@ export class AuthService {
       displayName: ctx.displayName,
       emailVerified: ctx.emailVerified,
       roles: ctx.roles,
+      permissions: permissionsOf(ctx.roles),
       mfa: mfaState(ctx.roles.length > 0, ctx.mfaConfigured, ctx.mfaVerified),
     };
   }
@@ -541,6 +543,7 @@ export class AuthService {
       displayName: user.displayName,
       emailVerified: user.emailVerifiedAt !== null,
       roles,
+      permissions: permissionsOf(roles),
       mfa: mfaState(
         roles.length > 0,
         user.mfaFactor?.confirmedAt != null,

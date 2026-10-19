@@ -35,12 +35,16 @@ execFileSync('node', ['dist/cli/create-super-admin.js'], {
 });
 const db = new pg.Client({ connectionString: databaseUrl });
 await db.connect();
-for (const project of PROJECTS.slice(1)) {
+const extraStaff = [
+  ...PROJECTS.slice(1).map((p) => [staffEmail(p), 'E2E Yönetici 2']),
+  ...PROJECTS.map((p) => [`e2e-taksonomi-${p}@example.test`, 'E2E Taksonomi']),
+];
+for (const [email, name] of extraStaff) {
   const { rows } = await db.query(
     `INSERT INTO users (id, email, email_verified_at, password_hash, display_name, age_confirmed_at, terms_version, updated_at)
-     SELECT gen_random_uuid(), $1, now(), password_hash, 'E2E Yönetici 2', now(), 'staff-bootstrap', now()
+     SELECT gen_random_uuid(), $1, now(), password_hash, $3, now(), 'staff-bootstrap', now()
      FROM users WHERE email = $2 RETURNING id`,
-    [staffEmail(project), staffEmail(PROJECTS[0])],
+    [email, staffEmail(PROJECTS[0]), name],
   );
   await db.query(`INSERT INTO staff_roles (user_id, role) VALUES ($1, 'ADMIN')`, [rows[0].id]);
 }

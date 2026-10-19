@@ -129,12 +129,12 @@
       "title": "Durum değiştiren ve tekrar edilebilecek POST'larda Idempotency-Key desteği (değerlendir…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Kategori güncellemesinde version + 412 PRECONDITION_FAILED (koşullu güncelleme).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Idempotency-Key ve If-Match başlığı ilgili POST/PATCH uç noktalarıyla (D3, D7, D9)."
     },
     {
       "id": "REQ-MIM-012",
@@ -177,21 +177,21 @@
       "title": "Domain olayları transactional outbox ile yayınlanır (arama indeksi, puan özetleri, önbe…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "outbox_events: domain işlemiyle aynı işlemde yazım, SKIP LOCKED kiralama, üstel bekleme, ölü mektup (outbox.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Tüketiciler (arama indeksi, rating_stats, önbellek) ilgili dilimlerde eklenir."
     },
     {
       "id": "REQ-MIM-016",
       "title": "Arka plan işleri için ilk seçenek PostgreSQL tabanlı kuyruktur",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Arka plan işleri PostgreSQL kuyruğu (outbox worker, `pnpm --filter @incelemeler/api worker`); Redis yok.",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -693,12 +693,12 @@
       "title": "Yönetici kod değiştirmeden kategori, alt kategori, özellik şeması, değerlendirme kriter…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": "E2E'de yönetici \"Glamping alanları\" kategorisini (kind=LODGING) ve 3 özellik (`hasPrivateBathroom: bool`, `tentType: enum`, `maxGuests: int`) oluşturur, bir listeleme ekler, yayımlar ve bu özelliklere göre filtreler — deploy gerekmez.",
+      "acceptance": "Panelden kategori/alt kategori ekleme, sıralama, gizleme/yayımlama (E2E admin-taxonomy; entegrasyon taxonomy.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Özellik şeması ve değerlendirme kriterleri dilim 2b; koleksiyon sayfaları ve \"Glamping\" uçtan uca kabulü listeleme (D3) ve filtreler (D6) ile."
     },
     {
       "id": "REQ-KAT-002",
@@ -717,12 +717,12 @@
       "title": "Kategori durumları TASLAK → GİZLİ (yalnızca personel) → YAYINDA",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "TASLAK → GİZLİ → YAYINDA; üst kategori yayında değilken alt kategori yayımlanamaz; gizlenen üstün altları herkese açık listeden çıkar; yayımlanmış slug kilitli.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yayın eşikleri (§7.2) listeleme sayıları gerektirir → D3/D6."
     },
     {
       "id": "REQ-KAT-004",
@@ -731,10 +731,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Kategori bayrakları (YMYL, lisans, uzman incelemesi, sponsorluk, UGC); YMYL/lisanslıda sponsorluk kapalı ve YMYL'de uzman incelemesi zorunlu (API 422 + veritabanı CHECK + tohum testi).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Faz 0: Lisans bayrakları seed'de işaretli; legalGate davranışı Faz 1."
+      "notes": "legalGate ve LegalApproval test fikstürü listeleme yayınıyla (D3/D4)."
     },
     {
       "id": "REQ-KAT-005",

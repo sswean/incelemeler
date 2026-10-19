@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Req } from '@nestjs/common';
 import type { Request } from 'express';
-import { z } from 'zod';
 import {
   LoginBody,
   MfaCodeBody,
@@ -12,17 +11,9 @@ import {
 } from '@incelemeler/contracts';
 import { parseBody } from '../../common/zod-body.js';
 import { requestMeta } from '../../common/request-meta.js';
-import { HttpStatus } from '@nestjs/common';
-import { ProblemException } from '../../common/problem.js';
+import { parseId } from '../../common/ids.js';
 import { Auth, type AuthContext, Public, RequireAuth } from './auth.context.js';
 import { AuthService } from './auth.service.js';
-
-const uuid = z.uuid();
-function parseId(id: string): string {
-  const r = uuid.safeParse(id);
-  if (!r.success) throw new ProblemException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Bulunamadı');
-  return r.data;
-}
 
 @Controller('v1/auth')
 export class AuthController {

@@ -9,6 +9,9 @@ import { AuditService } from './modules/platform/audit.service.js';
 import { RateLimitService } from './modules/platform/rate-limit.service.js';
 import { CategoriesController } from './modules/taxonomy/categories.controller.js';
 import { CategoriesService } from './modules/taxonomy/categories.service.js';
+import { AdminCategoriesController } from './modules/taxonomy/admin-categories.controller.js';
+import { AdminCategoriesService } from './modules/taxonomy/admin-categories.service.js';
+import { OutboxService } from './modules/outbox/outbox.service.js';
 import {
   AdminAccessController,
   AuthController,
@@ -46,6 +49,7 @@ export const CONTROLLERS = [
   AuthController,
   MeController,
   AdminAccessController,
+  AdminCategoriesController,
 ];
 
 @Module({})
@@ -64,6 +68,8 @@ export class AppModule {
         RateLimitService,
         AuthService,
         CategoriesService,
+        AdminCategoriesService,
+        OutboxService,
       ],
     };
   }

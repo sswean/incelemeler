@@ -276,6 +276,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tüm kategoriler (her durumda), ağaç sırasıyla */
+        get: operations["adminListCategories"];
+        put?: never;
+        /** Kategori oluşturur (TASLAK durumunda) */
+        post: operations["adminCreateCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/categories/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kategori ayrıntısı */
+        get: operations["adminGetCategory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Kategoriyi günceller (sürüm uyuşmazlığında 412) */
+        patch: operations["adminUpdateCategory"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -320,6 +356,59 @@ export interface components {
             data: components["schemas"]["CategorySummary"][];
             page: components["schemas"]["PageInfo"];
         };
+        AdminCategory: {
+            id: string;
+            slug: string;
+            name: string;
+            parentId: string | null;
+            depth: number;
+            allowedKinds: ("PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK")[];
+            /** @enum {string} */
+            status: "DRAFT" | "HIDDEN" | "PUBLISHED";
+            sortOrder: number;
+            ymyl: boolean;
+            requiresExpertReview: boolean;
+            ugcEnabled: boolean;
+            sponsorshipAllowed: boolean;
+            requiresLicense: boolean;
+            dataOrigin: string;
+            /** Format: date-time */
+            firstPublishedAt: string | null;
+            /** Format: date-time */
+            updatedAt: string;
+            version: number;
+        };
+        AdminCategoryList: {
+            data: components["schemas"]["AdminCategory"][];
+            page: components["schemas"]["PageInfo"];
+        };
+        CategoryCreateBody: {
+            name: string;
+            slug?: string;
+            /** Format: uuid */
+            parentId?: string | null;
+            allowedKinds: ("PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK")[];
+            sortOrder?: number;
+            ymyl?: boolean;
+            requiresExpertReview?: boolean;
+            ugcEnabled?: boolean;
+            sponsorshipAllowed?: boolean;
+            requiresLicense?: boolean;
+        };
+        CategoryUpdateBody: {
+            version: number;
+            name?: string;
+            slug?: string;
+            allowedKinds?: ("PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK")[];
+            /** @enum {string} */
+            status?: "DRAFT" | "HIDDEN" | "PUBLISHED";
+            sortOrder?: number;
+            ymyl?: boolean;
+            requiresExpertReview?: boolean;
+            ugcEnabled?: boolean;
+            sponsorshipAllowed?: boolean;
+            requiresLicense?: boolean;
+        };
         RegisterBody: {
             email: unknown;
             password: string;
@@ -345,6 +434,7 @@ export interface components {
             displayName: string;
             emailVerified: boolean;
             roles: ("SUPER_ADMIN" | "ADMIN" | "EDITOR" | "AUTHOR" | "MODERATOR" | "SALES")[];
+            permissions: string[];
             /** @enum {string} */
             mfa: "NONE" | "SETUP_REQUIRED" | "VERIFY_REQUIRED" | "VERIFIED";
         };
@@ -917,6 +1007,162 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CurrentUser"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListCategories: {
+        parameters: {
+            query?: {
+                limit?: number;
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Kategoriler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCategoryList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    slug?: string;
+                    /** Format: uuid */
+                    parentId?: string | null;
+                    allowedKinds: ("PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK")[];
+                    sortOrder?: number;
+                    ymyl?: boolean;
+                    requiresExpertReview?: boolean;
+                    ugcEnabled?: boolean;
+                    sponsorshipAllowed?: boolean;
+                    requiresLicense?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCategory"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Kategori */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCategory"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    name?: string;
+                    slug?: string;
+                    allowedKinds?: ("PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK")[];
+                    /** @enum {string} */
+                    status?: "DRAFT" | "HIDDEN" | "PUBLISHED";
+                    sortOrder?: number;
+                    ymyl?: boolean;
+                    requiresExpertReview?: boolean;
+                    ugcEnabled?: boolean;
+                    sponsorshipAllowed?: boolean;
+                    requiresLicense?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCategory"];
                 };
             };
             /** @description Hata (RFC 9457) */

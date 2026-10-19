@@ -55,3 +55,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, readonly Permission[]> = {
 export function can(roles: readonly StaffRole[], permission: Permission): boolean {
   return roles.some((r) => ROLE_PERMISSIONS[r].includes(permission));
 }
+
+export function permissionsOf(roles: readonly StaffRole[]): Permission[] {
+  return PERMISSIONS.filter((p) => can(roles, p));
+}

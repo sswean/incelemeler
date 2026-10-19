@@ -20,7 +20,16 @@ describe('[REQ-MIM-006] OpenAPI üretimi', () => {
     }
   });
   it('[REQ-MIM-009] sponsorlu sıralama parametresi yoktur', () => {
-    expect(JSON.stringify(doc).toLowerCase()).not.toContain('sponsor');
+    // Hiçbir uç noktanın sorgu parametresi (adı ya da izinli değerleri) sponsorluğa göre sıralama/filtre sunmaz.
+    // Kategori yönetimindeki `sponsorshipAllowed` bayrağı bir sıralama parametresi değildir.
+    const paths = (doc as { paths: Record<string, Record<string, { parameters?: unknown[] }>> })
+      .paths;
+    const queryParams = Object.values(paths)
+      .flatMap((item) => Object.values(item))
+      .flatMap((op) => (op.parameters ?? []) as Array<{ in: string }>)
+      .filter((p) => p.in === 'query');
+    expect(queryParams.length).toBeGreaterThan(0);
+    for (const p of queryParams) expect(JSON.stringify(p).toLowerCase()).not.toContain('sponsor');
   });
 });
 

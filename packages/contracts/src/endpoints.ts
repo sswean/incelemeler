@@ -1,6 +1,14 @@
 import { z } from 'zod';
 import { HealthStatus } from './health.js';
-import { CategoryList, CategoryListQuery } from './taxonomy.js';
+import {
+  AdminCategory,
+  AdminCategoryList,
+  AdminCategoryListQuery,
+  CategoryCreateBody,
+  CategoryList,
+  CategoryListQuery,
+  CategoryUpdateBody,
+} from './taxonomy.js';
 import {
   Accepted,
   CurrentUser,
@@ -189,5 +197,44 @@ export const endpoints: EndpointDef[] = [
     summary: 'Personel rollerini belirler (süper yönetici, step-up gerekir)',
     body: RoleAssignBody,
     responses: { 200: ok('Güncel kullanıcı', CurrentUser) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/categories',
+    operationId: 'adminListCategories',
+    tags: ['admin', 'taxonomy'],
+    auth: 'staff-mfa',
+    summary: 'Tüm kategoriler (her durumda), ağaç sırasıyla',
+    query: AdminCategoryListQuery,
+    responses: { 200: ok('Kategoriler', AdminCategoryList) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/categories',
+    operationId: 'adminCreateCategory',
+    tags: ['admin', 'taxonomy'],
+    auth: 'staff-mfa',
+    summary: 'Kategori oluşturur (TASLAK durumunda)',
+    body: CategoryCreateBody,
+    responses: { 201: ok('Oluşturuldu', AdminCategory) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/categories/{id}',
+    operationId: 'adminGetCategory',
+    tags: ['admin', 'taxonomy'],
+    auth: 'staff-mfa',
+    summary: 'Kategori ayrıntısı',
+    responses: { 200: ok('Kategori', AdminCategory) },
+  },
+  {
+    method: 'patch',
+    path: '/v1/admin/categories/{id}',
+    operationId: 'adminUpdateCategory',
+    tags: ['admin', 'taxonomy'],
+    auth: 'staff-mfa',
+    summary: 'Kategoriyi günceller (sürüm uyuşmazlığında 412)',
+    body: CategoryUpdateBody,
+    responses: { 200: ok('Güncellendi', AdminCategory) },
   },
 ];

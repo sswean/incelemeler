@@ -60,6 +60,8 @@ model Category {
   sponsorshipAllowed   Boolean        @default(true) @map("sponsorship_allowed")
   requiresLicense      Boolean        @default(false) @map("requires_license")
   dataOrigin           DataOrigin     @default(EDITORIAL) @map("data_origin")
+  /// İlk yayın anı; yayımlanmış kategorinin slug'ı değişmez (A-011).
+  firstPublishedAt     DateTime?      @map("first_published_at") @db.Timestamptz(3)
   createdAt            DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt            DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
   version              Int            @default(1)
@@ -284,4 +286,24 @@ model RateLimitBucket {
   count       Int
 
   @@map("rate_limit_buckets")
+}
+
+/// Transactional outbox (REQ-MIM-015, ADR-0010): domain değişikliğiyle aynı işlemde yazılır, worker işler.
+model OutboxEvent {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  type          String
+  aggregateType String    @map("aggregate_type")
+  aggregateId   String    @map("aggregate_id") @db.Uuid
+  /// Kişisel veri içermez; yalnızca kimlikler ve değişen alan adları.
+  payload       Json      @default("{}")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  /// Bir sonraki deneme zamanı; işlenirken kiralama (lease) süresi kadar ileri alınır.
+  availableAt   DateTime  @default(now()) @map("available_at") @db.Timestamptz(3)
+  attempts      Int       @default(0)
+  lastError     String?   @map("last_error")
+  processedAt   DateTime? @map("processed_at") @db.Timestamptz(3)
+  deadAt        DateTime? @map("dead_at") @db.Timestamptz(3)
+
+  @@index([aggregateType, aggregateId])
+  @@map("outbox_events")
 }

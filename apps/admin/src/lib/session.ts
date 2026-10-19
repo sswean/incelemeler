@@ -2,6 +2,7 @@ import 'server-only';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { createApiClient } from '@incelemeler/api-client';
+import type { CurrentUser } from '@incelemeler/contracts';
 
 /** Panel oturum çerezi: kamu sitesinden ayrı ad; HttpOnly, Secure, SameSite=Strict. */
 export const ADMIN_SESSION_COOKIE = '__Host-asid';
@@ -46,7 +47,7 @@ export function pathForMfa(mfa: string): string {
  * Panel sayfaları için koruma (REQ-HSP-007): 2FA doğrulanmış personel oturumu yoksa
  * giriş ya da 2FA adımına yönlendirir.
  */
-export async function requireStaff() {
+export async function requireStaff(): Promise<{ token: string; user: CurrentUser }> {
   const token = await getSessionToken();
   if (!token) redirect('/giris');
   const client = await api(token);

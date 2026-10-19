@@ -14,3 +14,5 @@ Bir ders bir madde; ilk satır tek cümlelik özet. Yanlış çıkan ders silini
 - **Zod 4 girdi (`io: input`) şemaları kimlikliyse tekil dönüşüm `#/definitions/...` üretir ve openapi-typescript çözemez.** Girdi şemaları boş bir kayıt defteriyle (`metadata: z.registry()`) satır içi üretilir.
 - **Next.js yol duyurucusu (`#__next-route-announcer__`) da `role="alert"` taşır.** Playwright'ta `getByRole('main').getByRole('alert')` gibi kapsamlı seçici kullan.
 - **E2E'de tüm tarayıcı istekleri 127.0.0.1'den gelir; IP hız sınırları testleri birbirine bağlar.** Her teste ayrı `X-Forwarded-For` veren otomatik fixture (`tests/e2e/support/fixtures.ts`).
+- **Next.js App Router yerleşimleri (layout) istemci gezintisinde yeniden çizilmez.** Yetki denetimi yalnız yerleşimde yapılırsa sayfalar korunmaz; her panel sayfası `requireStaff()` çağırır (asıl yetki API'de).
+- **Tohum (seed) verisi domain kurallarını atlayabilir.** Kural hem servis hem veritabanı CHECK kısıtıyla korunur; tohum `update: {}` ile panel değişikliklerini ezmez.

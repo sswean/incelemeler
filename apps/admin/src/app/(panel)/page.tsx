@@ -1,13 +1,12 @@
 import { tr } from '@incelemeler/i18n';
-import { serverApi } from '../lib/api';
-import { requireStaff } from '../lib/session';
-import { logoutAction } from './actions';
+import { serverApi } from '../../lib/api';
+import { requireStaff } from '../../lib/session';
 
 export const dynamic = 'force-dynamic';
 
 /** Faz 0: yalnızca gerçek sistem durumu. Sabit/örnek istatistik gösterilmez (AK-02). */
 export default async function AdminHome() {
-  const { user } = await requireStaff();
+  await requireStaff();
   const result = await serverApi()
     .GET('/v1/health')
     .catch(() => null);
@@ -15,20 +14,6 @@ export default async function AdminHome() {
 
   return (
     <div className="space-y-6">
-      <div
-        className="flex flex-wrap items-center justify-between gap-4 text-sm"
-        data-testid="staff-identity"
-      >
-        <p>
-          {tr.admin.signedInAs}: <strong>{user.displayName}</strong> · {tr.admin.roles}:{' '}
-          {user.roles.join(', ')}
-        </p>
-        <form action={logoutAction}>
-          <button type="submit" className="min-h-11 text-brand-default underline">
-            {tr.auth.logout}
-          </button>
-        </form>
-      </div>
       <p role="note" className="text-sm text-text-secondary">
         {tr.admin.phaseNotice}
       </p>

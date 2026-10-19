@@ -150,6 +150,7 @@ export interface FlatCategory {
   requiresLicense: boolean;
   ymyl: boolean;
   sponsorshipAllowed: boolean;
+  requiresExpertReview: boolean;
 }
 
 /** Ağacı sıralı düz listeye çevirir; slug'lar global olarak benzersizdir. */
@@ -166,7 +167,10 @@ export function flattenTaxonomy(tree: SeedCategory[] = BASE_TAXONOMY): FlatCateg
         sortOrder: (i + 1) * 10,
         requiresLicense: node.requiresLicense ?? false,
         ymyl: node.ymyl ?? false,
-        sponsorshipAllowed: node.sponsorshipAllowed ?? true,
+        // REQ-KAT-004: YMYL ve lisanslı kategoride sponsorluk kapalı; YMYL'de uzman incelemesi zorunlu.
+        sponsorshipAllowed:
+          !(node.ymyl || node.requiresLicense) && (node.sponsorshipAllowed ?? true),
+        requiresExpertReview: node.ymyl ?? false,
       });
       if (node.children) walk(node.children, slug);
     });

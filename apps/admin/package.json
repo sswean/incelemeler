@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@incelemeler/api-client": "workspace:*",
+    "@incelemeler/contracts": "workspace:*",
     "@incelemeler/i18n": "workspace:*",
     "@incelemeler/tokens": "workspace:*",
     "next": "16.4.2",

@@ -14,6 +14,7 @@ export class CategoriesService {
 
   /**
    * Yayındaki kategoriler; sıralama (sortOrder, id) — cursor sayfalama (REQ-MIM-008).
+   * Tüm üst kategorileri de yayında olmalıdır (REQ-KAT-003; ağaç en fazla 3 seviye).
    * Üretimde DEMO kayıtlar dönmez (§12.4).
    */
   async listPublished(query: CategoryListQuery): Promise<CategoryList> {
@@ -36,6 +37,19 @@ export class CategoriesService {
     const rows = await this.prisma.category.findMany({
       where: {
         status: 'PUBLISHED',
+        AND: [
+          {
+            OR: [
+              { parentId: null },
+              {
+                parent: {
+                  status: 'PUBLISHED',
+                  OR: [{ parentId: null }, { parent: { status: 'PUBLISHED' } }],
+                },
+              },
+            ],
+          },
+        ],
         ...(this.env.APP_ENV === 'production' ? { dataOrigin: { not: 'DEMO' } } : {}),
         ...(after
           ? {

@@ -42,6 +42,8 @@ export const CurrentUser = z
     displayName: z.string(),
     emailVerified: z.boolean(),
     roles: z.array(StaffRole),
+    /** Rollerden türetilen izinler (arayüz yalnızca gösterim için kullanır; yetki API'de denetlenir). */
+    permissions: z.array(z.string()),
     mfa: MfaState,
   })
   .meta({ id: 'CurrentUser' });

@@ -18,7 +18,12 @@ export const DEFAULT_BAYES_C = 10;
  * @param prior m — grup ortalaması (öncül)
  * @param c C — öncül ağırlığı (varsayılan 10)
  */
-export function bayesianAverage(sum: number, n: number, prior: number, c = DEFAULT_BAYES_C): number {
+export function bayesianAverage(
+  sum: number,
+  n: number,
+  prior: number,
+  c = DEFAULT_BAYES_C,
+): number {
   if (n < 0 || c < 0) throw new RangeError('n ve C negatif olamaz');
   if (n === 0 && c === 0) throw new RangeError('n ve C aynı anda 0 olamaz');
   return (c * prior + sum) / (c + n);

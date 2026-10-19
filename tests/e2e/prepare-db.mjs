@@ -3,7 +3,8 @@
 import { execFileSync } from 'node:child_process';
 import pg from 'pg';
 
-const base = process.env.E2E_DB_BASE ?? 'postgresql://incelemeler:incelemeler_local_only@localhost:54320';
+const base =
+  process.env.E2E_DB_BASE ?? 'postgresql://incelemeler:incelemeler_local_only@localhost:54320';
 const admin = new pg.Client({ connectionString: `${base}/incelemeler` });
 await admin.connect();
 await admin.query('DROP DATABASE IF EXISTS incelemeler_e2e WITH (FORCE)');

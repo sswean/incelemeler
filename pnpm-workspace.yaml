@@ -1,7 +1,7 @@
 packages:
-  - "apps/*"
-  - "packages/*"
-  - "tests/*"
+  - 'apps/*'
+  - 'packages/*'
+  - 'tests/*'
 
 # pnpm 10 yükleme betiklerini varsayılan olarak engeller; yalnızca gerekli olanlara izin verilir.
 onlyBuiltDependencies:

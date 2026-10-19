@@ -9,7 +9,7 @@ import {
 } from './format.js';
 
 // Intl çıktısında bölünemez boşluklar olabilir; karşılaştırma için normalize edilir.
-const n = (s: string) => s.replace(/[  ]/g, ' ');
+const n = (s: string) => s.replace(/[\u00a0\u202f]/g, ' ');
 
 describe('[REQ-YRL-003] tr-TR biçimleri', () => {
   it('para: 123456 kuruş → ₺1.234,56', () => {

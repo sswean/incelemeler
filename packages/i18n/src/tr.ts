@@ -26,7 +26,7 @@ export const tr = {
     databaseStatus: 'Veritabanı',
     up: 'Çalışıyor',
     down: 'Erişilemiyor',
-    unreachable: 'API\'ye ulaşılamadı.',
+    unreachable: "API'ye ulaşılamadı.",
     phaseNotice:
       'Faz 0: Yönetim modülleri ve personel girişi (2FA zorunlu) Faz 1 dilimlerinde eklenecek.',
   },

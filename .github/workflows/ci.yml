@@ -1,0 +1,51 @@
+# CI (REQ-OPS-002). Bu çalıştırıcının etkin olduğu henüz doğrulanmadı (X-031); aynı adımlar `pnpm ci:local` ile yerelde koşar.
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      APP_ENV: test
+      DATABASE_URL: postgresql://incelemeler:incelemeler_local_only@localhost:54320/incelemeler
+      CURSOR_SECRET: ci-cursor-secret-not-a-real-secret-000000
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @incelemeler/api prisma:generate
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm deps:check
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm test:integration
+      - run: pnpm build
+      - run: pnpm openapi:check
+      - run: node scripts/license-check.mjs
+      - run: pnpm audit --audit-level=high --prod
+      - name: Sır taraması (gitleaks, tüm geçmiş)
+        run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest detect --source /repo --no-banner --redact
+      - name: Yerel servisler (E2E)
+        run: docker compose -f infra/docker-compose.yml up -d --wait
+      - name: Playwright tarayıcısı
+        run: pnpm --filter @incelemeler/e2e exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - run: pnpm req:check

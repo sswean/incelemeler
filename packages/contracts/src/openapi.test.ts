@@ -26,10 +26,12 @@ describe('[REQ-MIM-006] OpenAPI üretimi', () => {
 
 describe('[REQ-MIM-006] OpenAPI referans bütünlüğü', () => {
   it('her $ref components/schemas altında tanımlı', () => {
-    const doc = buildOpenApiDocument('test') as { components: { schemas: Record<string, unknown> } };
-    const refs = [...JSON.stringify(doc).matchAll(/"\$ref":"#\/components\/schemas\/([^"]+)"/g)].map(
-      (m) => m[1],
-    );
+    const doc = buildOpenApiDocument('test') as {
+      components: { schemas: Record<string, unknown> };
+    };
+    const refs = [
+      ...JSON.stringify(doc).matchAll(/"\$ref":"#\/components\/schemas\/([^"]+)"/g),
+    ].map((m) => m[1]);
     expect(refs.length).toBeGreaterThan(0);
     for (const r of refs) expect(doc.components.schemas[r as string]).toBeDefined();
   });

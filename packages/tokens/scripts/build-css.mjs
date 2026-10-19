@@ -10,7 +10,9 @@ const vars = (obj) =>
 const theme = [
   ...Object.keys(color.light).map((k) => `  --color-${k}: var(--ic-${k});`),
   ...Object.entries(space).map(([k, v]) => `  --spacing-${k}: ${v / 16}rem;`),
-  ...Object.entries(radius).map(([k, v]) => `  --radius-${k}: ${v === 9999 ? '9999px' : `${v / 16}rem`};`),
+  ...Object.entries(radius).map(
+    ([k, v]) => `  --radius-${k}: ${v === 9999 ? '9999px' : `${v / 16}rem`};`,
+  ),
   ...Object.entries(fontSize).map(([k, v]) => `  --text-${k}: ${v / 16}rem;`),
   ...Object.entries(breakpoints).map(([k, v]) => `  --breakpoint-${k}: ${v / 16}rem;`),
   ...Object.entries(motion).map(([k, v]) => `  --duration-${k}: ${v}ms;`),

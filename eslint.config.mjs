@@ -26,10 +26,17 @@ export default tseslint.config(
       // AK-11 / §12.2: gerekçesiz devre dışı bırakma yorumu yasak
       '@typescript-eslint/ban-ts-comment': [
         'error',
-        { 'ts-ignore': true, 'ts-expect-error': 'allow-with-description', minimumDescriptionLength: 10 },
+        {
+          'ts-ignore': true,
+          'ts-expect-error': 'allow-with-description',
+          minimumDescriptionLength: 10,
+        },
       ],
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
       'no-console': ['error', { allow: ['warn', 'error'] }],
     },
   },
@@ -52,7 +59,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/**/*.mjs'],
+    files: ['scripts/**/*.mjs', '**/scripts/**/*.mjs', 'tests/e2e/prepare-db.mjs'],
     rules: { 'no-console': 'off' },
   },
 );

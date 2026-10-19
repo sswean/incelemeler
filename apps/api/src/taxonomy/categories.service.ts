@@ -24,7 +24,11 @@ export class CategoriesService {
         after = { sortOrder: Number(c.k[0]), id: c.id };
       } catch (e) {
         if (e instanceof InvalidCursorError) {
-          throw new ProblemException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Geçersiz cursor');
+          throw new ProblemException(
+            HttpStatus.BAD_REQUEST,
+            'VALIDATION_FAILED',
+            'Geçersiz cursor',
+          );
         }
         throw e;
       }

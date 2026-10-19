@@ -110,3 +110,49 @@ describe('yürüyen iskelet: API ↔ PostgreSQL', () => {
     await expect(prisma.category.delete({ where: { id: parent.id } })).rejects.toThrow();
   });
 });
+
+describe('[REQ-VER-001] listeleme ortak tablosu', () => {
+  const base = async () => {
+    const cat = await prisma.category.findUniqueOrThrow({ where: { slug: 'kahvalti-mekanlari' } });
+    return {
+      kind: 'PLACE' as const,
+      primaryCategoryId: cat.id,
+      dataOrigin: 'DEMO' as const,
+      source: 'test',
+    };
+  };
+
+  it('ortak alanlarla listeleme oluşturulur; attributes varsayılanı boş nesne', async () => {
+    const l = await prisma.listing.create({
+      data: {
+        ...(await base()),
+        slug: 'ornek-kahvalti-evi-demo',
+        name: 'Örnek Kahvaltı Evi (Demo)',
+      },
+    });
+    expect(l.status).toBe('DRAFT');
+    expect(l.attributes).toEqual({});
+    expect(l.version).toBe(1);
+  });
+
+  it('[REQ-VER-011] fiyat seviyesi 1–4 dışında reddedilir', async () => {
+    await expect(
+      prisma.listing.create({
+        data: { ...(await base()), slug: 'fiyat-5', name: 'Fiyat 5 (Demo)', priceLevel: 5 },
+      }),
+    ).rejects.toThrow();
+  });
+
+  it('yayın tarihi olmadan PUBLISHED olamaz', async () => {
+    await expect(
+      prisma.listing.create({
+        data: { ...(await base()), slug: 'tarihsiz', name: 'Tarihsiz (Demo)', status: 'PUBLISHED' },
+      }),
+    ).rejects.toThrow();
+  });
+
+  it('[REQ-VER-025] listelemesi olan kategori silinemez', async () => {
+    const cat = await prisma.category.findUniqueOrThrow({ where: { slug: 'kahvalti-mekanlari' } });
+    await expect(prisma.category.delete({ where: { id: cat.id } })).rejects.toThrow();
+  });
+});

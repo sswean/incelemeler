@@ -1,5 +1,5 @@
 import { tr } from '@incelemeler/i18n';
-import { serverApi } from '@/lib/api';
+import { serverApi } from '../lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +15,10 @@ export default async function AdminHome() {
       <p role="note" className="text-sm text-text-secondary">
         {tr.admin.phaseNotice}
       </p>
-      <section aria-labelledby="durum" className="rounded-lg border border-border-default bg-bg-default p-6">
+      <section
+        aria-labelledby="durum"
+        className="rounded-lg border border-border-default bg-bg-default p-6"
+      >
         <h1 id="durum" className="mb-4 text-xl font-semibold">
           {tr.admin.systemStatus}
         </h1>

@@ -10,3 +10,5 @@ packages/api-client/src/schema.d.ts
 packages/tokens/dist/
 docs/api/openapi.json
 *.md
+docs/api/openapi.json
+packages/tokens/dist

@@ -63,6 +63,7 @@ model Category {
   createdAt            DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt            DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
   version              Int            @default(1)
+  listings             Listing[]
 
   @@index([status, sortOrder, id])
   @@index([parentId])
@@ -85,4 +86,71 @@ model AuditLog {
   @@index([targetType, targetId])
   @@index([createdAt])
   @@map("audit_log")
+}
+
+enum OrganizationType {
+  BUSINESS
+  BRAND
+  CHAIN
+  OPERATOR
+  ADVERTISER
+}
+
+/// Kuruluş: işletme, marka, zincir, operatör, reklamveren (REQ-VER-008). Faz 1'de üyelikler eklenir.
+model Organization {
+  id         String           @id @default(uuid(7)) @db.Uuid
+  type       OrganizationType
+  slug       String           @unique
+  name       String
+  dataOrigin DataOrigin       @default(EDITORIAL) @map("data_origin")
+  createdAt  DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version    Int              @default(1)
+  listings   Listing[]
+
+  @@map("organizations")
+}
+
+enum ListingStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  CLOSED_TEMPORARILY
+  CLOSED_PERMANENTLY
+  ARCHIVED
+}
+
+/// Listeleme ortak alanları (REQ-VER-001). Tür özel alanlar 1:1 uzantı tablolarında (Faz 1),
+/// kategoriye özgü alanlar `attributes` JSONB içinde kategori şemasına karşı doğrulanır (REQ-VER-003).
+/// primaryMediaId, medya modeli (REQ-VER-014) ile birlikte Faz 1'de FK olarak eklenir.
+model Listing {
+  id                     String        @id @default(uuid(7)) @db.Uuid
+  kind                   ListingKind
+  slug                   String        @unique
+  name                   String
+  shortDescription       String?       @map("short_description")
+  /// "Hakkında" bölümü: blok JSON (REQ-LST-010)
+  description            Json?
+  primaryCategoryId      String        @map("primary_category_id") @db.Uuid
+  primaryCategory        Category      @relation(fields: [primaryCategoryId], references: [id], onDelete: Restrict)
+  organizationId         String?       @map("organization_id") @db.Uuid
+  organization           Organization? @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  status                 ListingStatus @default(DRAFT)
+  /// Göreli fiyat seviyesi 1–4 (REQ-VER-011); CHECK kısıtı migration'da.
+  priceLevel             Int?          @map("price_level") @db.SmallInt
+  attributes             Json          @default("{}")
+  attributeSchemaVersion Int           @default(1) @map("attribute_schema_version")
+  dataOrigin             DataOrigin    @map("data_origin")
+  /// Bilginin kaynağı (§12.4): editör girişi, işletme beyanı, lisanslı veri…
+  source                 String
+  sourceVerifiedAt       DateTime?     @map("source_verified_at") @db.Timestamptz(3)
+  publishedAt            DateTime?     @map("published_at") @db.Timestamptz(3)
+  createdAt              DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt              DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt              DateTime?     @map("deleted_at") @db.Timestamptz(3)
+  version                Int           @default(1)
+
+  @@index([kind, status, primaryCategoryId])
+  @@index([organizationId])
+  @@map("listings")
 }

@@ -1,23 +1,68 @@
 import { Module, type DynamicModule } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import type { Env } from './config/env.js';
 import { ENV } from './config/env.provider.js';
 import { ProblemFilter } from './common/problem.filter.js';
 import { PrismaService } from './prisma/prisma.service.js';
-import { HealthController } from './platform/health.controller.js';
-import { CategoriesController } from './taxonomy/categories.controller.js';
-import { CategoriesService } from './taxonomy/categories.service.js';
+import { HealthController } from './modules/platform/health.controller.js';
+import { AuditService } from './modules/platform/audit.service.js';
+import { RateLimitService } from './modules/platform/rate-limit.service.js';
+import { CategoriesController } from './modules/taxonomy/categories.controller.js';
+import { CategoriesService } from './modules/taxonomy/categories.service.js';
+import {
+  AdminAccessController,
+  AuthController,
+  MeController,
+} from './modules/identity/auth.controller.js';
+import { AuthGuard } from './modules/identity/auth.guard.js';
+import { AuthService } from './modules/identity/auth.service.js';
+import {
+  DisabledEmailAdapter,
+  EMAIL_PORT,
+  type EmailPort,
+  MailpitEmailAdapter,
+  MemoryEmailAdapter,
+} from './modules/notifications/email.port.js';
+
+export interface AppOverrides {
+  emailPort?: EmailPort;
+}
+
+function emailAdapter(env: Env): EmailPort {
+  switch (env.EMAIL_ADAPTER) {
+    case 'mailpit':
+      return new MailpitEmailAdapter(env.MAILPIT_URL, env.EMAIL_FROM);
+    case 'memory':
+      return new MemoryEmailAdapter();
+    default:
+      return new DisabledEmailAdapter();
+  }
+}
+
+/** Tüm denetleyiciler (rota yetki denetimi testi bu listeyi kullanır). */
+export const CONTROLLERS = [
+  HealthController,
+  CategoriesController,
+  AuthController,
+  MeController,
+  AdminAccessController,
+];
 
 @Module({})
 export class AppModule {
-  static forRoot(env: Env): DynamicModule {
+  static forRoot(env: Env, overrides: AppOverrides = {}): DynamicModule {
     return {
       module: AppModule,
-      controllers: [HealthController, CategoriesController],
+      controllers: CONTROLLERS,
       providers: [
         { provide: ENV, useValue: env },
+        { provide: EMAIL_PORT, useValue: overrides.emailPort ?? emailAdapter(env) },
         { provide: APP_FILTER, useClass: ProblemFilter },
+        { provide: APP_GUARD, useClass: AuthGuard },
         PrismaService,
+        AuditService,
+        RateLimitService,
+        AuthService,
         CategoriesService,
       ],
     };

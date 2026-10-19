@@ -33,3 +33,11 @@ Biçim: Ek C-4. "Yüksek" geri alma maliyetli varsayımlar OPEN-QUESTIONS'ta da 
 ## A-008: Web ve panel geliştirme sürümünde `noindex`
 - Tarih: 2026-10-19 · Faz 0 · Gerekçe: Canlıya geçiş C sınıfı; erken indekslenmeyi önler.
 - Geri alma maliyeti: Düşük · Durum: AÇIK
+
+## A-009: İstemci IP'si web/panelden `X-Forwarded-For` ile API'ye iletilir; üretimde başlığı güvenilen uç vekil ekler
+- Tarih: 2026-10-19 · Faz 1 · Gerekçe: IP başına hız sınırları (REQ-HSP-008) web sunucusunun değil son kullanıcının IP'siyle çalışmalı. API yalnız loopback vekile güvenir (`TRUST_PROXY`) ve en sağdaki güvenilmeyen adresi kullanır; uç vekil (X-003) başlığa gözlediği IP'yi eklemezse istemci başlığı taklit edebilir. Gereksinim X-003 kaydına not düşüldü.
+- Etkilediği REQ'ler: REQ-HSP-008, REQ-GUV-009 · Geri alma maliyeti: Düşük · Durum: AÇIK
+
+## A-010: CSRF koruması ilk sürümde SameSite çerez + Next Server Actions Origin/Host denetimi
+- Tarih: 2026-10-19 · Faz 1 · Gerekçe: Durum değiştiren tüm web/panel istekleri Server Action (yalnız POST, Next Origin ≠ Host ise reddeder); API çerez kabul etmez. Çift gönderim token'ı D13 sertleştirmede eklenecek.
+- Etkilediği REQ'ler: REQ-HSP-004, REQ-GUV-006 · Geri alma maliyeti: Düşük · Durum: AÇIK

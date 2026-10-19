@@ -19,6 +19,14 @@ pnpm verify      # format + lint + sınırlar + typecheck + testler + build + Op
 
 `pnpm setup` değil, `pnpm run setup` yazın (pnpm'in yerleşik `setup` komutuyla çakışır).
 
+Panel için ilk süper yönetici (değerler ortam değişkenlerinden okunur; ilk girişte 2FA kurulumu zorunludur):
+
+```bash
+ADMIN_EMAIL=... ADMIN_PASSWORD=... pnpm --filter @incelemeler/api admin:create-super-admin
+```
+
+Yerelde gönderilen e-postalar (doğrulama, parola sıfırlama) Mailpit arayüzünde görünür: http://localhost:8025
+
 | Komut | İşlev |
 |---|---|
 | `pnpm test:e2e` | Playwright uçtan uca testleri (izole veritabanı) |

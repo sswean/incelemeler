@@ -1,37 +1,25 @@
 import type { INestApplication } from '@nestjs/common';
-import { PrismaPg } from '@prisma/adapter-pg';
-import type { StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { CategoryList, HealthStatus, Problem } from '@incelemeler/contracts';
-import { createApp } from '../src/bootstrap.js';
-import { PrismaClient } from '../src/generated/prisma/client.js';
+import type { PrismaClient } from '../src/generated/prisma/client.js';
 import { seedTaxonomy } from '../src/seed/seed-taxonomy.js';
 import { flattenTaxonomy } from '../src/seed/taxonomy.js';
-import { startDatabase } from './postgres.js';
+import { startTestApp, type TestContext } from './app.js';
 
-let container: StartedPostgreSqlContainer;
+let t: TestContext;
 let app: INestApplication;
 let prisma: PrismaClient;
 
 beforeAll(async () => {
-  const db = await startDatabase();
-  container = db.container;
-  prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: db.url }) });
+  t = await startTestApp();
+  app = t.app;
+  prisma = t.prisma;
   await seedTaxonomy(prisma);
-  app = await createApp({
-    APP_ENV: 'test',
-    DATABASE_URL: db.url,
-    API_PORT: 0,
-    CURSOR_SECRET: 't'.repeat(32),
-  });
-  await app.init();
 });
 
 afterAll(async () => {
-  await app?.close();
-  await prisma?.$disconnect();
-  await container?.stop();
+  await t?.close();
 });
 
 describe('yürüyen iskelet: API ↔ PostgreSQL', () => {

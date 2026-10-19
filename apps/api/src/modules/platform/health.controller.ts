@@ -1,7 +1,8 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import type { HealthStatus } from '@incelemeler/contracts';
-import { PrismaService } from '../prisma/prisma.service.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { Public } from '../identity/auth.context.js';
 
 const VERSION = process.env.npm_package_version ?? '0.0.0';
 
@@ -10,6 +11,7 @@ export class HealthController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get()
+  @Public()
   async health(@Res({ passthrough: true }) res: Response): Promise<HealthStatus> {
     let database: HealthStatus['database'] = 'up';
     try {

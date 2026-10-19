@@ -1,6 +1,21 @@
 import { z } from 'zod';
 import { HealthStatus } from './health.js';
 import { CategoryList, CategoryListQuery } from './taxonomy.js';
+import {
+  Accepted,
+  CurrentUser,
+  LoginBody,
+  LoginResult,
+  MfaCodeBody,
+  MfaConfirmResult,
+  MfaSetupResult,
+  PasswordResetConfirmBody,
+  PasswordResetRequestBody,
+  RegisterBody,
+  RoleAssignBody,
+  SessionList,
+  VerifyEmailBody,
+} from './auth.js';
 
 export interface EndpointDef {
   method: 'get' | 'post' | 'put' | 'patch' | 'delete';
@@ -11,7 +26,14 @@ export interface EndpointDef {
   query?: z.ZodObject;
   body?: z.ZodType;
   responses: Record<number, { description: string; schema?: z.ZodType }>;
+  /** Oturum gerektirir (Bearer). `staff-mfa`: 2FA doğrulanmış personel oturumu. */
+  auth?: 'session' | 'staff-mfa';
 }
+
+const ok = (description: string, schema?: z.ZodType) => ({
+  description,
+  ...(schema ? { schema } : {}),
+});
 
 /**
  * API sözleşmesinin tek kaynağı (REQ-MIM-006). OpenAPI belgesi bu listeden üretilir;
@@ -25,8 +47,8 @@ export const endpoints: EndpointDef[] = [
     summary: 'Servis ve veritabanı sağlık durumu',
     tags: ['platform'],
     responses: {
-      200: { description: 'Sağlıklı', schema: HealthStatus },
-      503: { description: 'Veritabanına erişilemiyor', schema: HealthStatus },
+      200: ok('Sağlıklı', HealthStatus),
+      503: ok('Veritabanına erişilemiyor', HealthStatus),
     },
   },
   {
@@ -36,8 +58,136 @@ export const endpoints: EndpointDef[] = [
     summary: 'Yayındaki kategorileri listeler (cursor sayfalama)',
     tags: ['taxonomy'],
     query: CategoryListQuery,
-    responses: {
-      200: { description: 'Kategori listesi', schema: CategoryList },
-    },
+    responses: { 200: ok('Kategori listesi', CategoryList) },
+  },
+  {
+    method: 'post',
+    path: '/v1/auth/register',
+    operationId: 'register',
+    tags: ['auth'],
+    summary:
+      'Üyelik oluşturur; e-posta doğrulama bağlantısı gönderir. Hesabın varlığını açığa vurmaz.',
+    body: RegisterBody,
+    responses: { 202: ok('Kabul edildi', Accepted) },
+  },
+  {
+    method: 'post',
+    path: '/v1/auth/verify-email',
+    operationId: 'verifyEmail',
+    tags: ['auth'],
+    summary: "E-posta doğrulama token'ını kullanır",
+    body: VerifyEmailBody,
+    responses: { 200: ok('Doğrulandı', Accepted) },
+  },
+  {
+    method: 'post',
+    path: '/v1/auth/login',
+    operationId: 'login',
+    tags: ['auth'],
+    summary: 'E-posta + parola ile oturum açar',
+    body: LoginBody,
+    responses: { 200: ok('Oturum', LoginResult) },
+  },
+  {
+    method: 'post',
+    path: '/v1/auth/logout',
+    operationId: 'logout',
+    tags: ['auth'],
+    auth: 'session',
+    summary: 'Geçerli oturumu kapatır',
+    responses: { 204: ok('Kapatıldı') },
+  },
+  {
+    method: 'post',
+    path: '/v1/auth/password-reset/request',
+    operationId: 'requestPasswordReset',
+    tags: ['auth'],
+    summary: 'Parola sıfırlama bağlantısı ister (her zaman 202)',
+    body: PasswordResetRequestBody,
+    responses: { 202: ok('Kabul edildi', Accepted) },
+  },
+  {
+    method: 'post',
+    path: '/v1/auth/password-reset/confirm',
+    operationId: 'confirmPasswordReset',
+    tags: ['auth'],
+    summary: 'Yeni parolayı belirler; tüm oturumları kapatır',
+    body: PasswordResetConfirmBody,
+    responses: { 200: ok('Güncellendi', Accepted) },
+  },
+  {
+    method: 'post',
+    path: '/v1/auth/mfa/setup',
+    operationId: 'mfaSetup',
+    tags: ['auth'],
+    auth: 'session',
+    summary: 'Personel için TOTP kurulumu başlatır',
+    responses: { 200: ok('Gizli anahtar', MfaSetupResult) },
+  },
+  {
+    method: 'post',
+    path: '/v1/auth/mfa/confirm',
+    operationId: 'mfaConfirm',
+    tags: ['auth'],
+    auth: 'session',
+    summary: 'TOTP kurulumunu onaylar; kurtarma kodlarını bir kez döner',
+    body: MfaCodeBody,
+    responses: { 200: ok('Kurtarma kodları', MfaConfirmResult) },
+  },
+  {
+    method: 'post',
+    path: '/v1/auth/mfa/verify',
+    operationId: 'mfaVerify',
+    tags: ['auth'],
+    auth: 'session',
+    summary: 'Oturumu ikinci faktörle doğrular (step-up dahil)',
+    body: MfaCodeBody,
+    responses: { 200: ok('Doğrulandı', CurrentUser) },
+  },
+  {
+    method: 'get',
+    path: '/v1/me',
+    operationId: 'getMe',
+    tags: ['me'],
+    auth: 'session',
+    summary: 'Oturumdaki kullanıcı',
+    responses: { 200: ok('Kullanıcı', CurrentUser) },
+  },
+  {
+    method: 'get',
+    path: '/v1/me/sessions',
+    operationId: 'listMySessions',
+    tags: ['me'],
+    auth: 'session',
+    summary: 'Aktif oturumlar',
+    responses: { 200: ok('Oturumlar', SessionList) },
+  },
+  {
+    method: 'delete',
+    path: '/v1/me/sessions/{id}',
+    operationId: 'revokeMySession',
+    tags: ['me'],
+    auth: 'session',
+    summary: 'Bir oturumu kapatır',
+    responses: { 204: ok('Kapatıldı') },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/me',
+    operationId: 'getAdminMe',
+    tags: ['admin'],
+    auth: 'staff-mfa',
+    summary: 'Panel oturumu (2FA doğrulanmış personel)',
+    responses: { 200: ok('Personel', CurrentUser) },
+  },
+  {
+    method: 'put',
+    path: '/v1/admin/users/{id}/roles',
+    operationId: 'setUserRoles',
+    tags: ['admin'],
+    auth: 'staff-mfa',
+    summary: 'Personel rollerini belirler (süper yönetici, step-up gerekir)',
+    body: RoleAssignBody,
+    responses: { 200: ok('Güncel kullanıcı', CurrentUser) },
   },
 ];

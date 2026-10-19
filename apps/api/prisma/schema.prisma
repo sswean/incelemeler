@@ -2,11 +2,11 @@
 // Tam model Faz 1 dilimlerinde ADR-0004'e göre genişletilir (Ek A2).
 
 generator client {
-  provider     = "prisma-client"
-  output       = "../src/generated/prisma"
-  moduleFormat         = "esm"
-  importFileExtension  = "js"
-  runtime              = "nodejs"
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+  runtime             = "nodejs"
 }
 
 datasource db {
@@ -153,4 +153,135 @@ model Listing {
   @@index([kind, status, primaryCategoryId])
   @@index([organizationId])
   @@map("listings")
+}
+
+// ───────────────────────── Kimlik ve erişim (Ek A3, ADR-0003) ─────────────────────────
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_DELETION
+  DELETED
+}
+
+/// Personel rolleri (§7.1). İşletme/reklamveren rolleri global değildir (Faz 3, kuruluş üyeliği).
+enum StaffRole {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  AUTHOR
+  MODERATOR
+  SALES
+}
+
+enum EmailTokenPurpose {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+  DELETE_ACCOUNT
+}
+
+model User {
+  id                  String                @id @default(uuid(7)) @db.Uuid
+  /// Küçük harfe çevrilmiş ve normalize edilmiş e-posta; benzersiz.
+  email               String                @unique
+  emailVerifiedAt     DateTime?             @map("email_verified_at") @db.Timestamptz(3)
+  passwordHash        String                @map("password_hash")
+  displayName         String                @map("display_name")
+  status              UserStatus            @default(ACTIVE)
+  /// 18+ beyanı (REQ-HSP-014)
+  ageConfirmedAt      DateTime              @map("age_confirmed_at") @db.Timestamptz(3)
+  termsVersion        String                @map("terms_version")
+  deletionRequestedAt DateTime?             @map("deletion_requested_at") @db.Timestamptz(3)
+  dataOrigin          DataOrigin            @default(USER) @map("data_origin")
+  createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime              @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version             Int                   @default(1)
+  roles               StaffRoleAssignment[]
+  sessions            Session[]
+  emailTokens         EmailToken[]
+  mfaFactor           MfaFactor?
+  recoveryCodes       RecoveryCode[]
+
+  @@index([status])
+  @@map("users")
+}
+
+model StaffRoleAssignment {
+  userId    String    @map("user_id") @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      StaffRole
+  grantedBy String?   @map("granted_by") @db.Uuid
+  grantedAt DateTime  @default(now()) @map("granted_at") @db.Timestamptz(3)
+
+  @@id([userId, role])
+  @@map("staff_roles")
+}
+
+/// Sunucu tarafı oturum; istemcide yalnızca opak token, veritabanında SHA-256 karması (REQ-HSP-004).
+model Session {
+  id                String    @id @default(uuid(7)) @db.Uuid
+  userId            String    @map("user_id") @db.Uuid
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash         String    @unique @map("token_hash")
+  isStaff           Boolean   @default(false) @map("is_staff")
+  mfaVerifiedAt     DateTime? @map("mfa_verified_at") @db.Timestamptz(3)
+  stepUpAt          DateTime? @map("step_up_at") @db.Timestamptz(3)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  lastSeenAt        DateTime  @default(now()) @map("last_seen_at") @db.Timestamptz(3)
+  idleExpiresAt     DateTime  @map("idle_expires_at") @db.Timestamptz(3)
+  absoluteExpiresAt DateTime  @map("absolute_expires_at") @db.Timestamptz(3)
+  revokedAt         DateTime? @map("revoked_at") @db.Timestamptz(3)
+  /// Kısaltılmış IP (IPv4 /24, IPv6 /48) — ham IP saklanmaz (REQ-KVK-025)
+  ipPrefix          String?   @map("ip_prefix")
+  userAgent         String?   @map("user_agent")
+
+  @@index([userId, revokedAt])
+  @@map("sessions")
+}
+
+/// Tek kullanımlık e-posta token'ları; yalnızca karma saklanır.
+model EmailToken {
+  id        String            @id @default(uuid(7)) @db.Uuid
+  userId    String            @map("user_id") @db.Uuid
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose   EmailTokenPurpose
+  tokenHash String            @unique @map("token_hash")
+  expiresAt DateTime          @map("expires_at") @db.Timestamptz(3)
+  usedAt    DateTime?         @map("used_at") @db.Timestamptz(3)
+  createdAt DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([userId, purpose])
+  @@map("email_tokens")
+}
+
+/// TOTP ikinci faktör; gizli anahtar AES-256-GCM ile şifreli (REQ-GUV-010).
+model MfaFactor {
+  userId          String    @id @map("user_id") @db.Uuid
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  secretEncrypted String    @map("secret_encrypted")
+  confirmedAt     DateTime? @map("confirmed_at") @db.Timestamptz(3)
+  lastUsedStep    BigInt?   @map("last_used_step")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@map("mfa_factors")
+}
+
+model RecoveryCode {
+  id       String    @id @default(uuid(7)) @db.Uuid
+  userId   String    @map("user_id") @db.Uuid
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash String    @map("code_hash")
+  usedAt   DateTime? @map("used_at") @db.Timestamptz(3)
+
+  @@index([userId])
+  @@map("recovery_codes")
+}
+
+/// Sabit pencereli hız sınırı sayacı (Redis yok, A-006).
+model RateLimitBucket {
+  key         String   @id
+  windowStart DateTime @map("window_start") @db.Timestamptz(3)
+  count       Int
+
+  @@map("rate_limit_buckets")
 }

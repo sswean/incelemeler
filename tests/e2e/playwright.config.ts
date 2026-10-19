@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { ADMIN_PORT, API_PORT, E2E_DATABASE_URL, WEB_PORT } from './env.js';
+import { ADMIN_PORT, API_PORT, E2E_DATABASE_URL, MAILPIT_URL, WEB_PORT } from './env.js';
 
 const apiUrl = `http://localhost:${API_PORT}`;
 
@@ -31,6 +31,12 @@ export default defineConfig({
         DATABASE_URL: E2E_DATABASE_URL,
         API_PORT: String(API_PORT),
         CURSOR_SECRET: 'e2e-cursor-secret-not-a-real-secret-0000',
+        // Yalnızca E2E: sabit, gerçek olmayan test anahtarı (her koşuda sıfırlanan veritabanı).
+        DATA_ENCRYPTION_KEY: 'e2'.repeat(32),
+        EMAIL_ADAPTER: 'mailpit',
+        MAILPIT_URL,
+        WEB_BASE_URL: `http://localhost:${WEB_PORT}`,
+        ADMIN_BASE_URL: `http://localhost:${ADMIN_PORT}`,
       },
     },
     {

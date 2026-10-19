@@ -1,9 +1,9 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import type { CategoryList, CategoryListQuery, ListingKind } from '@incelemeler/contracts';
-import { ENV, type EnvToken } from '../config/env.provider.js';
-import { decodeCursor, encodeCursor, InvalidCursorError } from '../common/cursor.js';
-import { ProblemException } from '../common/problem.js';
-import { PrismaService } from '../prisma/prisma.service.js';
+import { ENV, type EnvToken } from '../../config/env.provider.js';
+import { decodeCursor, encodeCursor, InvalidCursorError } from '../../common/cursor.js';
+import { ProblemException } from '../../common/problem.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
 
 @Injectable()
 export class CategoriesService {

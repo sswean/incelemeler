@@ -11,15 +11,15 @@ Hiçbiri henüz sağlanmamıştır. Her biri için İnsan'dan beklenen eylem C s
 |---|---|---|---|
 | X-001 | Alan adı `incelemeler.com.tr` DNS yönetimi ve TLS | Canlıya geçiş | Yerel/staging alan adları |
 | X-002 | Barındırma (uygulama + yönetilen PostgreSQL + S3 uyumlu depolama) — **veri yerleşimi kararı** | Canlıya geçiş | Docker Compose |
-| X-003 | CDN / WAF | Canlıya geçiş | — |
-| X-004 | İşlemsel e-posta gönderim hizmeti | 1 | Yerel e-posta yakalayıcı |
+| X-003 | CDN / WAF | Canlıya geçiş | — · Not: uç vekil `X-Forwarded-For`'a gözlediği istemci IP'sini EKLEMELİ (A-009) |
+| X-004 | İşlemsel e-posta gönderim hizmeti | 1 | Yerel e-posta yakalayıcı (Mailpit HTTP API); üretimde `EMAIL_ADAPTER=disabled` — gönderim yok. Gerekecek ortam değişkeni adları sağlayıcı seçilince eklenecek |
 | X-005 | Harita kütüphanesi/karo sağlayıcısı + coğrafi kodlama (lisans ve kullanım şartları) | 1 (İSTEĞE BAĞLI) | Harita KAPALI; adres + "Yol tarifi" dış bağlantısı |
 | X-006 | Türkiye idari bölge verisi (il/ilçe/mahalle; lisansı uygun kaynak) | 0–1 | İl/ilçe listesi elle (kaynaklı) |
 | X-007 | Hata izleme ve log/izleme hizmetleri | 1 | Yerel loglar |
 | X-008 | Analitik aracı (birinci taraf yeterliyse gerekmez) | 1 | Birinci taraf olay hattı |
 | X-009 | Gizlilik dostu CAPTCHA | 1 | Hız sınırları + bal küpü alanı |
 | X-010 | Kötü amaçlı dosya taraması | 1 | Yalnızca personel yüklemesi + yeniden kodlama |
-| X-011 | Sızdırılmış parola kontrolü (k-anonimlik API) | 1 | Yerel yaygın parola listesi |
+| X-011 | Sızdırılmış parola kontrolü (k-anonimlik API) | 1 | Yerel yaygın parola listesi (`apps/api/src/modules/identity/common-passwords.ts`); REQ-HSP-003 KISMİ |
 | X-012 | Google Search Console, Bing Webmaster, Yandex Webmaster | Canlıya geçiş | — |
 | X-013 | Apple Developer Program + App Store Connect | 2 | Simülatör/yerel derleme |
 | X-014 | Google Play Console | 2 | Emülatör/yerel derleme |

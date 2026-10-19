@@ -48,11 +48,13 @@ test.describe('Faz 0 yürüyen iskelet', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
-  test('[REQ-ADM-001] @smoke panel gerçek sistem durumunu gösterir ve noindex', async ({
+  test('[REQ-ADM-001] @smoke panel noindex; oturumsuz ziyaretçi giriş sayfasına yönlenir', async ({
     page,
   }) => {
+    // Sistem durumunun gerçek veriyle gösterimi, giriş + 2FA sonrası admin-auth.spec.ts'de doğrulanır.
     const res = await page.goto(admin);
     expect(res?.headers()['x-robots-tag']).toContain('noindex');
-    await expect(page.getByTestId('system-status')).toContainText('Çalışıyor');
+    await expect(page).toHaveURL(`${admin}/giris`);
+    await expect(page.getByRole('heading', { level: 1, name: 'Personel girişi' })).toBeVisible();
   });
 });

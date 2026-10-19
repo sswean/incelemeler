@@ -2,6 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@n
 import type { Request, Response } from 'express';
 import { ProblemException, problemFor } from './problem.js';
 import { traceIdOf } from './trace.js';
+import { RateLimitedException } from '../modules/platform/rate-limit.service.js';
 
 /** Tüm hataları problem+json'a çevirir; iç bilgi (yığın izi, SQL) istemciye sızmaz (REQ-GUV-015). */
 @Catch()
@@ -16,6 +17,9 @@ export class ProblemFilter implements ExceptionFilter {
     const instance = req.path;
 
     let body;
+    if (exception instanceof RateLimitedException) {
+      res.setHeader('Retry-After', String(exception.retryAfter));
+    }
     if (exception instanceof ProblemException) {
       body = exception.toProblem(instance, traceId);
     } else if (exception instanceof HttpException) {

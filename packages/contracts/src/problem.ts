@@ -12,6 +12,13 @@ export const ErrorCode = z.enum([
   'RATE_LIMITED',
   'INTERNAL_ERROR',
   'SERVICE_UNAVAILABLE',
+  'INVALID_CREDENTIALS',
+  'INVALID_TOKEN',
+  'WEAK_PASSWORD',
+  'ACCOUNT_SUSPENDED',
+  'MFA_INVALID',
+  'STEP_UP_REQUIRED',
+  'EMAIL_NOT_VERIFIED',
 ]);
 export type ErrorCode = z.infer<typeof ErrorCode>;
 

@@ -4,3 +4,4 @@ export * from './taxonomy.js';
 export * from './data-origin.js';
 export * from './endpoints.js';
 export * from './openapi.js';
+export * from './auth.js';

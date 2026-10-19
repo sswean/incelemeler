@@ -537,36 +537,36 @@
       "title": "E-posta + parola ile kayıt",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Kayıt 202 + doğrulama e-postası (24 sa, tek kullanımlık, hash); sıfırlama 30 dk tek kullanımlık ve tüm oturumları kapatır; web akışı E2E.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Değerlendirme/başvuru için doğrulanmış e-posta zorunluluğu ilgili dilimlerde (D7, ISL) uygulanacak."
     },
     {
       "id": "REQ-HSP-003",
       "title": "Parola hash'i Argon2id (parametreler güncel OWASP Password Storage önerisine göre ADR'de",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Argon2id (m=19456, t=2, p=1; ADR-0003); en az 10, en çok 256 karakter; yaygın parola ve e-postayı içeren parola reddi.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Sızıntı listesi k-anonimlik kontrolü dış servis gerektirir (X-011, doğrulanmadı) → şimdilik yerel yaygın parola listesi."
     },
     {
       "id": "REQ-HSP-004",
       "title": "Web",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "`__Host-sid` HttpOnly+Secure+SameSite=Lax (E2E); token istemci JS'ine açık değil; kayan 30 gün / mutlak 90 gün, personel 12 sa / 7 gün; oturum listesi ve iptal (başkasınınki 404).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "CSRF: SameSite=Lax + Next Server Actions Origin/Host denetimi var; ayrı çift gönderim token'ı D13 sertleştirmede (A-010)."
     },
     {
       "id": "REQ-HSP-005",
@@ -597,36 +597,36 @@
       "title": "Personel (süper yönetici, yönetici, editör, yazar, moderatör) için TOTP tabanlı 2FA ZOR…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "2FA kurulmadan panel uç noktaları 403 MFA_REQUIRED; TOTP yeniden oynatma koruması; 10 hash'li kurtarma kodu tek kullanımlık; rol değişikliğinde 10 dk step-up (STEP_UP_REQUIRED); panel arayüzü E2E.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Diğer kritik işlemler (kampanya tutarı, toplu silme, dışa aktarma, hukuki kapı) eklendikçe aynı `stepUp: true` mekanizmasını kullanır."
     },
     {
       "id": "REQ-HSP-008",
       "title": "Hız sınırları (varsayılan)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Giriş IP 10/dk + hesap 5/dk (yalnız başarısız denemeler); sıfırlama e-posta başına 3/sa (sessiz); kayıt IP 5/sa; 429 + Retry-After; yanıtlar hesap varlığını sızdırmaz.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Artan bekleme (üstel) henüz yok (sabit pencere); değerlendirme sınırı D7."
     },
     {
       "id": "REQ-HSP-009",
       "title": "Rol × izin matrisi docs/requirements/HSP.md içinde tablo olarak yazılır",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "`permissions.ts` rol × izin matrisi + birim testleri; rol atama yalnız süper yönetici, son süper yönetici kaldırılamaz, denetim kaydı.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Matris tablosunun HSP.md'ye işlenmesi ve her hücrenin uç nokta yetki testine bağlanması uç noktalar eklendikçe (D2…D9)."
     },
     {
       "id": "REQ-HSP-010",
@@ -681,9 +681,9 @@
       "title": "Yaş",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "`ageConfirmed: true` olmadan kayıt 422; web formunda zorunlu onay kutusu (E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -2553,12 +2553,12 @@
       "title": "Yetkilendirme",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Varsayılan reddet: her rota @Public ya da @RequireAuth taşır, sözleşmedeki yetki düzeyiyle birebir (birim testi); başkasının oturumu 404 (IDOR).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Kuruluş kapsamı Faz 3; sahiplik kontrolleri kaynaklar eklendikçe."
     },
     {
       "id": "REQ-GUV-002",
@@ -2613,12 +2613,12 @@
       "title": "CSRF",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "SameSite=Lax/Strict çerez + Next Server Actions yerleşik Origin/Host denetimi; API yalnız Bearer kabul eder (çerezle çağrılamaz). Çift gönderim token'ı D13 (A-010)."
     },
     {
       "id": "REQ-GUV-007",
@@ -2685,12 +2685,12 @@
       "title": "Oturum güvenliği",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Parola sıfırlama ve rol değişikliğinde oturum iptali (entegrasyon testi); personel kayan 12 sa; oturum listesi.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Oturum içi parola değiştirme uç noktası D10 (hesap yönetimi) ile."
     },
     {
       "id": "REQ-GUV-013",
@@ -2757,12 +2757,12 @@
       "title": "Aydınlatma metni ve açık rıza metni ayrı belgeler ve ayrı arayüz eylemleridir",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Kayıt formunda aydınlatma ayrı bağlantı, koşul kabulü ayrı kutu; metinler TASLAK (L-009). Açık rıza amaçları (pazarlama vb.) ilgili dilimlerde."
     },
     {
       "id": "REQ-KVK-002",

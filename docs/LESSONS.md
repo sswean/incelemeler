@@ -11,3 +11,6 @@ Bir ders bir madde; ilk satır tek cümlelik özet. Yanlış çıkan ders silini
 - **`minio/minio` imajı bu ortamda çekilemiyor.** Yerel S3 için SeaweedFS.
 - **dependency-cruiser, çözümlenemeyen paketleri yol kuralıyla yakalamaz.** `couldNotResolve` kuralı ve çıplak paket adını da kapsayan desen gerekir.
 - **req:check (a) faz içinde yalnızca çalışılmaya başlanan ZORUNLU REQ'leri denetler; faz kapısında `node scripts/req-check.mjs --gate` tüm ZORUNLU REQ'leri denetler.** Aksi hâlde faz başında CI hep kırmızı olurdu.
+- **Zod 4 girdi (`io: input`) şemaları kimlikliyse tekil dönüşüm `#/definitions/...` üretir ve openapi-typescript çözemez.** Girdi şemaları boş bir kayıt defteriyle (`metadata: z.registry()`) satır içi üretilir.
+- **Next.js yol duyurucusu (`#__next-route-announcer__`) da `role="alert"` taşır.** Playwright'ta `getByRole('main').getByRole('alert')` gibi kapsamlı seçici kullan.
+- **E2E'de tüm tarayıcı istekleri 127.0.0.1'den gelir; IP hız sınırları testleri birbirine bağlar.** Her teste ayrı `X-Forwarded-For` veren otomatik fixture (`tests/e2e/support/fixtures.ts`).

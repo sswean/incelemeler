@@ -235,3 +235,124 @@ export type AdminArticleListQuery = z.infer<typeof AdminArticleListQuery>;
 export const PreviewLink = z
   .object({ url: z.string(), expiresAt: z.iso.datetime() })
   .meta({ id: 'PreviewLink' });
+
+// ── Herkese açık ──
+
+/** Gömülü listeleme kartı: canlı veriden (REQ-ICR-003). */
+export const ListingCardData = z.object({
+  id: z.string(),
+  kind: z.string(),
+  slug: z.string(),
+  name: z.string(),
+  status: z.string(),
+  carRental: z.boolean(),
+  categoryName: z.string(),
+  place: z.string().nullable(),
+  priceLevel: z.number().int().nullable(),
+  reviewCount: z.number().int(),
+  /** Herkese açık değilse (taslak/silinmiş) kart gösterilmez. */
+  visible: z.boolean(),
+});
+export type ListingCardData = z.infer<typeof ListingCardData>;
+
+export const PublicMedia = z.object({
+  id: z.string(),
+  width: z.number().int(),
+  height: z.number().int(),
+  altText: z.string(),
+  credit: z.string(),
+  blurhash: z.string().nullable(),
+});
+
+export const PublicArticle = z
+  .object({
+    id: z.string(),
+    type: ArticleType,
+    slug: z.string(),
+    title: z.string(),
+    summary: z.string().nullable(),
+    body: ArticleBody,
+    hero: PublicMedia.nullable(),
+    sources: z.array(ArticleSource),
+    commercialRelation: CommercialRelation,
+    experienceType: ExperienceType.nullable(),
+    experienceNote: z.string().nullable(),
+    selectionMethod: z.string().nullable(),
+    author: z.object({ displayName: z.string(), slug: z.string().nullable() }),
+    editor: z.object({ displayName: z.string() }).nullable(),
+    status: ArticleStatus,
+    publishedAt: z.iso.datetime().nullable(),
+    lastSignificantUpdateAt: z.iso.datetime().nullable(),
+    updateNotes: z.array(z.object({ date: z.iso.datetime(), note: z.string() })),
+    corrections: z.array(z.object({ date: z.iso.datetime(), note: z.string() })),
+    dataOrigin: z.string(),
+    /** Gövdede kullanılan lisanslı görseller (lisansı eksik olan gösterilmez). */
+    media: z.record(z.string(), PublicMedia),
+    listings: z.record(z.string(), ListingCardData),
+  })
+  .meta({ id: 'PublicArticle' });
+export type PublicArticle = z.infer<typeof PublicArticle>;
+
+export const PreviewQuery = z.object({ token: z.string().min(10).max(2000) });
+
+export const ArticleSitemapPage = z
+  .object({
+    data: z.array(z.object({ type: ArticleType, slug: z.string(), lastmod: z.iso.datetime() })),
+  })
+  .meta({ id: 'ArticleSitemapPage' });
+
+// ── Yazar profili (REQ-ICR-011) ──
+
+export const AuthorLink = z.object({
+  label: z.string().trim().min(2).max(60),
+  url: z.url({ protocol: /^https$/ }).max(300),
+});
+
+export const AuthorProfileBody = z.object({
+  slug: z
+    .string()
+    .min(2)
+    .max(80)
+    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
+  title: z.string().trim().max(120).nullable(),
+  bio: z.string().trim().max(2000).nullable(),
+  expertise: z.array(z.string().trim().min(2).max(60)).max(12),
+  /** Etik beyanı: menfaat ilişkileri, kabul edilen davet/ürün politikası. */
+  ethics: z.string().trim().max(2000).nullable(),
+  links: z.array(AuthorLink).max(6),
+  /** Mevcut profil güncellenirken iyimser kilit; ilk oluşturmada verilmez. */
+  version: z.number().int().positive().optional(),
+});
+export type AuthorProfileBody = z.infer<typeof AuthorProfileBody>;
+
+export const AuthorProfile = z
+  .object({
+    displayName: z.string(),
+    profile: AuthorProfileBody.omit({ version: true })
+      .extend({ version: z.number().int(), updatedAt: z.iso.datetime() })
+      .nullable(),
+  })
+  .meta({ id: 'AuthorProfile' });
+export type AuthorProfile = z.infer<typeof AuthorProfile>;
+
+export const PublicAuthor = z
+  .object({
+    displayName: z.string(),
+    slug: z.string(),
+    title: z.string().nullable(),
+    bio: z.string().nullable(),
+    expertise: z.array(z.string()),
+    ethics: z.string().nullable(),
+    links: z.array(AuthorLink),
+    articles: z.array(
+      z.object({
+        type: ArticleType,
+        slug: z.string(),
+        title: z.string(),
+        summary: z.string().nullable(),
+        publishedAt: z.iso.datetime().nullable(),
+      }),
+    ),
+  })
+  .meta({ id: 'PublicAuthor' });
+export type PublicAuthor = z.infer<typeof PublicAuthor>;

@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 3 — listeleme CRUD + tür uzantıları + medya + içe aktarma (dilim 2 taksonomi tamamlandı)
+- Aktif dilim: Faz 1 dilim 6 — arama + filtreler + hub sayfaları (dilim 5 içerik editörü tamamlandı: `docs/status-log/F1-D5.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -24,7 +24,12 @@
 - Medya: `/v1/admin/media` (yükleme, EXIF/GPS silme, blurhash, lisans alanları), listeleme görselleri, panelde lisans düzenleme.
 - İçe aktarma: `/v1/admin/imports` (CSV önizleme → onay → geri alma), panel `/ice-aktarma`. XLSX henüz yok (izin listesinde uygun kütüphane seçimi — PARKING-LOT P-003).
 
+## Dilim 5 özeti (içerik editörü + yayın akışı)
+- API: `/v1/admin/articles` (taslak, blok gövde, revizyonlar, menfaat beyanı, geçişler, düzeltme, imzalı önizleme, zamanlı yayın worker'da), `/v1/articles/{slug}`, `/v1/preview/article`, `/v1/sitemap/articles`, `/v1/admin/author-profile`, `/v1/authors/{slug}`.
+- Panel: `/icerikler` (liste, yeni, blok editörü, önizleme bağlantısı), `/yazar-profili`.
+- Web: `/rehber|liste|karsilastir|inceleme|haber|sponsorlu/{slug}` (künye, ticari açıklama, deneyim beyanı, Article JSON-LD), `/onizleme`, `/yazar/{slug}`, metodoloji/politika sayfaları (TASLAK), alt bilgi.
+
 ## Sonraki 3 adım (Faz 1, §9.3 önerilen sıra)
-1. Dilim 4 — Pilot listeleme detay sayfaları (Mekan, Konaklama, Ürün) + SEO temeli: URL şeması, slug 301, JSON-LD, sitemap/robots, görsel varyantları (Next Image), yer tutucu sistemi.
-2. Dilim 5 — İçerik editörü + yayın akışı (blok şemaları, revizyonlar).
-3. Dilim 6 — Arama + filtreler (attr.* filtrelenebilir özellikler) + hub sayfaları ve yayın eşikleri.
+1. Dilim 6 — Arama + filtreler (attr.* filtrelenebilir özellikler) + hub sayfaları ve yayın eşikleri.
+2. Dilim 7 — Değerlendirmeler + moderasyon + bildirim/itiraz.
+3. Dilim 8 — Dış yönlendirme/affiliate (`/git/`).

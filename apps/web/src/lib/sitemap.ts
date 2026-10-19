@@ -1,5 +1,5 @@
 import 'server-only';
-import { listingPath } from '@incelemeler/routes';
+import { articlePath, listingPath } from '@incelemeler/routes';
 import { serverApi } from './api';
 import { canonical } from './seo';
 
@@ -36,6 +36,15 @@ export async function listingPages(): Promise<Array<Array<{ loc: string; lastmod
     cursor = data.nextCursor ?? undefined;
   } while (cursor);
   return pages.length ? pages : [[]];
+}
+
+/** Yayındaki içerikler (demo hariç — API süzer). */
+export async function articlePages(): Promise<Array<{ loc: string; lastmod: string }>> {
+  const { data } = await serverApi().GET('/v1/sitemap/articles');
+  return (data?.data ?? []).map((e) => ({
+    loc: canonical(articlePath({ type: e.type, slug: e.slug })),
+    lastmod: e.lastmod,
+  }));
 }
 
 export function urlset(entries: Array<{ loc: string; lastmod?: string }>): string {

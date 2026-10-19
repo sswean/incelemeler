@@ -12,3 +12,4 @@ export * from './imports.js';
 export * from './cta.js';
 export * from './public-listing.js';
 export * from './content.js';
+export * from './rich-text.js';

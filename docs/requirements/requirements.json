@@ -875,10 +875,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "İçerik JSON blok dizisi; her blok tipinin zod şeması packages/contracts (content.ts); API yazımda doğrular.",
+      "acceptance": "İçerik JSON blok dizisi; zod şemaları packages/contracts; panel blok editörü (editor-blocks.test, E2E editorial.spec); web sunucuda render eder.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Panel blok editörü (5b), web/mobil render (5c, Faz 2)."
+      "notes": "Mobil render Faz 2."
     },
     {
       "id": "REQ-ICR-002",
@@ -897,12 +897,12 @@
       "title": "Gömülü listeleme kartları canlı veriden render edilir (ad, puan, fiyat durumu, açık/kap…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Gömülü listeleme kartı canlı veriden (ad, kategori, yer, fiyat seviyesi, kapalı durumu); kapanan listelemede \"Kalıcı olarak kapandı\" (articles.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Puan gösterimi D7; editör iş listesine görev REQ-ADM-009 ile (D12)."
     },
     {
       "id": "REQ-ICR-004",
@@ -911,10 +911,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "Türler: Rehber, Liste (seçim yöntemi zorunlu), Karşılaştırma, İnceleme (deneyim beyanı zorunlu), Haber, Sponsorlu (ilişki zorunlu, inceleme gibi sunulamaz) — article-rules.test, articles.int.",
+      "acceptance": "Türler ve kuralları (article-rules.test, articles.int); tür önekli URL ve şablon (Liste seçim yöntemi kutusu, ticari açıklama, deneyim beyanı) — E2E editorial.spec.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Şablonlar (5c); listede sponsorlu öğe yasağı D9."
+      "notes": "İçindekiler/harita/karşılaştırma tablosu D6; listede sponsorlu öğe yasağı D9."
     },
     {
       "id": "REQ-ICR-005",
@@ -923,10 +923,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "TASLAK → İNCELEMEDE → ONAYLANDI → ZAMANLANDI → YAYINDA → ARŞİV; yazar yayımlayamaz; sponsorluda yönetici kontrolü; imzalı süreli önizleme; zamanlanmış yayın worker'da (articles.int).",
+      "acceptance": "TASLAK → İNCELEMEDE → ONAYLANDI → ZAMANLANDI → YAYINDA → ARŞİV; yazar yayımlayamaz; sponsorluda yönetici kontrolü; imzalı süreli noindex önizleme sayfası; zamanlanmış yayın worker'da (articles.int, E2E editorial.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "GÜNCELLENİYOR ara durumu A-014; önizleme sayfası (5c)."
+      "notes": "GÜNCELLENİYOR ara durumu A-014."
     },
     {
       "id": "REQ-ICR-006",
@@ -935,10 +935,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "Yayın tarihi, son anlamlı güncelleme, değişiklik notu zorunluluğu, kaynaklar alanı (articles.int).",
+      "acceptance": "Künye: yazar (yazar sayfası bağlantılı), editör, yayın ve son güncelleme tarihi, güncelleme notları, kaynaklar, ticari ilişki beyanı (articles.int, E2E editorial.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Görünür gösterim ve yazar sayfası bağlantısı (5c)."
+      "notes": "Okur tarafı \"Yapay zekâ yardımı\" gösterimi hukuki incelemeye bağlı."
     },
     {
       "id": "REQ-ICR-007",
@@ -947,10 +947,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "İncelemede deneyim beyanı zorunlu; sponsorlu içerikte deneyim/puan iddiası engelli.",
+      "acceptance": "İncelemede deneyim beyanı zorunlu ve sayfada görünür; sponsorlu içerikte deneyim/puan iddiası engelli.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Görünür gösterim (5c); editör puanı kuralı D7."
+      "notes": "Editör puanı kuralı D7."
     },
     {
       "id": "REQ-ICR-008",
@@ -959,10 +959,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "Menfaat beyanı sorusu yanıtlanmadan incelemeye gönderilemez; GIFTED/SPONSORED/AFFILIATE ilişkisi.",
+      "acceptance": "Menfaat beyanı zorunlu; NONE dışı ilişkide sabit sözlükten açıklama sayfanın başında otomatik basılır (TASLAK metin).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Otomatik etiket basımı (5c, D9)."
+      "notes": "compliance_config üzerinden etiket güncelleme D9."
     },
     {
       "id": "REQ-ICR-009",
@@ -971,46 +971,46 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "Düzeltme notu yalnızca yayındaki içeriğe, denetim kaydıyla (articles.int).",
+      "acceptance": "Düzeltme notu yalnızca yayındaki içeriğe, denetim kaydıyla; sayfada \"Düzeltme: {tarih} — {not}\" görünür.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Sayfada görünür gösterim (5c)."
+      "notes": "Okur hata bildirimi kanalı D7."
     },
     {
       "id": "REQ-ICR-010",
       "title": "İçerik ve tasarım ayrıdır",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Editör rehber/liste/karşılaştırma/inceleme/haber sayfasını panelden kod değiştirmeden hazırlar ve yayımlar (E2E editorial.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Koleksiyon sayfaları D11 (ana sayfa modülleri) ile."
     },
     {
       "id": "REQ-ICR-011",
       "title": "Yazar/editör profili sayfası",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Personel kendi yazar profilini yönetir (sürüm denetimi, adres çakışması, denetim kaydı); /yazar/{slug} ad, unvan, uzmanlık, biyografi, bağlantılar, etik beyanı ve yayındaki içerikleri gösterir (articles.int, E2E editorial.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Editörün başka yazar profilini düzenlemesi ve profil fotoğrafı sonraki dilimde."
     },
     {
       "id": "REQ-ICR-012",
       "title": "Editoryal metodoloji sayfaları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "/nasil-degerlendiriyoruz (ölçekler, eşikler, Bayes formülü, deneyim beyanı türleri), /editoryal-bagimsizlik, /sponsorlu-icerik-politikasi, /duzeltme-politikasi TASLAK damgalı; alt bilgiden erişilir (E2E editorial.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Test yöntemleri bölümü editoryal ekip metniyle; TASLAK kaldırma C sınıfı. A-015 (noindex)."
     },
     {
       "id": "REQ-DEG-001",
@@ -2351,10 +2351,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "Site haritası dizini + listeleme bölümü (≤ 50.000/dosya); demo, kapalı, taslak, silinmiş yok (public-listings.int, E2E).",
+      "acceptance": "Site haritası dizini + listeleme ve içerik bölümleri (≤ 50.000/dosya); demo, kapalı, taslak, silinmiş yok (public-listings.int, articles.int, E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "İçerik, hub, destinasyon ve görsel site haritaları ilgili dilimlerde."
+      "notes": "Hub, destinasyon ve görsel site haritaları ilgili dilimlerde."
     },
     {
       "id": "REQ-SEO-007",
@@ -2375,10 +2375,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "Listeleme JSON-LD (Restaurant/LodgingBusiness/Product/…), BreadcrumbList; değerlendirme yokken puan işaretlemesi yok; demo'da JSON-LD yok (json-ld.test, E2E).",
+      "acceptance": "Listeleme JSON-LD, BreadcrumbList, Article/NewsArticle (yazar Person, yayıncı), yazar sayfasında ProfilePage/Person; değerlendirme yokken puan işaretlemesi yok; demo'da JSON-LD yok.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Article/ItemList/Person/Organization/WebSite ilgili dilimlerde; çevrimdışı şema doğrulayıcı D13."
+      "notes": "ItemList/Organization/WebSite ilgili dilimlerde; çevrimdışı şema doğrulayıcı D13."
     },
     {
       "id": "REQ-SEO-009",

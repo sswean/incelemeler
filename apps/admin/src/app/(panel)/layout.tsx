@@ -23,6 +23,19 @@ export default async function PanelLayout({ children }: { children: ReactNode })
           >
             {tr.admin.nav.listings}
           </Link>
+          <Link href="/icerikler" className="min-h-11 content-center text-brand-default underline">
+            {tr.admin.nav.content}
+          </Link>
+          {user.permissions.some((x) =>
+            ['content.publish', 'content.draft', 'sponsored.content.write'].includes(x),
+          ) ? (
+            <Link
+              href="/yazar-profili"
+              className="min-h-11 content-center text-brand-default underline"
+            >
+              {tr.admin.nav.authorProfile}
+            </Link>
+          ) : null}
           {user.permissions.includes('listings.write') ? (
             <Link
               href="/ice-aktarma"

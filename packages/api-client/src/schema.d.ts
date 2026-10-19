@@ -745,6 +745,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/articles/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Yayındaki içerik (canlı listeleme kartları ve lisanslı görsellerle) */
+        get: operations["getPublicArticle"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/preview/article": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** İmzalı belirteçle önizleme (her durumda; noindex sayfada) */
+        get: operations["previewArticle"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sitemap/articles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Site haritası için yayındaki içerikler (demo hariç) */
+        get: operations["sitemapArticles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/author-profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Oturumdaki yazarın profili (yoksa profile=null) */
+        get: operations["adminGetOwnAuthorProfile"];
+        /** Yazar profilini oluşturur ya da günceller (sürüm denetimli) */
+        put: operations["adminSaveOwnAuthorProfile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/authors/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Yazar sayfası: profil ve yayındaki içerikleri */
+        get: operations["getPublicAuthor"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1612,6 +1698,223 @@ export interface components {
             url: string;
             /** Format: date-time */
             expiresAt: string;
+        };
+        PublicArticle: {
+            id: string;
+            /** @enum {string} */
+            type: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED";
+            slug: string;
+            title: string;
+            summary: string | null;
+            body: ({
+                /** @enum {string} */
+                type: "heading";
+                level: 2 | 3;
+                text: string;
+            } | {
+                /** @enum {string} */
+                type: "paragraph";
+                content: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "list";
+                ordered: boolean;
+                items: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[][];
+            } | {
+                /** @enum {string} */
+                type: "image";
+                /** Format: uuid */
+                mediaId: string;
+                caption?: string;
+            } | {
+                /** @enum {string} */
+                type: "gallery";
+                mediaIds: string[];
+            } | {
+                /** @enum {string} */
+                type: "table";
+                header: string[];
+                rows: string[][];
+                caption?: string;
+            } | {
+                /** @enum {string} */
+                type: "listingCard";
+                /** Format: uuid */
+                listingId: string;
+                note?: string;
+            } | {
+                /** @enum {string} */
+                type: "infoBox";
+                /** @enum {string} */
+                tone: "tip" | "warning";
+                content: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "prosCons";
+                pros: string[];
+                cons: string[];
+            } | {
+                /** @enum {string} */
+                type: "faq";
+                items: {
+                    question: string;
+                    answer: {
+                        text: string;
+                        bold?: boolean;
+                        italic?: boolean;
+                        /** Format: uri */
+                        href?: string;
+                    }[];
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "quote";
+                content: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[];
+                attribution?: string;
+            })[];
+            hero: {
+                id: string;
+                width: number;
+                height: number;
+                altText: string;
+                credit: string;
+                blurhash: string | null;
+            } | null;
+            sources: {
+                title: string;
+                /** Format: uri */
+                url?: string;
+                /** Format: date */
+                accessedAt?: string;
+            }[];
+            /** @enum {string} */
+            commercialRelation: "NONE" | "GIFTED" | "SPONSORED" | "AFFILIATE";
+            /** @enum {string|null} */
+            experienceType: "TESTED_IN_PERSON" | "VISITED" | "STAYED" | "USED_LONG_TERM" | "RESEARCH_ONLY" | null;
+            experienceNote: string | null;
+            selectionMethod: string | null;
+            author: {
+                displayName: string;
+                slug: string | null;
+            };
+            editor: {
+                displayName: string;
+            } | null;
+            /** @enum {string} */
+            status: "DRAFT" | "IN_REVIEW" | "APPROVED" | "SCHEDULED" | "PUBLISHED" | "ARCHIVED";
+            /** Format: date-time */
+            publishedAt: string | null;
+            /** Format: date-time */
+            lastSignificantUpdateAt: string | null;
+            updateNotes: {
+                /** Format: date-time */
+                date: string;
+                note: string;
+            }[];
+            corrections: {
+                /** Format: date-time */
+                date: string;
+                note: string;
+            }[];
+            dataOrigin: string;
+            media: {
+                [key: string]: {
+                    id: string;
+                    width: number;
+                    height: number;
+                    altText: string;
+                    credit: string;
+                    blurhash: string | null;
+                };
+            };
+            listings: {
+                [key: string]: {
+                    id: string;
+                    kind: string;
+                    slug: string;
+                    name: string;
+                    status: string;
+                    carRental: boolean;
+                    categoryName: string;
+                    place: string | null;
+                    priceLevel: number | null;
+                    reviewCount: number;
+                    visible: boolean;
+                };
+            };
+        };
+        ArticleSitemapPage: {
+            data: {
+                /** @enum {string} */
+                type: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED";
+                slug: string;
+                /** Format: date-time */
+                lastmod: string;
+            }[];
+        };
+        AuthorProfile: {
+            displayName: string;
+            profile: {
+                slug: string;
+                title: string | null;
+                bio: string | null;
+                expertise: string[];
+                ethics: string | null;
+                links: {
+                    label: string;
+                    /** Format: uri */
+                    url: string;
+                }[];
+                version: number;
+                /** Format: date-time */
+                updatedAt: string;
+            } | null;
+        };
+        PublicAuthor: {
+            displayName: string;
+            slug: string;
+            title: string | null;
+            bio: string | null;
+            expertise: string[];
+            ethics: string | null;
+            links: {
+                label: string;
+                /** Format: uri */
+                url: string;
+            }[];
+            articles: {
+                /** @enum {string} */
+                type: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED";
+                slug: string;
+                title: string;
+                summary: string | null;
+                /** Format: date-time */
+                publishedAt: string | null;
+            }[];
         };
         PublicListing: {
             id: string;
@@ -3918,6 +4221,202 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PreviewLink"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getPublicArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description İçerik */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicArticle"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    previewArticle: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description İçerik */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicArticle"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    sitemapArticles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sayfa */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticleSitemapPage"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetOwnAuthorProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Profil */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorProfile"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminSaveOwnAuthorProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    slug: string;
+                    title: string | null;
+                    bio: string | null;
+                    expertise: string[];
+                    ethics: string | null;
+                    links: {
+                        label: string;
+                        /** Format: uri */
+                        url: string;
+                    }[];
+                    version?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Profil */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorProfile"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getPublicAuthor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Yazar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicAuthor"];
                 };
             };
             /** @description Hata (RFC 9457) */

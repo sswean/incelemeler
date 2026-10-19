@@ -1,6 +1,13 @@
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { AdminArticle, AdminArticleList, PreviewLink, Problem } from '@incelemeler/contracts';
+import {
+  AdminArticle,
+  AdminArticleList,
+  AuthorProfile,
+  PreviewLink,
+  Problem,
+  PublicAuthor,
+} from '@incelemeler/contracts';
 import { verifyToken } from '../src/common/signed-token.js';
 import {
   AdminArticlesService,
@@ -183,7 +190,7 @@ describe('içerik yayın akışı (REQ-ICR-005)', () => {
       (await http().post(`/v1/admin/articles/${guide.id}/preview`).set(as(editor)).expect(200))
         .body,
     );
-    const token = link.url.split('/onizleme/')[1]!;
+    const token = new URL(link.url).searchParams.get('belirtec')!;
     expect(verifyToken(token, t.env.CURSOR_SECRET, PREVIEW_PURPOSE)).toMatchObject({
       articleId: guide.id,
     });
@@ -201,5 +208,142 @@ describe('içerik yayın akışı (REQ-ICR-005)', () => {
       .send({ type: 'GUIDE', title: 'Kadıköy gezi rehberi' })
       .expect(409);
     expect(codes(clash.body)).toEqual(['slug_taken']);
+  });
+});
+
+describe('herkese açık içerik (REQ-ICR-003, REQ-SEO-001)', () => {
+  it('[REQ-ICR-003] yayındaki içerik canlı listeleme kartıyla döner; taslak 404; önizleme belirteçle her durumda', async () => {
+    const cat = await t.prisma.category.create({
+      data: {
+        slug: 'test-restoran',
+        name: 'Test restoran',
+        allowedKinds: ['PLACE'],
+        status: 'PUBLISHED',
+        firstPublishedAt: new Date(),
+      },
+    });
+    const closed = await t.prisma.listing.create({
+      data: {
+        kind: 'PLACE',
+        slug: 'kapanan-yer',
+        name: 'Kapanan Yer',
+        primaryCategoryId: cat.id,
+        status: 'CLOSED_PERMANENTLY',
+        publishedAt: new Date(),
+        dataOrigin: 'EDITORIAL',
+        source: 'Editör',
+      },
+    });
+    let a = await create(editor, { type: 'GUIDE', title: 'Moda sahili rehberi' });
+    a = parse(
+      await patch(editor, a, {
+        body: [paragraph('Sahil boyunca yürüyüş.'), { type: 'listingCard', listingId: closed.id }],
+        interestDeclared: true,
+        commercialRelation: 'GIFTED',
+      }).expect(200),
+    );
+    await http().get(`/v1/articles/${a.slug}`).expect(404);
+    const link = PreviewLink.parse(
+      (await http().post(`/v1/admin/articles/${a.id}/preview`).set(as(editor)).expect(200)).body,
+    );
+    const token = new URL(link.url).searchParams.get('belirtec')!;
+    const preview = await http()
+      .get(`/v1/preview/article?token=${encodeURIComponent(token)}`)
+      .expect(200);
+    expect(preview.headers['x-robots-tag']).toBe('noindex');
+    expect(preview.body.status).toBe('DRAFT');
+    await http().get('/v1/preview/article?token=gecersiz-belirtec-xyz').expect(404);
+
+    a = parse(await move(editor, a, 'IN_REVIEW').expect(200));
+    a = parse(await move(editor, a, 'APPROVED').expect(200));
+    a = parse(await move(editor, a, 'PUBLISHED').expect(200));
+    const pub = (await http().get(`/v1/articles/${a.slug}`).expect(200)).body as {
+      commercialRelation: string;
+      listings: Record<string, { status: string; visible: boolean; name: string }>;
+    };
+    expect(pub.commercialRelation).toBe('GIFTED');
+    expect(pub.listings[closed.id]).toMatchObject({
+      status: 'CLOSED_PERMANENTLY',
+      visible: true,
+      name: 'Kapanan Yer',
+    });
+
+    const sitemap = (await http().get('/v1/sitemap/articles').expect(200)).body as {
+      data: Array<{ slug: string }>;
+    };
+    expect(sitemap.data.map((d) => d.slug)).toEqual(
+      expect.arrayContaining([a.slug, 'kadikoy-gezi-rehberi']),
+    );
+    expect(sitemap.data.map((d) => d.slug)).not.toContain('marka-is-birligiyle-yaz-rotasi');
+  });
+});
+
+describe('yazar profili (REQ-ICR-011)', () => {
+  const body = {
+    slug: 'icerik-yazar',
+    title: 'Gezi yazarı',
+    bio: 'İstanbul semtleri üzerine yazar.',
+    expertise: ['İstanbul', 'Sokak lezzetleri'],
+    ethics: 'Ücretsiz davet kabul etmez.',
+    links: [{ label: 'Kişisel site', url: 'https://ornek.example' }],
+  };
+
+  it('[REQ-ICR-011] personel kendi profilini oluşturur; sürüm denetimi ve adres çakışması', async () => {
+    const empty = AuthorProfile.parse(
+      (await http().get('/v1/admin/author-profile').set(as(author)).expect(200)).body,
+    );
+    expect(empty.profile).toBeNull();
+    const created = AuthorProfile.parse(
+      (await http().put('/v1/admin/author-profile').set(as(author)).send(body).expect(200)).body,
+    );
+    expect(created.profile).toMatchObject({ slug: 'icerik-yazar', version: 1 });
+    // Sürümsüz ikinci yazım (eski form) reddedilir.
+    await http().put('/v1/admin/author-profile').set(as(author)).send(body).expect(412);
+    const updated = AuthorProfile.parse(
+      (
+        await http()
+          .put('/v1/admin/author-profile')
+          .set(as(author))
+          .send({ ...body, title: 'Kıdemli gezi yazarı', version: 1 })
+          .expect(200)
+      ).body,
+    );
+    expect(updated.profile).toMatchObject({ title: 'Kıdemli gezi yazarı', version: 2 });
+    const clash = await http()
+      .put('/v1/admin/author-profile')
+      .set(as(editor))
+      .send({ ...body, slug: 'icerik-yazar' })
+      .expect(409);
+    expect(codes(clash.body)).toEqual(['slug_taken']);
+    // Yalnızca https bağlantı.
+    await http()
+      .put('/v1/admin/author-profile')
+      .set(as(editor))
+      .send({ ...body, slug: 'icerik-editor', links: [{ label: 'Site', url: 'http://x.example' }] })
+      .expect(422);
+    const log = await t.prisma.auditLog.findMany({
+      where: { action: { startsWith: 'editorial.author_profile.' } },
+    });
+    expect(log.map((l) => l.action).sort()).toEqual([
+      'editorial.author_profile.created',
+      'editorial.author_profile.updated',
+    ]);
+  });
+
+  it('[REQ-ICR-011] yazar sayfası yalnızca yayındaki içerikleri listeler; makale künyesi yazar sayfasına bağlanır', async () => {
+    const page = PublicAuthor.parse(
+      (await http().get('/v1/authors/icerik-yazar').expect(200)).body,
+    );
+    expect(page).toMatchObject({ title: 'Kıdemli gezi yazarı', expertise: body.expertise });
+    expect(page.articles.length).toBeGreaterThan(0);
+    const drafts = await t.prisma.article.findMany({
+      where: { author: { email: 'icerik-yazar@example.com' }, status: { not: 'PUBLISHED' } },
+      select: { slug: true },
+    });
+    for (const d of drafts) expect(page.articles.map((a) => a.slug)).not.toContain(d.slug);
+    const first = page.articles[0]!;
+    const article = await http().get(`/v1/articles/${first.slug}`).expect(200);
+    expect(article.body.author).toEqual({ displayName: page.displayName, slug: 'icerik-yazar' });
+    await http().get('/v1/authors/olmayan-yazar').expect(404);
   });
 });

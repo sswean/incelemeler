@@ -22,6 +22,10 @@ import { PublicListingsController } from './modules/catalog/public-listings.cont
 import { PublicListingsService } from './modules/catalog/public-listings.service.js';
 import { AdminArticlesController } from './modules/editorial/admin-articles.controller.js';
 import { AdminArticlesService } from './modules/editorial/admin-articles.service.js';
+import { AuthorProfilesController } from './modules/editorial/author-profiles.controller.js';
+import { AuthorProfilesService } from './modules/editorial/author-profiles.service.js';
+import { PublicArticlesController } from './modules/editorial/public-articles.controller.js';
+import { PublicArticlesService } from './modules/editorial/public-articles.service.js';
 import { AdminAreasController } from './modules/geo/admin-areas.controller.js';
 import { MediaController } from './modules/media/media.controller.js';
 import { MediaService } from './modules/media/media.service.js';
@@ -77,6 +81,8 @@ export const CONTROLLERS = [
   ImportsController,
   PublicListingsController,
   AdminArticlesController,
+  PublicArticlesController,
+  AuthorProfilesController,
 ];
 
 @Module({})
@@ -110,6 +116,8 @@ export class AppModule {
         ImportsService,
         PublicListingsService,
         AdminArticlesService,
+        PublicArticlesService,
+        AuthorProfilesService,
         OutboxService,
       ],
     };

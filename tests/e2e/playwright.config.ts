@@ -58,7 +58,7 @@ export default defineConfig({
       cwd: '../../apps/admin',
       url: `http://localhost:${ADMIN_PORT}`,
       reuseExistingServer: false,
-      env: { API_INTERNAL_URL: apiUrl },
+      env: { API_INTERNAL_URL: apiUrl, WEB_BASE_URL: `http://localhost:${WEB_PORT}` },
     },
   ],
 });

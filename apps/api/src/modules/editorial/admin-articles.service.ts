@@ -398,7 +398,7 @@ export class AdminArticlesService {
       PREVIEW_TTL_MS,
     );
     return {
-      url: `${this.env.WEB_BASE_URL}/onizleme/${token}`,
+      url: `${this.env.WEB_BASE_URL}/onizleme?belirtec=${encodeURIComponent(token)}`,
       expiresAt: expiresAt.toISOString(),
     };
   }

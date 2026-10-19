@@ -57,3 +57,11 @@ Biçim: Ek C-4. "Yüksek" geri alma maliyetli varsayımlar OPEN-QUESTIONS'ta da 
 ## A-014: İçerik akışı ayrıntıları
 - Tarih: 2026-10-19 · Faz 1 · Gerekçe: (1) A15.1'de olmayan türler için önek: Haber `/haber/{slug}`, Sponsorlu içerik `/sponsorlu/{slug}` (ticari ilişki URL'de de açık). (2) Sponsorlu içerikte "ticari açıklama kontrolü" adımı, İNCELEMEDE → ONAYLANDI geçişinin yönetici (`campaigns.amount` izni: yönetici/süper yönetici) tarafından yapılmasıyla karşılanır; kontrol eden kaydedilir. (3) "GÜNCELLENİYOR" ara durumu yerine yayındaki içerik editör tarafından doğrudan güncellenir; her güncellemede önceki hâl revizyon olarak saklanır ve değişiklik notu zorunludur (aşamalı taslak sürüm D13'te değerlendirilecek).
 - Etkilediği REQ'ler: REQ-ICR-004/005, REQ-SEO-003 · Geri alma maliyeti: Orta · Durum: AÇIK
+
+## A-015: Metodoloji ve politika sayfaları TASLAK iken noindex
+- Tarih: 2026-10-19 · Faz 1 · Gerekçe: REQ-ICR-012 sayfaları TASLAK damgalıdır (AK-12) ve hukuki/editoryal incelemeden geçmemiştir; hukuki taslak sayfalarla aynı biçimde arama motorlarına kapalı tutulur. Kurallar Ek A6/A8'den aktarılmıştır; "Test yöntemleri" bölümü editoryal ekip metni gelene kadar yer tutucu açıklamadır (uydurma yöntem yazılmadı).
+- Etkilediği REQ'ler: REQ-ICR-012, REQ-SEO-005 · Geri alma maliyeti: Düşük (TASLAK kaldırma C sınıfı; kaldırıldığında `robots` açılır) · Durum: AÇIK
+
+## A-016: Önizleme belirteci sorgu parametresinde
+- Tarih: 2026-10-19 · Faz 1 · Gerekçe: URL normalleştirme (REQ-SEO-003) yolu küçük harfe çevirir; büyük/küçük harf duyarlı imzalı belirteç yolda bozulurdu. Önizleme adresi `/onizleme?belirtec=…` (noindex, `Cache-Control: private, no-store`, API'de `X-Robots-Tag: noindex`).
+- Etkilediği REQ'ler: REQ-ICR-005 · Geri alma maliyeti: Düşük · Durum: AÇIK

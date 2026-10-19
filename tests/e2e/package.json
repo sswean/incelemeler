@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node prepare-db.mjs && playwright test",
-    "test:smoke": "node prepare-db.mjs && playwright test --grep @smoke",
+    "e2e": "node prepare-db.mjs && playwright test",
+    "e2e:smoke": "node prepare-db.mjs && playwright test --grep @smoke",
     "typecheck": "tsc --noEmit",
     "lint": "eslint ."
   },

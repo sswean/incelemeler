@@ -83,6 +83,7 @@ model Category {
   schemaVersions         CategorySchemaVersion[]
   listingCategories      ListingCategory[]
   legalApprovals         LegalApproval[]
+  importBatches          ImportBatch[]
 
   @@index([status, sortOrder, id])
   @@index([parentId])
@@ -161,6 +162,9 @@ model Listing {
   attributeSchemaVersion Int           @default(1) @map("attribute_schema_version")
   /// İletişim kanalları: { phone?, website?, email?, reservationUrl? } (zod ile doğrulanır)
   contacts               Json          @default("{}")
+  /// Toplu içe aktarmayla oluşturulduysa işlem kimliği (REQ-LST-007, geri alma için)
+  importBatchId          String?       @map("import_batch_id") @db.Uuid
+  importBatch            ImportBatch?  @relation(fields: [importBatchId], references: [id], onDelete: Restrict)
   dataOrigin             DataOrigin    @map("data_origin")
   /// Bilginin kaynağı (§12.4): editör girişi, işletme beyanı, lisanslı veri…
   source                 String
@@ -183,6 +187,7 @@ model Listing {
 
   @@index([kind, status, primaryCategoryId])
   @@index([organizationId])
+  @@index([importBatchId])
   @@map("listings")
 }
 
@@ -230,6 +235,7 @@ model User {
   roles               StaffRoleAssignment[]
   sessions            Session[]
   uploadedMedia       MediaAsset[]
+  importBatches       ImportBatch[]
   emailTokens         EmailToken[]
   mfaFactor           MfaFactor?
   recoveryCodes       RecoveryCode[]
@@ -613,4 +619,38 @@ model MediaUsage {
   @@unique([mediaId, entityType, entityId])
   @@index([entityType, entityId, sortOrder])
   @@map("media_usages")
+}
+
+enum ImportStatus {
+  PREVIEW
+  COMMITTED
+  ROLLED_BACK
+}
+
+/// Toplu içe aktarma işlemi (REQ-LST-007): önizleme → onay → (gerekirse) geri alma.
+model ImportBatch {
+  id                String       @id @default(uuid(7)) @db.Uuid
+  kind              ListingKind
+  primaryCategoryId String       @map("primary_category_id") @db.Uuid
+  primaryCategory   Category     @relation(fields: [primaryCategoryId], references: [id], onDelete: Restrict)
+  /// Verinin kaynağı (ZORUNLU): lisanslı veri, işletme beyanı, editör derlemesi… Scraping yasak (AK-07).
+  source            String
+  fileName          String?      @map("file_name")
+  status            ImportStatus @default(PREVIEW)
+  /// Başlık → alan eşlemesi
+  mapping           Json
+  /// Satır satır doğrulama raporu ve normalize değerler
+  rows              Json
+  rowCount          Int          @map("row_count")
+  validCount        Int          @map("valid_count")
+  createdCount      Int          @default(0) @map("created_count")
+  createdById       String       @map("created_by_id") @db.Uuid
+  createdBy         User         @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  committedAt       DateTime?    @map("committed_at") @db.Timestamptz(3)
+  rolledBackAt      DateTime?    @map("rolled_back_at") @db.Timestamptz(3)
+  listings          Listing[]
+
+  @@index([createdAt])
+  @@map("import_batches")
 }

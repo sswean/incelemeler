@@ -29,6 +29,7 @@ import {
   ListingUpdateBody,
 } from './listings.js';
 import { MediaAsset, MediaUpdateBody, MediaUploadForm } from './media.js';
+import { ImportBatch, ImportBatchList, ImportPreviewBody } from './imports.js';
 import {
   Accepted,
   CurrentUser,
@@ -426,5 +427,51 @@ export const endpoints: EndpointDef[] = [
     summary: 'Görsel baytları (meta verisi silinmiş özgün)',
     binaryResponse: 'image/*',
     responses: { 200: ok('Görsel') },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/imports',
+    operationId: 'adminListImports',
+    tags: ['admin', 'imports'],
+    auth: 'staff-mfa',
+    summary: 'Toplu içe aktarma işlemleri (son 50)',
+    responses: { 200: ok('İşlemler', ImportBatchList) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/imports',
+    operationId: 'adminPreviewImport',
+    tags: ['admin', 'imports'],
+    auth: 'staff-mfa',
+    summary: 'CSV önizleme: alan eşleme, doğrulama raporu, yinelenen tespiti (kayıt oluşturmaz)',
+    body: ImportPreviewBody,
+    responses: { 201: ok('Önizleme', ImportBatch) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/imports/{id}',
+    operationId: 'adminGetImport',
+    tags: ['admin', 'imports'],
+    auth: 'staff-mfa',
+    summary: 'İçe aktarma işlemi ve satır raporu',
+    responses: { 200: ok('İşlem', ImportBatch) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/imports/{id}/commit',
+    operationId: 'adminCommitImport',
+    tags: ['admin', 'imports'],
+    auth: 'staff-mfa',
+    summary: 'Geçerli satırlardan TASLAK listelemeler oluşturur (dataOrigin=IMPORT)',
+    responses: { 200: ok('Tamamlandı', ImportBatch) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/imports/{id}/rollback',
+    operationId: 'adminRollbackImport',
+    tags: ['admin', 'imports'],
+    auth: 'staff-mfa',
+    summary: 'İşlemle oluşturulan listelemeleri geri alır (hiçbiri değiştirilmemişse)',
+    responses: { 200: ok('Geri alındı', ImportBatch) },
   },
 ];

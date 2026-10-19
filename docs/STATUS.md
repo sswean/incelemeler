@@ -20,7 +20,11 @@
 - API `/v1/admin/categories` (liste/oluştur/ayrıntı/güncelle; 412 sürüm çakışması), bayrak kuralları (A-011), outbox + worker.
 - Panel `/kategoriler` (ağaç tablosu, oluştur, düzenle, yayımla); `CurrentUser.permissions` ile yetkiye göre arayüz.
 
+## Dilim 3c/3d özeti (medya + içe aktarma)
+- Medya: `/v1/admin/media` (yükleme, EXIF/GPS silme, blurhash, lisans alanları), listeleme görselleri, panelde lisans düzenleme.
+- İçe aktarma: `/v1/admin/imports` (CSV önizleme → onay → geri alma), panel `/ice-aktarma`. XLSX henüz yok (izin listesinde uygun kütüphane seçimi — PARKING-LOT P-003).
+
 ## Sonraki 3 adım (Faz 1, §9.3 önerilen sıra)
-1. Dilim 2b — Özellik şeması (`attribute_definitions`, sürümlü; REQ-VER-003) ve değerlendirme kriterleri (A6.3) yönetimi + panel ekranları.
-3. Dilim 3 — Listeleme CRUD + tür uzantıları + medya hattı + toplu içe aktarma (REQ-LST-*, REQ-VER-002…014).
-4. (Dilim 2 ile) Panelde personel/rol yönetimi ekranı ve 2FA kurulumunda QR kodu.
+1. Dilim 4 — Pilot listeleme detay sayfaları (Mekan, Konaklama, Ürün) + SEO temeli: URL şeması, slug 301, JSON-LD, sitemap/robots, görsel varyantları (Next Image), yer tutucu sistemi.
+2. Dilim 5 — İçerik editörü + yayın akışı (blok şemaları, revizyonlar).
+3. Dilim 6 — Arama + filtreler (attr.* filtrelenebilir özellikler) + hub sayfaları ve yayın eşikleri.

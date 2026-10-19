@@ -521,6 +521,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Toplu içe aktarma işlemleri (son 50) */
+        get: operations["adminListImports"];
+        put?: never;
+        /** CSV önizleme: alan eşleme, doğrulama raporu, yinelenen tespiti (kayıt oluşturmaz) */
+        post: operations["adminPreviewImport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/imports/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** İçe aktarma işlemi ve satır raporu */
+        get: operations["adminGetImport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/imports/{id}/commit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Geçerli satırlardan TASLAK listelemeler oluşturur (dataOrigin=IMPORT) */
+        post: operations["adminCommitImport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/imports/{id}/rollback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** İşlemle oluşturulan listelemeleri geri alır (hiçbiri değiştirilmemişse) */
+        post: operations["adminRollbackImport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1007,6 +1076,89 @@ export interface components {
         AdminListingList: {
             data: components["schemas"]["AdminListingSummary"][];
             page: components["schemas"]["PageInfo"];
+        };
+        ImportPreviewBody: {
+            /** @enum {string} */
+            kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+            /** Format: uuid */
+            primaryCategoryId: string;
+            source: string;
+            fileName?: string;
+            csv: string;
+            mapping?: {
+                [key: string]: string;
+            };
+        };
+        ImportBatch: {
+            id: string;
+            /** @enum {string} */
+            kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+            primaryCategory: {
+                id: string;
+                name: string;
+            };
+            source: string;
+            fileName: string | null;
+            /** @enum {string} */
+            status: "PREVIEW" | "COMMITTED" | "ROLLED_BACK";
+            mapping: {
+                [key: string]: string;
+            };
+            unmappedHeaders: string[];
+            rowCount: number;
+            validCount: number;
+            createdCount: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            committedAt: string | null;
+            /** Format: date-time */
+            rolledBackAt: string | null;
+            rows: {
+                row: number;
+                /** @enum {string} */
+                status: "VALID" | "INVALID" | "DUPLICATE" | "CREATED" | "SKIPPED";
+                name: string | null;
+                errors: {
+                    field: string;
+                    code: string;
+                }[];
+                duplicateOf: {
+                    listingId: string | null;
+                    row: number | null;
+                    /** @enum {string} */
+                    reason: "gtin" | "name_proximity" | "name_district";
+                } | null;
+                listingId: string | null;
+            }[];
+        };
+        ImportBatchList: {
+            data: {
+                id: string;
+                /** @enum {string} */
+                kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+                primaryCategory: {
+                    id: string;
+                    name: string;
+                };
+                source: string;
+                fileName: string | null;
+                /** @enum {string} */
+                status: "PREVIEW" | "COMMITTED" | "ROLLED_BACK";
+                mapping: {
+                    [key: string]: string;
+                };
+                unmappedHeaders: string[];
+                rowCount: number;
+                validCount: number;
+                createdCount: number;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                committedAt: string | null;
+                /** Format: date-time */
+                rolledBackAt: string | null;
+            }[];
         };
         RegisterBody: {
             email: unknown;
@@ -2569,6 +2721,172 @@ export interface operations {
                 };
                 content: {
                     "image/*": string;
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListImports: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description İşlemler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatchList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminPreviewImport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+                    /** Format: uuid */
+                    primaryCategoryId: string;
+                    source: string;
+                    fileName?: string;
+                    csv: string;
+                    mapping?: {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Önizleme */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatch"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetImport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description İşlem */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatch"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCommitImport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Tamamlandı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatch"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminRollbackImport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Geri alındı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatch"];
                 };
             };
             /** @description Hata (RFC 9457) */

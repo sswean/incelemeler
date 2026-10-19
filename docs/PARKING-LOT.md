@@ -6,3 +6,4 @@ Biçim: fikir · kaynak · önerilen faz · tahmini etki. Aktif fazda bu maddele
 |---|---|---|---|---|
 | P-001 | Turborepo uzak önbelleği (CI hızlandırma) | Faz 0 CI kurulumu | 2+ | Düşük |
 | P-002 | Storybook + görsel regresyon testleri (Ek A14.5) — Faz 0'da yalnızca token paketi kuruldu | §8.1/11 | 1 (ilk UI dilimi) | Orta |
+| P-003 | XLSX içe aktarma (izin listesi lisanslı ayrıştırıcı seçimi; CSV mevcut) | Dilim 3d | 1 (D13) | Orta |

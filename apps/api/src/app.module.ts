@@ -16,6 +16,8 @@ import { CategorySchemaService } from './modules/taxonomy/category-schema.servic
 import { OutboxService } from './modules/outbox/outbox.service.js';
 import { AdminListingsController } from './modules/catalog/admin-listings.controller.js';
 import { AdminListingsService } from './modules/catalog/admin-listings.service.js';
+import { ImportsController } from './modules/catalog/imports.controller.js';
+import { ImportsService } from './modules/catalog/imports.service.js';
 import { AdminAreasController } from './modules/geo/admin-areas.controller.js';
 import { MediaController } from './modules/media/media.controller.js';
 import { MediaService } from './modules/media/media.service.js';
@@ -68,6 +70,7 @@ export const CONTROLLERS = [
   AdminAreasController,
   AdminListingsController,
   MediaController,
+  ImportsController,
 ];
 
 @Module({})
@@ -98,6 +101,7 @@ export class AppModule {
         CategorySchemaService,
         AdminListingsService,
         MediaService,
+        ImportsService,
         OutboxService,
       ],
     };

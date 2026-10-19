@@ -18,6 +18,20 @@ export default async function PanelLayout({ children }: { children: ReactNode })
             {tr.admin.nav.home}
           </Link>
           <Link
+            href="/listelemeler"
+            className="min-h-11 content-center text-brand-default underline"
+          >
+            {tr.admin.nav.listings}
+          </Link>
+          {user.permissions.includes('listings.write') ? (
+            <Link
+              href="/ice-aktarma"
+              className="min-h-11 content-center text-brand-default underline"
+            >
+              {tr.admin.nav.imports}
+            </Link>
+          ) : null}
+          <Link
             href="/kategoriler"
             className="min-h-11 content-center text-brand-default underline"
           >

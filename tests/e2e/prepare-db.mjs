@@ -40,6 +40,7 @@ const extraStaff = [
   ...PROJECTS.map((p) => [`e2e-taksonomi-${p}@example.test`, 'E2E Taksonomi']),
   ...PROJECTS.map((p) => [`e2e-katalog-${p}@example.test`, 'E2E Katalog']),
   ...PROJECTS.map((p) => [`e2e-katalog2-${p}@example.test`, 'E2E Katalog 2']),
+  ...PROJECTS.map((p) => [`e2e-aktarim-${p}@example.test`, 'E2E Aktarım']),
 ];
 for (const [email, name] of extraStaff) {
   const { rows } = await db.query(

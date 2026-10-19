@@ -837,12 +837,12 @@
       "title": "Toplu içe aktarma (CSV/XLSX)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "CSV: alan eşleme (Türkçe/İngilizce başlıklar + açık eşleme), satır doğrulama raporu, yinelenen tespiti (GTIN; normalize ad + 150 m; koordinatsızda ad + ilçe), önizleme, işlem kimliğiyle geri alma, kaynak zorunlu, dataOrigin=IMPORT (imports.int, csv.test, import-rows.test, E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "XLSX desteği P-003."
     },
     {
       "id": "REQ-LST-008",

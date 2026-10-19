@@ -21,3 +21,4 @@ Bir ders bir madde; ilk satır tek cümlelik özet. Yanlış çıkan ders silini
 - **Elle adlandırılan migration klasörü gerçek UTC zaman damgası taşımalı** (`date -u +%Y%m%d%H%M%S`); aksi hâlde temiz veritabanında uygulama sırası değişir.
 - **Next.js sunucu eylemi gövde sınırı varsayılan 1 MB'tır.** Görsel yükleyen panelde `experimental.serverActions.bodySizeLimit` ayarlanır.
 - **Zod 4'te kayıt defterinden bağımsız satır içi üretimde `.meta()` alanları kaybolur;** çok parçalı dosya alanı için `z.file()` OpenAPI'de `format: binary` üretir.
+- **Betikle yapılan metin değiştirmeleri (Python `str.replace`) Prettier biçimlendirmesinden sonra sessizce eşleşmeyebilir.** Değiştirme sonrası `assert` ya da `grep` ile doğrula; arayüz değişikliklerini E2E'de gezinmeyle (doğrudan URL değil) test et.

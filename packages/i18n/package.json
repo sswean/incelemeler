@@ -16,5 +16,6 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
     "test": "vitest run"
-  }
+  },
+  "sideEffects": false
 }

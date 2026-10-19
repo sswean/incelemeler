@@ -3089,7 +3089,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "İlk yükleme JS (gzip, nomodule hariç) E2E bütçesi ≤ 170 KB: hub 159,9 / detay 166,6 / arama 161,5 / ana sayfa 160,8 KB (F1-D13). Lighthouse CI kurulmadı (araç kararı A-027)."
+      "notes": "İlk yükleme JS (gzip, nomodule hariç) E2E bütçesi ≤ 170 KB: hub 144,0 / detay 150,8 / arama 145,6 / ana sayfa 144,9 KB (F1-D14). Lighthouse CI kurulmadı (araç kararı A-027)."
     },
     {
       "id": "REQ-PRF-003",
@@ -3111,9 +3111,9 @@
       "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["eslint.config.mjs#REQ-PRF-004", "tests/e2e/specs/hardening.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": "Sunucu bileşenleri varsayılan; istemci paketine zod girmez (contracts/consent-cookie alt yolu). i18n sözlüğünün tamamı istemcide (~24 KB gzip) — sonraki iyileştirme. Paket analizi CI raporu yok."
+      "notes": "Sunucu bileşenleri varsayılan; istemci bileşenleri yalnızca kullandıkları i18n ad alanını içe aktarır, contracts kökünden değer (zod) almaz — ESLint kuralı (apps/web). İlk yükleme JS: ana sayfa 144,9 / hub 144,0 / detay 150,8 / arama 145,6 KB gzip. Eksik: paket analizi raporu CI'da."
     },
     {
       "id": "REQ-PRF-005",

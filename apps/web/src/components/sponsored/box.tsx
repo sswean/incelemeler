@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import type { SponsoredItem } from '@incelemeler/contracts';
-import { tr } from '@incelemeler/i18n';
+import { sponsored } from '@incelemeler/i18n';
 import { ImpressionTracker } from './impression';
 import { CommercialLabel } from './label';
+
+// Yalnızca kullanılan ad alanı istemci paketine girer (REQ-PRF-004).
+const tr = { sponsored };
 
 /**
  * Listeleme detayı rakip sponsorlu kutu (A8.3: ≤ 1, sayfanın alt yarısında, "Benzer seçenekler" dışında).

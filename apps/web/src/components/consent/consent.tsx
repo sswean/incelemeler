@@ -4,10 +4,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 import type { ConsentState } from '@incelemeler/contracts';
-import { tr } from '@incelemeler/i18n';
+import { consent } from '@incelemeler/i18n';
 import { STATIC_PATHS } from '@incelemeler/routes';
 import { landingSource, sendEvent } from '../../lib/analytics-client';
 import { type ConsentChoice, saveConsent } from '../../lib/consent-client';
+
+// Yalnızca kullanılan ad alanı istemci paketine girer (REQ-PRF-004).
+const tr = { consent };
 
 const T = tr.consent;
 type Ctx = {

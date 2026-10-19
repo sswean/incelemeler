@@ -3,7 +3,10 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useId, useRef, useState } from 'react';
 import type { SuggestResponse } from '@incelemeler/contracts';
-import { tr } from '@incelemeler/i18n';
+import { search } from '@incelemeler/i18n';
+
+// Yalnızca kullanılan ad alanı istemci paketine girer (REQ-PRF-004).
+const tr = { search };
 
 const S = tr.search;
 const GROUPS: Array<[keyof SuggestResponse, string]> = [

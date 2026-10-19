@@ -1,4 +1,7 @@
-import { tr } from '@incelemeler/i18n';
+import { errors } from '@incelemeler/i18n';
+
+// Yalnızca kullanılan ad alanı istemci paketine girer (REQ-PRF-004).
+const tr = { errors };
 
 type Code = keyof typeof tr.errors;
 

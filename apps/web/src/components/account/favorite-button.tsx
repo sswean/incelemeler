@@ -1,9 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { tr } from '@incelemeler/i18n';
+import { account } from '@incelemeler/i18n';
 import { sendEvent } from '../../lib/analytics-client';
 import { useConsent } from '../consent/consent';
+
+// Yalnızca kullanılan ad alanı istemci paketine girer (REQ-PRF-004).
+const tr = { account };
 
 const T = tr.account;
 

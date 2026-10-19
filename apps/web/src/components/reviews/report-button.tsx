@@ -1,9 +1,12 @@
 'use client';
 
 import { useActionState, useId } from 'react';
-import { tr } from '@incelemeler/i18n';
+import { reviews } from '@incelemeler/i18n';
 import { reportAction } from '../../app/degerlendir/actions';
 import { errorMessage } from '../../lib/errors';
+
+// Yalnızca kullanılan ad alanı istemci paketine girer (REQ-PRF-004).
+const tr = { reviews };
 
 const R = tr.reviews;
 

@@ -3,10 +3,13 @@
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import type { ReviewFormContext } from '@incelemeler/contracts';
-import { tr } from '@incelemeler/i18n';
+import { reviews } from '@incelemeler/i18n';
 import { errorMessage } from '../../../lib/errors';
 import { saveDraftAction, submitReviewAction, type ReviewFormState } from '../actions';
 import { EMPTY_DRAFT, type DraftData } from './draft';
+
+// Yalnızca kullanılan ad alanı istemci paketine girer (REQ-PRF-004).
+const tr = { reviews };
 
 const R = tr.reviews;
 type FieldCode = keyof typeof R.fieldErrors;

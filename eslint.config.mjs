@@ -5,6 +5,14 @@ import vitest from '@vitest/eslint-plugin';
 import playwright from 'eslint-plugin-playwright';
 import globals from 'globals';
 
+// REQ-GUV-004: ham HTML yalnızca JSON-LD için, `</script>` kaçışlı güvenli serileştiriciyle.
+const JSON_LD_ONLY = {
+  selector:
+    "JSXAttribute[name.name='dangerouslySetInnerHTML']:not(:has(CallExpression[callee.name='jsonLdScript']))",
+  message: 'dangerouslySetInnerHTML yalnızca jsonLdScript(...) ile JSON-LD için kullanılabilir.',
+};
+const CLIENT = "Program:has(> ExpressionStatement[directive='use client'])";
+
 export default tseslint.config(
   {
     ignores: [
@@ -60,15 +68,24 @@ export default tseslint.config(
   },
   {
     files: ['apps/**/*.tsx'],
+    rules: { 'no-restricted-syntax': ['error', JSON_LD_ONLY] },
+  },
+  {
+    files: ['apps/web/**/*.tsx'],
     rules: {
-      // REQ-GUV-004: ham HTML yalnızca JSON-LD için, `</script>` kaçışlı güvenli serileştiriciyle.
+      // REQ-PRF-004: istemci bileşenleri tüm i18n kataloğunu ya da zod şemalarını pakete çekmez.
       'no-restricted-syntax': [
         'error',
+        JSON_LD_ONLY,
         {
-          selector:
-            "JSXAttribute[name.name='dangerouslySetInnerHTML']:not(:has(CallExpression[callee.name='jsonLdScript']))",
+          selector: `${CLIENT} ImportDeclaration[source.value='@incelemeler/i18n'] ImportSpecifier[imported.name='tr']`,
           message:
-            'dangerouslySetInnerHTML yalnızca jsonLdScript(...) ile JSON-LD için kullanılabilir.',
+            "İstemci bileşeninde yalnızca kullanılan ad alanını içe aktar (ör. import { search } from '@incelemeler/i18n').",
+        },
+        {
+          selector: `${CLIENT} ImportDeclaration[source.value='@incelemeler/contracts'][importKind='value'] > ImportSpecifier[importKind='value']`,
+          message:
+            'İstemci bileşeni @incelemeler/contracts kökünden değer içe aktarmaz (zod); tip ya da zod içermeyen alt yol kullan.',
         },
       ],
     },

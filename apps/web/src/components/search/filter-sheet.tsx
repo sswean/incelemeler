@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { tr } from '@incelemeler/i18n';
+import { search } from '@incelemeler/i18n';
+
+// Yalnızca kullanılan ad alanı istemci paketine girer (REQ-PRF-004).
+const tr = { search };
 
 const S = tr.search;
 

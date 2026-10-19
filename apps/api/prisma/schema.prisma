@@ -426,6 +426,7 @@ model AdminArea {
   provinceLocations ListingLocation[]    @relation("LocationProvince")
   districtLocations ListingLocation[]    @relation("LocationDistrict")
   serviceAreas      ListingServiceArea[]
+  aliases           PlaceAlias[]
 
   @@unique([parentId, slug])
   @@index([level])
@@ -766,4 +767,106 @@ model AuthorProfile {
   version   Int      @default(1)
 
   @@map("author_profiles")
+}
+
+// ── Arama (REQ-ARA-001…014, ADR-0012) ──
+
+enum SearchDocType {
+  LISTING
+  ARTICLE
+  CATEGORY
+  PLACE
+}
+
+/// Arama okuma modeli (REQ-ARA-002): yalnızca SearchPort (PostgresSearchAdapter) ham SQL ile yazar;
+/// outbox olaylarıyla güncellenir, `search:reindex` ile baştan kurulur.
+model SearchDocument {
+  id          String                                @id @default(uuid(7)) @db.Uuid
+  docType     SearchDocType                         @map("doc_type")
+  refId       String                                @map("ref_id") @db.Uuid
+  title       String
+  subtitle    String?
+  path        String
+  /// normalizeTr(title).folded — trigram benzerlik geri dönüşü ve öneriler için.
+  nameFold    String                                @map("name_fold")
+  tsv         Unsupported("tsvector")
+  kind        ListingKind?
+  articleType ArticleType?                          @map("article_type")
+  /// Birincil + ikincil kategoriler ve tüm ataları.
+  categoryIds String[]                              @map("category_ids") @db.Uuid
+  provinceId  String?                               @map("province_id") @db.Uuid
+  districtId  String?                               @map("district_id") @db.Uuid
+  priceLevel  Int?                                  @map("price_level") @db.SmallInt
+  attributes  Json                                  @default("{}")
+  status      String?
+  dataOrigin  DataOrigin                            @map("data_origin")
+  /// Yayımlanmış kullanıcı değerlendirmesi sayısı ve Bayes puanı (D7'de doldurulur; ticari sinyal yok).
+  ratingCount Int                                   @default(0) @map("rating_count")
+  /// Gösterilen ortalama (filtre "≥ 4" bunu kullanır; yalnızca n ≥ 3 iken dolu).
+  ratingAvg   Decimal?                              @map("rating_avg") @db.Decimal(3, 2)
+  ratingBayes Decimal?                              @map("rating_bayes") @db.Decimal(5, 3)
+  geo         Unsupported("geography(Point,4326)")?
+  publishedAt DateTime?                             @map("published_at") @db.Timestamptz(3)
+  indexedAt   DateTime                              @default(now()) @map("indexed_at") @db.Timestamptz(3)
+
+  @@unique([docType, refId])
+  @@index([tsv], type: Gin)
+  @@index([nameFold(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@index([categoryIds], type: Gin)
+  @@index([provinceId, districtId])
+  @@index([geo], type: Gist)
+  @@map("search_documents")
+}
+
+/// Yer adı takma adları (gazetteer, Ek A7.1): "Kapadokya" → Nevşehir.
+model PlaceAlias {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  alias       String
+  aliasFold   String    @unique @map("alias_fold")
+  adminAreaId String    @map("admin_area_id") @db.Uuid
+  adminArea   AdminArea @relation(fields: [adminAreaId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@map("place_aliases")
+}
+
+/// Eş anlamlılar (panelden yönetilir): katlanmış ifade → katlanmış ifade.
+model SearchSynonym {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  term        String   @unique
+  replacement String
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("search_synonyms")
+}
+
+/// Niyet/özellik eşlemesi (panelden yönetilir): ifade → yapılandırılmış filtre.
+model SearchIntent {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  key       String   @unique
+  label     String
+  /// Katlanmış ifadeler.
+  terms     String[]
+  /// { priceLevelMax?, attributes?: { key: value } } — zod ile doğrulanır.
+  filter    Json
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("search_intents")
+}
+
+/// Arama olayları (REQ-ARA-014): kişisel veri yok; oturum karması yalnızca analitik rızasıyla.
+model SearchEvent {
+  id          BigInt   @id @default(autoincrement())
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  queryNorm   String   @map("query_norm")
+  filters     Json     @default("{}")
+  resultCount Int      @map("result_count")
+  sessionHash String?  @map("session_hash")
+
+  @@index([createdAt])
+  @@index([queryNorm])
+  @@map("search_events")
 }

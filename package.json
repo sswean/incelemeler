@@ -23,6 +23,7 @@
     "db:migrate": "pnpm --filter @incelemeler/api db:migrate",
     "db:reset:local": "pnpm --filter @incelemeler/api db:reset:local",
     "seed:demo": "pnpm --filter @incelemeler/api seed:demo",
+    "search:reindex": "pnpm --filter @incelemeler/api search:reindex",
     "openapi:generate": "pnpm --filter @incelemeler/api openapi:generate && pnpm --filter @incelemeler/api-client generate",
     "openapi:check": "node scripts/openapi-check.mjs",
     "req:check": "node scripts/req-check.mjs",

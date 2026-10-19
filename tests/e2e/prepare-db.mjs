@@ -102,4 +102,17 @@ await fixtureListing('e2e-kapanan-lokanta', 'E2E Kapanan Lokanta', {
 await fixtureListing('e2e-kaldirilan-lokanta', 'E2E Kaldırılan Lokanta', { deleted: true });
 await fixtureListing('ornek-lokanta-demo', 'Örnek Lokanta (Demo)', { origin: 'DEMO' });
 await db.end();
+// Doğrudan SQL ile eklenen fikstürler outbox'tan geçmez: arama okuma modelini baştan kur (REQ-ARA-002).
+execFileSync('node', ['dist/cli/search-reindex.js'], {
+  cwd: apiDir,
+  // Yalnızca E2E: playwright.config.ts'deki sabit, gerçek olmayan test değerleri.
+  env: {
+    ...env,
+    CURSOR_SECRET: 'e2e-cursor-secret-not-a-real-secret-0000',
+    DATA_ENCRYPTION_KEY: 'e2'.repeat(32),
+    STORAGE_ADAPTER: 'memory',
+    EMAIL_ADAPTER: 'memory',
+  },
+  stdio: 'inherit',
+});
 console.log('E2E veritabanı hazır: incelemeler_e2e');

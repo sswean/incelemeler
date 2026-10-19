@@ -13,3 +13,4 @@ export * from './cta.js';
 export * from './public-listing.js';
 export * from './content.js';
 export * from './rich-text.js';
+export * from './search.js';

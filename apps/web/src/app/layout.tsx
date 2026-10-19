@@ -39,7 +39,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <Link href="/" className="text-xl font-semibold tracking-tight">
               {tr.brand.name}
             </Link>
-            <nav aria-label="Hesap" className="text-sm">
+            <nav aria-label="Hesap" className="flex items-center gap-4 text-sm">
+              <Link href={STATIC_PATHS.search} className="text-brand-default underline">
+                {tr.search.headerLink}
+              </Link>
               {signedIn ? (
                 <Link href="/hesabim" className="text-brand-default underline">
                   {tr.auth.accountTitle}

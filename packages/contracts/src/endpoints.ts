@@ -29,6 +29,13 @@ import {
   ListingUpdateBody,
 } from './listings.js';
 import { MediaAsset, MediaUpdateBody, MediaUploadForm } from './media.js';
+import {
+  SearchFilters,
+  SearchQuery,
+  SearchResponse,
+  SuggestQuery,
+  SuggestResponse,
+} from './search.js';
 import { ImportBatch, ImportBatchList, ImportPreviewBody } from './imports.js';
 import {
   AdminArticle,
@@ -651,5 +658,32 @@ export const endpoints: EndpointDef[] = [
     tags: ['editorial'],
     summary: 'Yazar sayfası: profil ve yayındaki içerikleri',
     responses: { 200: ok('Yazar', PublicAuthor) },
+  },
+  {
+    method: 'get',
+    path: '/v1/search',
+    operationId: 'search',
+    tags: ['search'],
+    summary:
+      'Arama (REQ-ARA-001…013): sorgu ayrıştırma, ortak filtreler, organik sıralama (ticari sinyal yok)',
+    query: SearchQuery,
+    responses: { 200: ok('Sonuçlar', SearchResponse) },
+  },
+  {
+    method: 'get',
+    path: '/v1/search/suggest',
+    operationId: 'searchSuggest',
+    tags: ['search'],
+    summary: 'Otomatik tamamlama: yer, kategori, listeleme ve içerik grupları (REQ-ARA-010)',
+    query: SuggestQuery,
+    responses: { 200: ok('Öneriler', SuggestResponse) },
+  },
+  {
+    method: 'get',
+    path: '/v1/search/filters',
+    operationId: 'searchFilters',
+    tags: ['search'],
+    summary: 'Filtrelenebilir özellikler (filtre paneli)',
+    responses: { 200: ok('Filtreler', SearchFilters) },
   },
 ];

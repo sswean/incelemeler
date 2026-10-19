@@ -531,7 +531,7 @@ function toAttribute(a: AttributeRow): AttributeDefinition {
   };
 }
 
-function snapshotAttr(a: AttributeRow): Prisma.InputJsonObject {
+export function snapshotAttr(a: AttributeRow): Prisma.InputJsonObject {
   return {
     id: a.id,
     categoryId: a.categoryId,

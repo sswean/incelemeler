@@ -1,0 +1,422 @@
+{
+  "version": 1,
+  "description": "REQ-ARA-006 arama sorgu korpusu: her sorgu için beklenen ilk 5 sonuç (kurgusal demo veride, apps/api/src/seed/demo-listings.ts). Kabul: ortalama recall@5 ≥ 0,90; sıfır sonuç yalnızca expectZero sorgularda. apps/api/test/search.int.test.ts çalıştırır.",
+  "queries": [
+    {
+      "q": "Antalya'da denize yakın uygun fiyatlı oteller",
+      "expect": ["ornek-konyaalti-sahil-oteli-demo", "ornek-kemer-koy-oteli-demo"],
+      "note": "A7.1"
+    },
+    {
+      "q": "İstanbul'da iyi kahvaltı mekanları",
+      "expect": [
+        "ornek-kahvalti-evi-cihangir-demo",
+        "ornek-koy-kahvaltisi-kadikoy-demo",
+        "ornek-bogaz-kahvalti-bahcesi-demo",
+        "ornek-simit-ve-cay-duragi-demo",
+        "ornek-gun-isigi-kahvalti-salonu-demo"
+      ],
+      "note": "A7.1"
+    },
+    {
+      "q": "Kapadokya'da rehberli balon ve çevre turları",
+      "expect": ["ornek-goreme-balon-turu-demo", "ornek-urgup-cevre-turu-demo"],
+      "note": "A7.1; VE sonuçsuz → VEYA"
+    },
+    {
+      "q": "İzmir'de günlük araç kiralama",
+      "expect": [
+        "ornek-cesme-arac-kiralama-demo",
+        "ornek-ege-oto-kiralama-havalimani-demo",
+        "ornek-bornova-rent-arac-demo"
+      ],
+      "note": "A7.1"
+    },
+    {
+      "q": "İstanbul'da özel gün için restoranlar",
+      "expect": ["ornek-balikci-lokantasi-kumkapi-demo", "ornek-nisantasi-bistro-demo"],
+      "note": "A7.1"
+    },
+    {
+      "q": "Bütçeye uygun kablosuz kulaklıklar",
+      "expect": ["ornek-kablosuz-kulaklik-k1-demo", "ornek-spor-kulaklik-kosu-r2-demo"],
+      "note": "A7.1"
+    },
+    {
+      "q": "Çocuklarla gidilebilecek tatil yerleri",
+      "expect": [
+        "ornek-ege-kiyilari-tatil-bolgesi-demo",
+        "ornek-akdeniz-sahilleri-tatil-bolgesi-demo"
+      ],
+      "note": "A7.1"
+    },
+    {
+      "q": "Hafta sonu gidilebilecek doğal güzellikler",
+      "expect": [
+        "ornek-selale-parki-antalya-demo",
+        "ornek-gizli-vadi-koyu-fethiye-demo",
+        "ornek-gol-kiyisi-yuruyusu-koycegiz-demo",
+        "ornek-peri-bacalari-vadisi-avanos-demo",
+        "ornek-dere-vadisi-gulsehir-demo"
+      ],
+      "note": "A7.1"
+    },
+    {
+      "q": "istanbul kahvaltı",
+      "expect": [
+        "ornek-kahvalti-evi-cihangir-demo",
+        "ornek-koy-kahvaltisi-kadikoy-demo",
+        "ornek-bogaz-kahvalti-bahcesi-demo",
+        "ornek-simit-ve-cay-duragi-demo",
+        "ornek-gun-isigi-kahvalti-salonu-demo"
+      ],
+      "note": "harf/aksan varyantı"
+    },
+    {
+      "q": "İSTANBUL KAHVALTI",
+      "expect": [
+        "ornek-kahvalti-evi-cihangir-demo",
+        "ornek-koy-kahvaltisi-kadikoy-demo",
+        "ornek-bogaz-kahvalti-bahcesi-demo",
+        "ornek-simit-ve-cay-duragi-demo",
+        "ornek-gun-isigi-kahvalti-salonu-demo"
+      ],
+      "note": "harf/aksan varyantı"
+    },
+    {
+      "q": "Istanbul kahvaltı",
+      "expect": [
+        "ornek-kahvalti-evi-cihangir-demo",
+        "ornek-koy-kahvaltisi-kadikoy-demo",
+        "ornek-bogaz-kahvalti-bahcesi-demo",
+        "ornek-simit-ve-cay-duragi-demo",
+        "ornek-gun-isigi-kahvalti-salonu-demo"
+      ],
+      "note": "harf/aksan varyantı"
+    },
+    {
+      "q": "istanbul kahvalti",
+      "expect": [
+        "ornek-kahvalti-evi-cihangir-demo",
+        "ornek-koy-kahvaltisi-kadikoy-demo",
+        "ornek-bogaz-kahvalti-bahcesi-demo",
+        "ornek-simit-ve-cay-duragi-demo",
+        "ornek-gun-isigi-kahvalti-salonu-demo"
+      ],
+      "note": "harf/aksan varyantı"
+    },
+    {
+      "q": "ISTANBUL KAHVALTI",
+      "expect": [
+        "ornek-kahvalti-evi-cihangir-demo",
+        "ornek-koy-kahvaltisi-kadikoy-demo",
+        "ornek-bogaz-kahvalti-bahcesi-demo",
+        "ornek-simit-ve-cay-duragi-demo",
+        "ornek-gun-isigi-kahvalti-salonu-demo"
+      ],
+      "note": "harf/aksan varyantı"
+    },
+    {
+      "q": "istanbulda kahvaltı",
+      "expect": [
+        "ornek-kahvalti-evi-cihangir-demo",
+        "ornek-koy-kahvaltisi-kadikoy-demo",
+        "ornek-bogaz-kahvalti-bahcesi-demo",
+        "ornek-simit-ve-cay-duragi-demo",
+        "ornek-gun-isigi-kahvalti-salonu-demo"
+      ],
+      "note": "harf/aksan varyantı"
+    },
+    {
+      "q": "İstanbul’da kahvaltı",
+      "expect": [
+        "ornek-kahvalti-evi-cihangir-demo",
+        "ornek-koy-kahvaltisi-kadikoy-demo",
+        "ornek-bogaz-kahvalti-bahcesi-demo",
+        "ornek-simit-ve-cay-duragi-demo",
+        "ornek-gun-isigi-kahvalti-salonu-demo"
+      ],
+      "note": "harf/aksan varyantı"
+    },
+    {
+      "q": "istanbul'da kahvaltıcı",
+      "expect": [
+        "ornek-kahvalti-evi-cihangir-demo",
+        "ornek-koy-kahvaltisi-kadikoy-demo",
+        "ornek-bogaz-kahvalti-bahcesi-demo",
+        "ornek-simit-ve-cay-duragi-demo",
+        "ornek-gun-isigi-kahvalti-salonu-demo"
+      ],
+      "note": "harf/aksan varyantı"
+    },
+    {
+      "q": "izmir kahvalti",
+      "expect": ["ornek-kordon-kahvalticisi-demo", "ornek-alacati-kahvalti-konagi-demo"],
+      "note": "aksansız"
+    },
+    {
+      "q": "IZMIR KAHVALTI",
+      "expect": ["ornek-kordon-kahvalticisi-demo", "ornek-alacati-kahvalti-konagi-demo"],
+      "note": "büyük harf I"
+    },
+    {
+      "q": "antalya kahvaltı",
+      "expect": ["ornek-muratpasa-kahvalti-bahcesi-demo"]
+    },
+    {
+      "q": "kapadoyka balon",
+      "expect": ["ornek-goreme-balon-turu-demo"],
+      "note": "yazım hatası (il takma adı)"
+    },
+    {
+      "q": "kapadokia otel",
+      "expect": ["ornek-kapadokya-magara-otel-demo", "ornek-goreme-tas-ev-pansiyonu-demo"],
+      "note": "yazım hatası + kategori genişletme"
+    },
+    {
+      "q": "antlaya otel",
+      "expect": [
+        "ornek-konyaalti-sahil-oteli-demo",
+        "ornek-kemer-koy-oteli-demo",
+        "ornek-side-antik-liman-oteli-demo"
+      ],
+      "note": "yazım hatası (il)"
+    },
+    {
+      "q": "istnabul kahvaltı",
+      "expect": [
+        "ornek-kahvalti-evi-cihangir-demo",
+        "ornek-koy-kahvaltisi-kadikoy-demo",
+        "ornek-bogaz-kahvalti-bahcesi-demo",
+        "ornek-simit-ve-cay-duragi-demo",
+        "ornek-gun-isigi-kahvalti-salonu-demo"
+      ],
+      "note": "yazım hatası (il)"
+    },
+    {
+      "q": "ızmır araç kiralama",
+      "expect": [
+        "ornek-cesme-arac-kiralama-demo",
+        "ornek-ege-oto-kiralama-havalimani-demo",
+        "ornek-bornova-rent-arac-demo"
+      ],
+      "note": "ı/i karışıklığı"
+    },
+    {
+      "q": "baklva",
+      "expect": ["ornek-baklava-atolyesi-karakoy-demo"],
+      "note": "yazım hatası (ad, trigram)"
+    },
+    {
+      "q": "kumru bufesi",
+      "expect": ["ornek-konak-kumru-bufesi-demo"],
+      "note": "aksansız ad"
+    },
+    {
+      "q": "izmir araba kiralama",
+      "expect": [
+        "ornek-cesme-arac-kiralama-demo",
+        "ornek-ege-oto-kiralama-havalimani-demo",
+        "ornek-bornova-rent-arac-demo"
+      ],
+      "note": "eş anlamlı"
+    },
+    {
+      "q": "antalya rent a car",
+      "expect": ["ornek-antalya-havalimani-arac-kiralama-demo"],
+      "note": "eş anlamlı"
+    },
+    {
+      "q": "muğla oto kiralama",
+      "expect": ["ornek-dalaman-havalimani-oto-kiralama-demo"],
+      "note": "eş anlamlı"
+    },
+    {
+      "q": "kadıköy kahvaltıcı",
+      "expect": ["ornek-koy-kahvaltisi-kadikoy-demo"],
+      "note": "eş anlamlı + ilçe"
+    },
+    {
+      "q": "kablosuz headphone",
+      "expect": [
+        "ornek-kablosuz-kulaklik-k1-demo",
+        "ornek-kablosuz-kulaklik-k2-pro-demo",
+        "ornek-spor-kulaklik-kosu-r2-demo"
+      ],
+      "note": "eş anlamlı"
+    },
+    {
+      "q": "kulaklik",
+      "expect": [
+        "ornek-kablosuz-kulaklik-k1-demo",
+        "ornek-kablosuz-kulaklik-k2-pro-demo",
+        "ornek-kulak-ustu-kulaklik-ses-s5-demo",
+        "ornek-spor-kulaklik-kosu-r2-demo"
+      ],
+      "note": "aksansız kategori"
+    },
+    {
+      "q": "izmir lokanta",
+      "expect": ["ornek-karsiyaka-balik-evi-demo"],
+      "note": "eş anlamlı (restoran)"
+    },
+    {
+      "q": "Bodrum'da otel",
+      "expect": ["ornek-bodrum-koy-oteli-demo"],
+      "note": "ekli ilçe"
+    },
+    {
+      "q": "Fethiye'de yamaç paraşütü",
+      "expect": ["ornek-yamac-parasutu-fethiye-demo"]
+    },
+    {
+      "q": "Sultanahmet'te köfte",
+      "expect": ["ornek-kofte-salonu-fatih-demo"],
+      "note": "takma ad → Fatih"
+    },
+    {
+      "q": "Alaçatı'da kahvaltı",
+      "expect": ["ornek-alacati-kahvalti-konagi-demo"],
+      "note": "takma ad → Çeşme"
+    },
+    {
+      "q": "cihangir kahvaltı",
+      "expect": ["ornek-kahvalti-evi-cihangir-demo"],
+      "note": "takma ad → Beyoğlu"
+    },
+    {
+      "q": "Göreme'de balon",
+      "expect": ["ornek-goreme-balon-turu-demo"],
+      "note": "takma ad → Nevşehir"
+    },
+    {
+      "q": "kaşta pansiyon",
+      "expect": ["ornek-kas-dalis-merkezi-pansiyonu-demo"],
+      "note": "ekli ilçe (kısa ad metinde)"
+    },
+    {
+      "q": "Ürgüp'te otel",
+      "expect": ["ornek-kapadokya-magara-otel-demo"],
+      "note": "ekli ilçe + genişletme"
+    },
+    {
+      "q": "Çeşme'de araç kiralama",
+      "expect": ["ornek-cesme-arac-kiralama-demo"]
+    },
+    {
+      "q": "antalya denize sıfır",
+      "expect": [
+        "ornek-konyaalti-sahil-oteli-demo",
+        "ornek-lara-aile-tatil-koyu-demo",
+        "ornek-kemer-koy-oteli-demo",
+        "ornek-side-antik-liman-oteli-demo",
+        "ornek-kas-dalis-merkezi-pansiyonu-demo"
+      ],
+      "note": "niyet"
+    },
+    {
+      "q": "muğla uygun fiyatlı pansiyon",
+      "expect": ["ornek-datca-badem-pansiyonu-demo"],
+      "note": "niyet + kategori"
+    },
+    {
+      "q": "rehberli tur nevşehir",
+      "expect": [
+        "ornek-goreme-balon-turu-demo",
+        "ornek-kapadokya-vadi-yuruyusu-demo",
+        "ornek-urgup-cevre-turu-demo",
+        "ornek-derinkuyu-yeralti-turu-demo"
+      ],
+      "note": "niyet"
+    },
+    {
+      "q": "çocuklarla kapadokya",
+      "expect": [
+        "ornek-avanos-comlek-atolyesi-demo",
+        "ornek-kapadokya-vadi-yuruyusu-demo",
+        "ornek-goreme-tas-ev-pansiyonu-demo",
+        "ornek-peri-bacalari-vadisi-avanos-demo"
+      ],
+      "note": "niyet + takma ad"
+    },
+    {
+      "q": "romantik akşam yemeği izmir",
+      "expect": ["ornek-urla-bag-evi-restoran-demo"],
+      "note": "niyet (özel gün)"
+    },
+    {
+      "q": "ucuz otel antalya",
+      "expect": ["ornek-konyaalti-sahil-oteli-demo", "ornek-kemer-koy-oteli-demo"],
+      "note": "niyet"
+    },
+    {
+      "q": "balon turu",
+      "expect": ["ornek-goreme-balon-turu-demo"]
+    },
+    {
+      "q": "tekne turu",
+      "expect": ["ornek-kemer-tekne-turu-demo", "ornek-marmaris-mavi-tur-teknesi-demo"]
+    },
+    {
+      "q": "mavi tur",
+      "expect": ["ornek-marmaris-mavi-tur-teknesi-demo"]
+    },
+    {
+      "q": "rafting",
+      "expect": ["ornek-kanyon-rafting-manavgat-demo"]
+    },
+    {
+      "q": "peri bacaları",
+      "expect": ["ornek-peri-bacalari-vadisi-avanos-demo", "ornek-urgup-cevre-turu-demo"]
+    },
+    {
+      "q": "çömlek",
+      "expect": ["ornek-avanos-comlek-atolyesi-demo"]
+    },
+    {
+      "q": "menemen",
+      "expect": ["ornek-gun-isigi-kahvalti-salonu-demo"],
+      "note": "kısa tanıtımda geçen kelime"
+    },
+    {
+      "q": "su böreği",
+      "expect": ["ornek-uskudar-borekcisi-demo"]
+    },
+    {
+      "q": "ocakbaşı kadıköy",
+      "expect": ["ornek-moda-ocakbasi-demo"]
+    },
+    {
+      "q": "kahve kadıköy",
+      "expect": ["ornek-kadikoy-kahve-duragi-demo"]
+    },
+    {
+      "q": "K2 Pro",
+      "expect": ["ornek-kablosuz-kulaklik-k2-pro-demo"],
+      "note": "ürün modeli"
+    },
+    {
+      "q": "Örnekmarka",
+      "expect": ["ornek-kablosuz-kulaklik-k1-demo", "ornek-kablosuz-kulaklik-k2-pro-demo"],
+      "note": "marka"
+    },
+    {
+      "q": "mağara otel",
+      "expect": ["ornek-kapadokya-magara-otel-demo"]
+    },
+    {
+      "q": "yeraltı şehri",
+      "expect": ["ornek-derinkuyu-yeralti-turu-demo"]
+    },
+    {
+      "q": "xqzvw",
+      "expectZero": true,
+      "note": "anlamsız sorgu"
+    },
+    {
+      "q": "trabzon kahvaltı",
+      "expectZero": true,
+      "note": "ilde veri yok → gevşetme önerisi"
+    }
+  ]
+}

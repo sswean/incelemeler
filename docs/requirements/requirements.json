@@ -1245,9 +1245,9 @@
       "title": "Arama, uygulama kodunun yalnızca gördüğü bir arama motoru arayüzü arkasındadır",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "SearchPort (upsert/delete/query/suggest) + PostgresSearchAdapter; uygulama yalnızca portu görür (ADR-0012; search.int).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -1257,84 +1257,84 @@
       "title": "Okuma modeli search_documents (listeleme, içerik, kategori, destinasyon) outbox olaylar…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "search_documents okuma modeli outbox olaylarıyla güncellenir; search:reindex; üretimde DEMO dışlanır (search.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "İçerik/kategori olayları bağlı; destinasyon belgeleri hub dilimiyle (6d)."
     },
     {
       "id": "REQ-ARA-003",
       "title": "Türkçe normalizasyon (normalizeTr, uygulamada ve SQL'de birebir aynı kurallar)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "KISMİ",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "normalizeTr ↔ SQL normalize_tr/fold_tr birebir parite testi; İ/I, kesme işareti, aksan katlama (turkish.test, search.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Faz 0: normalizeTr (TS) testli; SQL eşleniği Faz 1."
+      "notes": ""
     },
     {
       "id": "REQ-ARA-004",
       "title": "PostgreSQL turkish metin arama yapılandırmasının kullanılan sürümde varlığı doğrulanır …",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "turkish yapılandırması doğrulandı (ADR-0012); unaccent IMMUTABLE sarmalayıcı; A/B/C/D ağırlıkları; GIN; turkish + simple simetrik katlama korpusla değerlendirildi.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Büyük veriyle ağırlık ayarı D13."
     },
     {
       "id": "REQ-ARA-005",
       "title": "Yazım hatası toleransı",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "pg_trgm word_similarity geri dönüşü (< 5 sonuç), yer adlarında Damerau yazım düzeltmesi ve \"Bunu mu demek istediniz?\" (search.int, E2E search.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Eşiğin büyük korpusla ayarı D13."
     },
     {
       "id": "REQ-ARA-006",
       "title": "Sorgu korpusu",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": "recall@5 ≥ %90; sıfır sonuç yalnızca beklenen sorgularda. CI'da çalışır.",
+      "acceptance": "docs/requirements/ARA-sorgu-korpusu.json: 64 sorgu; recall@5 = 1,000; sıfır sonuç yalnızca beklenen 2 sorguda (search.int — CI).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Korpus gerçek veriyle genişletilecek."
     },
     {
       "id": "REQ-ARA-007",
       "title": "Ortak filtreler",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "İl/ilçe, kategori (alt kategoriler dahil), tür, içerik türü, fiyat, puan (değerlendirme yokken sonuç üretmez), filtrelenebilir özellikler, sıralama; ayrıştırılan filtreler çip (search.int, E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Açık şimdi (VER-010 saatler), etkinlik tarihi, yakınımda arayüzü sonraki dilimlerde."
     },
     {
       "id": "REQ-ARA-008",
       "title": "Sıralama seçenekleri",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Önerilen (alaka + Bayes + tazelik + mesafe), puana göre, en çok değerlendirilen, en yakın (konum zorunlu), en yeni; ticari sinyal yok; deterministik.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Bayes bileşeni değerlendirmelerle (D7); formül açıklaması metodoloji sayfasına D7'de."
     },
     {
       "id": "REQ-ARA-009",
@@ -1353,33 +1353,33 @@
       "title": "Otomatik tamamlama",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Gruplu otomatik tamamlama (yer, kategori, listeleme, içerik), ARIA combobox, klavye gezintisi (search.int, E2E search.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Son aramalar (cihazda/rızayla) D10."
     },
     {
       "id": "REQ-ARA-011",
       "title": "Liste görünümü ZORUNLU",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Liste görünümü; harita sağlayıcısı yok (X-005) → harita kapalı, liste + adres.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Harita İSTEĞE BAĞLI."
     },
     {
       "id": "REQ-ARA-012",
       "title": "Mobil web'de filtreler bottom sheet içinde",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Mobilde alt sayfa filtre paneli, rozet, Temizle, Sonuçları göster (N) canlı sayı; URL durumu yansıtır, geri tuşu çalışır (search-state.test, E2E search.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -1389,24 +1389,24 @@
       "title": "Sıfır sonuç durumu",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Sıfır sonuçta her filtre için gevşetme önerisi ve sonuç sayısı; tek tıkla gevşetme (search.int, E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yakın şehir/kategori önerisi hub dilimiyle."
     },
     {
       "id": "REQ-ARA-014",
       "title": "search_events",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "search_events: normalize sorgu, filtre özeti, sonuç sayısı; kişisel veri ve oturum karması yok (search.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Tıklanan sonuç sırası ve raporlar D12; rızalı oturum karması D10."
     },
     {
       "id": "REQ-ARA-015",

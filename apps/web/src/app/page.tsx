@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import { tr } from '@incelemeler/i18n';
+import { SearchBox } from '../components/search/search-box';
 import { serverApi } from '../lib/api';
 
 // Kategoriler her istekte API'den okunur (Faz 0 yürüyen iskelet; ISR stratejisi ADR-0009).
@@ -23,6 +25,7 @@ export default async function HomePage() {
         <h1 id="kesfet-baslik" className="text-3xl font-semibold">
           {tr.home.exploreTitle}
         </h1>
+        <SearchBox />
         {error || !data ? (
           <div role="alert" className="text-danger-text">
             <p>{tr.home.loadError}</p>
@@ -41,9 +44,12 @@ export default async function HomePage() {
           >
             {topLevel.map((c) => (
               <li key={c.id}>
-                <span className="block rounded-lg border border-border-default px-4 py-5 font-medium">
+                <Link
+                  href={`/ara?kategori=${c.slug}`}
+                  className="block rounded-lg border border-border-default px-4 py-5 font-medium hover:bg-bg-subtle"
+                >
                   {c.name}
-                </span>
+                </Link>
               </li>
             ))}
           </ul>

@@ -4892,6 +4892,301 @@
           }
         }
       }
+    },
+    "/v1/search": {
+      "get": {
+        "operationId": "search",
+        "summary": "Arama (REQ-ARA-001…013): sorgu ayrıştırma, ortak filtreler, organik sıralama (ticari sinyal yok)",
+        "tags": [
+          "search"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "province",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            }
+          },
+          {
+            "name": "district",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PLACE",
+                "LODGING",
+                "PRODUCT",
+                "SERVICE_PROVIDER",
+                "GUIDE_PERSON",
+                "EXPERIENCE",
+                "POI",
+                "DESTINATION",
+                "EVENT",
+                "WORK"
+              ]
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "LISTING",
+                "ARTICLE"
+              ]
+            }
+          },
+          {
+            "name": "priceMax",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            }
+          },
+          {
+            "name": "minRating",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "4",
+                "3.5",
+                "4.5"
+              ]
+            }
+          },
+          {
+            "name": "attr",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z][a-zA-Z0-9_]{0,59}:[a-zA-Z0-9_-]{1,60}$"
+                },
+                {
+                  "maxItems": 10,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9_]{0,59}:[a-zA-Z0-9_-]{1,60}$"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": "recommended",
+              "type": "string",
+              "enum": [
+                "recommended",
+                "rating",
+                "reviews",
+                "nearest",
+                "newest"
+              ]
+            }
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 35,
+              "maximum": 43
+            }
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 25,
+              "maximum": 45.5
+            }
+          },
+          {
+            "name": "interpret",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sonuçlar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/search/suggest": {
+      "get": {
+        "operationId": "searchSuggest",
+        "summary": "Otomatik tamamlama: yer, kategori, listeleme ve içerik grupları (REQ-ARA-010)",
+        "tags": [
+          "search"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Öneriler",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuggestResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/search/filters": {
+      "get": {
+        "operationId": "searchFilters",
+        "summary": "Filtrelenebilir özellikler (filtre paneli)",
+        "tags": [
+          "search"
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtreler",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchFilters"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -7120,390 +7415,6 @@
         "required": [
           "data",
           "page"
-        ],
-        "additionalProperties": false
-      },
-      "ImportPreviewBody": {
-        "type": "object",
-        "properties": {
-          "kind": {
-            "type": "string",
-            "enum": [
-              "PLACE",
-              "LODGING",
-              "PRODUCT",
-              "SERVICE_PROVIDER",
-              "GUIDE_PERSON",
-              "EXPERIENCE",
-              "POI",
-              "DESTINATION",
-              "EVENT",
-              "WORK"
-            ]
-          },
-          "primaryCategoryId": {
-            "type": "string",
-            "format": "uuid",
-            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
-          },
-          "source": {
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 200
-          },
-          "fileName": {
-            "type": "string",
-            "maxLength": 200
-          },
-          "csv": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 2000000
-          },
-          "mapping": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "kind",
-          "primaryCategoryId",
-          "source",
-          "csv"
-        ],
-        "additionalProperties": false
-      },
-      "ImportBatch": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "kind": {
-            "type": "string",
-            "enum": [
-              "PLACE",
-              "LODGING",
-              "PRODUCT",
-              "SERVICE_PROVIDER",
-              "GUIDE_PERSON",
-              "EXPERIENCE",
-              "POI",
-              "DESTINATION",
-              "EVENT",
-              "WORK"
-            ]
-          },
-          "primaryCategory": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "id",
-              "name"
-            ],
-            "additionalProperties": false
-          },
-          "source": {
-            "type": "string"
-          },
-          "fileName": {
-            "nullable": true,
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "PREVIEW",
-              "COMMITTED",
-              "ROLLED_BACK"
-            ]
-          },
-          "mapping": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          },
-          "unmappedHeaders": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "rowCount": {
-            "type": "integer",
-            "minimum": -9007199254740991,
-            "maximum": 9007199254740991
-          },
-          "validCount": {
-            "type": "integer",
-            "minimum": -9007199254740991,
-            "maximum": 9007199254740991
-          },
-          "createdCount": {
-            "type": "integer",
-            "minimum": -9007199254740991,
-            "maximum": 9007199254740991
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-          },
-          "committedAt": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-          },
-          "rolledBackAt": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-          },
-          "rows": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "row": {
-                  "type": "integer",
-                  "minimum": -9007199254740991,
-                  "maximum": 9007199254740991
-                },
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "VALID",
-                    "INVALID",
-                    "DUPLICATE",
-                    "CREATED",
-                    "SKIPPED"
-                  ]
-                },
-                "name": {
-                  "nullable": true,
-                  "type": "string"
-                },
-                "errors": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "field": {
-                        "type": "string"
-                      },
-                      "code": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "field",
-                      "code"
-                    ],
-                    "additionalProperties": false
-                  }
-                },
-                "duplicateOf": {
-                  "nullable": true,
-                  "type": "object",
-                  "properties": {
-                    "listingId": {
-                      "nullable": true,
-                      "type": "string"
-                    },
-                    "row": {
-                      "nullable": true,
-                      "type": "integer",
-                      "minimum": -9007199254740991,
-                      "maximum": 9007199254740991
-                    },
-                    "reason": {
-                      "type": "string",
-                      "enum": [
-                        "gtin",
-                        "name_proximity",
-                        "name_district"
-                      ]
-                    }
-                  },
-                  "required": [
-                    "listingId",
-                    "row",
-                    "reason"
-                  ],
-                  "additionalProperties": false
-                },
-                "listingId": {
-                  "nullable": true,
-                  "type": "string"
-                }
-              },
-              "required": [
-                "row",
-                "status",
-                "name",
-                "errors",
-                "duplicateOf",
-                "listingId"
-              ],
-              "additionalProperties": false
-            }
-          }
-        },
-        "required": [
-          "id",
-          "kind",
-          "primaryCategory",
-          "source",
-          "fileName",
-          "status",
-          "mapping",
-          "unmappedHeaders",
-          "rowCount",
-          "validCount",
-          "createdCount",
-          "createdAt",
-          "committedAt",
-          "rolledBackAt",
-          "rows"
-        ],
-        "additionalProperties": false
-      },
-      "ImportBatchList": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                },
-                "kind": {
-                  "type": "string",
-                  "enum": [
-                    "PLACE",
-                    "LODGING",
-                    "PRODUCT",
-                    "SERVICE_PROVIDER",
-                    "GUIDE_PERSON",
-                    "EXPERIENCE",
-                    "POI",
-                    "DESTINATION",
-                    "EVENT",
-                    "WORK"
-                  ]
-                },
-                "primaryCategory": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "name": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "id",
-                    "name"
-                  ],
-                  "additionalProperties": false
-                },
-                "source": {
-                  "type": "string"
-                },
-                "fileName": {
-                  "nullable": true,
-                  "type": "string"
-                },
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "PREVIEW",
-                    "COMMITTED",
-                    "ROLLED_BACK"
-                  ]
-                },
-                "mapping": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  }
-                },
-                "unmappedHeaders": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "rowCount": {
-                  "type": "integer",
-                  "minimum": -9007199254740991,
-                  "maximum": 9007199254740991
-                },
-                "validCount": {
-                  "type": "integer",
-                  "minimum": -9007199254740991,
-                  "maximum": 9007199254740991
-                },
-                "createdCount": {
-                  "type": "integer",
-                  "minimum": -9007199254740991,
-                  "maximum": 9007199254740991
-                },
-                "createdAt": {
-                  "type": "string",
-                  "format": "date-time",
-                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-                },
-                "committedAt": {
-                  "nullable": true,
-                  "type": "string",
-                  "format": "date-time",
-                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-                },
-                "rolledBackAt": {
-                  "nullable": true,
-                  "type": "string",
-                  "format": "date-time",
-                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-                }
-              },
-              "required": [
-                "id",
-                "kind",
-                "primaryCategory",
-                "source",
-                "fileName",
-                "status",
-                "mapping",
-                "unmappedHeaders",
-                "rowCount",
-                "validCount",
-                "createdCount",
-                "createdAt",
-                "committedAt",
-                "rolledBackAt"
-              ],
-              "additionalProperties": false
-            }
-          }
-        },
-        "required": [
-          "data"
         ],
         "additionalProperties": false
       },
@@ -10038,6 +9949,831 @@
           "ethics",
           "links",
           "articles"
+        ],
+        "additionalProperties": false
+      },
+      "SearchResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "LISTING",
+                    "ARTICLE"
+                  ]
+                },
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "subtitle": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "kind": {
+                  "nullable": true,
+                  "type": "string",
+                  "enum": [
+                    "PLACE",
+                    "LODGING",
+                    "PRODUCT",
+                    "SERVICE_PROVIDER",
+                    "GUIDE_PERSON",
+                    "EXPERIENCE",
+                    "POI",
+                    "DESTINATION",
+                    "EVENT",
+                    "WORK"
+                  ]
+                },
+                "articleType": {
+                  "nullable": true,
+                  "type": "string",
+                  "enum": [
+                    "GUIDE",
+                    "LIST",
+                    "COMPARISON",
+                    "REVIEW",
+                    "NEWS",
+                    "SPONSORED"
+                  ]
+                },
+                "status": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "priceLevel": {
+                  "nullable": true,
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "ratingCount": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "distanceKm": {
+                  "nullable": true,
+                  "type": "number"
+                },
+                "dataOrigin": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "id",
+                "title",
+                "subtitle",
+                "path",
+                "kind",
+                "articleType",
+                "status",
+                "priceLevel",
+                "ratingCount",
+                "distanceKm",
+                "dataOrigin"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "recommended",
+              "rating",
+              "reviews",
+              "nearest",
+              "newest"
+            ]
+          },
+          "interpretation": {
+            "type": "object",
+            "properties": {
+              "place": {
+                "nullable": true,
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "level": {
+                    "type": "string",
+                    "enum": [
+                      "PROVINCE",
+                      "DISTRICT"
+                    ]
+                  },
+                  "province": {
+                    "type": "string"
+                  },
+                  "district": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "corrected": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name",
+                  "level",
+                  "province",
+                  "district",
+                  "corrected"
+                ],
+                "additionalProperties": false
+              },
+              "category": {
+                "nullable": true,
+                "type": "object",
+                "properties": {
+                  "slug": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "slug",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              "intents": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "priceMax": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "attrs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "label",
+                    "priceMax",
+                    "attrs"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "text": {
+                "nullable": true,
+                "type": "string"
+              },
+              "didYouMean": {
+                "nullable": true,
+                "type": "string"
+              }
+            },
+            "required": [
+              "place",
+              "category",
+              "intents",
+              "text",
+              "didYouMean"
+            ],
+            "additionalProperties": false
+          },
+          "fuzzyFallback": {
+            "type": "boolean"
+          },
+          "relaxations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "drop": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "drop",
+                "label",
+                "count"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "pageSize",
+          "sort",
+          "interpretation",
+          "fuzzyFallback",
+          "relaxations"
+        ],
+        "additionalProperties": false
+      },
+      "SuggestResponse": {
+        "type": "object",
+        "properties": {
+          "places": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "subtitle": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "subtitle",
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "subtitle": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "subtitle",
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "listings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "subtitle": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "subtitle",
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "articles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "subtitle": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "subtitle",
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "places",
+          "categories",
+          "listings",
+          "articles"
+        ],
+        "additionalProperties": false
+      },
+      "SearchFilters": {
+        "type": "object",
+        "properties": {
+          "attributes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "BOOL",
+                    "ENUM",
+                    "MULTI_ENUM",
+                    "INT",
+                    "DECIMAL"
+                  ]
+                },
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "value",
+                      "label"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "categories": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "key",
+                "label",
+                "type",
+                "options",
+                "categories"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "attributes"
+        ],
+        "additionalProperties": false
+      },
+      "ImportPreviewBody": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "PLACE",
+              "LODGING",
+              "PRODUCT",
+              "SERVICE_PROVIDER",
+              "GUIDE_PERSON",
+              "EXPERIENCE",
+              "POI",
+              "DESTINATION",
+              "EVENT",
+              "WORK"
+            ]
+          },
+          "primaryCategoryId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "source": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+          },
+          "fileName": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "csv": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000000
+          },
+          "mapping": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "kind",
+          "primaryCategoryId",
+          "source",
+          "csv"
+        ],
+        "additionalProperties": false
+      },
+      "ImportBatch": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "PLACE",
+              "LODGING",
+              "PRODUCT",
+              "SERVICE_PROVIDER",
+              "GUIDE_PERSON",
+              "EXPERIENCE",
+              "POI",
+              "DESTINATION",
+              "EVENT",
+              "WORK"
+            ]
+          },
+          "primaryCategory": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "source": {
+            "type": "string"
+          },
+          "fileName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PREVIEW",
+              "COMMITTED",
+              "ROLLED_BACK"
+            ]
+          },
+          "mapping": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "unmappedHeaders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rowCount": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "validCount": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "createdCount": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "committedAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "rolledBackAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "row": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "VALID",
+                    "INVALID",
+                    "DUPLICATE",
+                    "CREATED",
+                    "SKIPPED"
+                  ]
+                },
+                "name": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "field": {
+                        "type": "string"
+                      },
+                      "code": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "field",
+                      "code"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "duplicateOf": {
+                  "nullable": true,
+                  "type": "object",
+                  "properties": {
+                    "listingId": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "row": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "gtin",
+                        "name_proximity",
+                        "name_district"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "listingId",
+                    "row",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                },
+                "listingId": {
+                  "nullable": true,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "row",
+                "status",
+                "name",
+                "errors",
+                "duplicateOf",
+                "listingId"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "primaryCategory",
+          "source",
+          "fileName",
+          "status",
+          "mapping",
+          "unmappedHeaders",
+          "rowCount",
+          "validCount",
+          "createdCount",
+          "createdAt",
+          "committedAt",
+          "rolledBackAt",
+          "rows"
+        ],
+        "additionalProperties": false
+      },
+      "ImportBatchList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "PLACE",
+                    "LODGING",
+                    "PRODUCT",
+                    "SERVICE_PROVIDER",
+                    "GUIDE_PERSON",
+                    "EXPERIENCE",
+                    "POI",
+                    "DESTINATION",
+                    "EVENT",
+                    "WORK"
+                  ]
+                },
+                "primaryCategory": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "source": {
+                  "type": "string"
+                },
+                "fileName": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "PREVIEW",
+                    "COMMITTED",
+                    "ROLLED_BACK"
+                  ]
+                },
+                "mapping": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "unmappedHeaders": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "rowCount": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "validCount": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "createdCount": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                },
+                "committedAt": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                },
+                "rolledBackAt": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "primaryCategory",
+                "source",
+                "fileName",
+                "status",
+                "mapping",
+                "unmappedHeaders",
+                "rowCount",
+                "validCount",
+                "createdCount",
+                "createdAt",
+                "committedAt",
+                "rolledBackAt"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "data"
         ],
         "additionalProperties": false
       },

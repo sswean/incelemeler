@@ -46,7 +46,8 @@ pnpm turbo run build --filter=@incelemeler/api --filter=@incelemeler/web --filte
 echo "▶ Migration'lar"
 pnpm db:migrate
 
-echo "▶ Başlangıç verisi (taksonomi; üretimde çalışmaz)"
+echo "▶ Başlangıç verisi (taksonomi, arama sözlüğü, demo listelemeler; üretimde çalışmaz)"
 pnpm seed:demo
+pnpm search:reindex
 
 echo "✔ Hazır. Geliştirme için: pnpm dev   ·   Doğrulama: pnpm verify"

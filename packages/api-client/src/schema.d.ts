@@ -831,6 +831,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Arama (REQ-ARA-001…013): sorgu ayrıştırma, ortak filtreler, organik sıralama (ticari sinyal yok) */
+        get: operations["search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/search/suggest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Otomatik tamamlama: yer, kategori, listeleme ve içerik grupları (REQ-ARA-010) */
+        get: operations["searchSuggest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/search/filters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Filtrelenebilir özellikler (filtre paneli) */
+        get: operations["searchFilters"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1317,89 +1368,6 @@ export interface components {
         AdminListingList: {
             data: components["schemas"]["AdminListingSummary"][];
             page: components["schemas"]["PageInfo"];
-        };
-        ImportPreviewBody: {
-            /** @enum {string} */
-            kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
-            /** Format: uuid */
-            primaryCategoryId: string;
-            source: string;
-            fileName?: string;
-            csv: string;
-            mapping?: {
-                [key: string]: string;
-            };
-        };
-        ImportBatch: {
-            id: string;
-            /** @enum {string} */
-            kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
-            primaryCategory: {
-                id: string;
-                name: string;
-            };
-            source: string;
-            fileName: string | null;
-            /** @enum {string} */
-            status: "PREVIEW" | "COMMITTED" | "ROLLED_BACK";
-            mapping: {
-                [key: string]: string;
-            };
-            unmappedHeaders: string[];
-            rowCount: number;
-            validCount: number;
-            createdCount: number;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            committedAt: string | null;
-            /** Format: date-time */
-            rolledBackAt: string | null;
-            rows: {
-                row: number;
-                /** @enum {string} */
-                status: "VALID" | "INVALID" | "DUPLICATE" | "CREATED" | "SKIPPED";
-                name: string | null;
-                errors: {
-                    field: string;
-                    code: string;
-                }[];
-                duplicateOf: {
-                    listingId: string | null;
-                    row: number | null;
-                    /** @enum {string} */
-                    reason: "gtin" | "name_proximity" | "name_district";
-                } | null;
-                listingId: string | null;
-            }[];
-        };
-        ImportBatchList: {
-            data: {
-                id: string;
-                /** @enum {string} */
-                kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
-                primaryCategory: {
-                    id: string;
-                    name: string;
-                };
-                source: string;
-                fileName: string | null;
-                /** @enum {string} */
-                status: "PREVIEW" | "COMMITTED" | "ROLLED_BACK";
-                mapping: {
-                    [key: string]: string;
-                };
-                unmappedHeaders: string[];
-                rowCount: number;
-                validCount: number;
-                createdCount: number;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                committedAt: string | null;
-                /** Format: date-time */
-                rolledBackAt: string | null;
-            }[];
         };
         ArticleCreateBody: {
             /** @enum {string} */
@@ -1914,6 +1882,176 @@ export interface components {
                 summary: string | null;
                 /** Format: date-time */
                 publishedAt: string | null;
+            }[];
+        };
+        SearchResponse: {
+            data: {
+                /** @enum {string} */
+                type: "LISTING" | "ARTICLE";
+                id: string;
+                title: string;
+                subtitle: string | null;
+                path: string;
+                /** @enum {string|null} */
+                kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK" | null;
+                /** @enum {string|null} */
+                articleType: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED" | null;
+                status: string | null;
+                priceLevel: number | null;
+                ratingCount: number;
+                distanceKm: number | null;
+                dataOrigin: string;
+            }[];
+            total: number;
+            page: number;
+            pageSize: number;
+            /** @enum {string} */
+            sort: "recommended" | "rating" | "reviews" | "nearest" | "newest";
+            interpretation: {
+                place: {
+                    name: string;
+                    /** @enum {string} */
+                    level: "PROVINCE" | "DISTRICT";
+                    province: string;
+                    district: string | null;
+                    corrected: boolean;
+                } | null;
+                category: {
+                    slug: string;
+                    name: string;
+                } | null;
+                intents: {
+                    key: string;
+                    label: string;
+                    priceMax: number | null;
+                    attrs: string[];
+                }[];
+                text: string | null;
+                didYouMean: string | null;
+            };
+            fuzzyFallback: boolean;
+            relaxations: {
+                drop: string;
+                label: string;
+                count: number;
+            }[];
+        };
+        SuggestResponse: {
+            places: {
+                title: string;
+                subtitle: string | null;
+                path: string;
+            }[];
+            categories: {
+                title: string;
+                subtitle: string | null;
+                path: string;
+            }[];
+            listings: {
+                title: string;
+                subtitle: string | null;
+                path: string;
+            }[];
+            articles: {
+                title: string;
+                subtitle: string | null;
+                path: string;
+            }[];
+        };
+        SearchFilters: {
+            attributes: {
+                key: string;
+                label: string;
+                /** @enum {string} */
+                type: "BOOL" | "ENUM" | "MULTI_ENUM" | "INT" | "DECIMAL";
+                options: {
+                    value: string;
+                    label: string;
+                }[];
+                categories: string[];
+            }[];
+        };
+        ImportPreviewBody: {
+            /** @enum {string} */
+            kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+            /** Format: uuid */
+            primaryCategoryId: string;
+            source: string;
+            fileName?: string;
+            csv: string;
+            mapping?: {
+                [key: string]: string;
+            };
+        };
+        ImportBatch: {
+            id: string;
+            /** @enum {string} */
+            kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+            primaryCategory: {
+                id: string;
+                name: string;
+            };
+            source: string;
+            fileName: string | null;
+            /** @enum {string} */
+            status: "PREVIEW" | "COMMITTED" | "ROLLED_BACK";
+            mapping: {
+                [key: string]: string;
+            };
+            unmappedHeaders: string[];
+            rowCount: number;
+            validCount: number;
+            createdCount: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            committedAt: string | null;
+            /** Format: date-time */
+            rolledBackAt: string | null;
+            rows: {
+                row: number;
+                /** @enum {string} */
+                status: "VALID" | "INVALID" | "DUPLICATE" | "CREATED" | "SKIPPED";
+                name: string | null;
+                errors: {
+                    field: string;
+                    code: string;
+                }[];
+                duplicateOf: {
+                    listingId: string | null;
+                    row: number | null;
+                    /** @enum {string} */
+                    reason: "gtin" | "name_proximity" | "name_district";
+                } | null;
+                listingId: string | null;
+            }[];
+        };
+        ImportBatchList: {
+            data: {
+                id: string;
+                /** @enum {string} */
+                kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+                primaryCategory: {
+                    id: string;
+                    name: string;
+                };
+                source: string;
+                fileName: string | null;
+                /** @enum {string} */
+                status: "PREVIEW" | "COMMITTED" | "ROLLED_BACK";
+                mapping: {
+                    [key: string]: string;
+                };
+                unmappedHeaders: string[];
+                rowCount: number;
+                validCount: number;
+                createdCount: number;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                committedAt: string | null;
+                /** Format: date-time */
+                rolledBackAt: string | null;
             }[];
         };
         PublicListing: {
@@ -4417,6 +4555,111 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PublicAuthor"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    search: {
+        parameters: {
+            query?: {
+                q?: string;
+                province?: string;
+                district?: string;
+                category?: string;
+                kind?: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+                type?: "LISTING" | "ARTICLE";
+                priceMax?: number;
+                minRating?: "4" | "3.5" | "4.5";
+                attr?: string | string[];
+                sort?: "recommended" | "rating" | "reviews" | "nearest" | "newest";
+                lat?: number;
+                lng?: number;
+                interpret?: "true" | "false";
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sonuçlar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResponse"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    searchSuggest: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Öneriler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuggestResponse"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    searchFilters: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Filtreler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchFilters"];
                 };
             };
             /** @description Hata (RFC 9457) */

@@ -96,6 +96,12 @@ importers:
       '@incelemeler/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@incelemeler/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+      '@incelemeler/routes':
+        specifier: workspace:*
+        version: link:../../packages/routes
       '@incelemeler/utils':
         specifier: workspace:*
         version: link:../../packages/utils

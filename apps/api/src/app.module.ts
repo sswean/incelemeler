@@ -22,6 +22,12 @@ import { PublicListingsController } from './modules/catalog/public-listings.cont
 import { PublicListingsService } from './modules/catalog/public-listings.service.js';
 import { AdminArticlesController } from './modules/editorial/admin-articles.controller.js';
 import { AdminArticlesService } from './modules/editorial/admin-articles.service.js';
+import { PostgresSearchAdapter } from './modules/search/postgres-search.adapter.js';
+import { SearchIndexerService } from './modules/search/search-indexer.service.js';
+import { SearchLexiconService } from './modules/search/search-lexicon.service.js';
+import { SearchController } from './modules/search/search.controller.js';
+import { SEARCH_PORT } from './modules/search/search.port.js';
+import { SearchService } from './modules/search/search.service.js';
 import { AuthorProfilesController } from './modules/editorial/author-profiles.controller.js';
 import { AuthorProfilesService } from './modules/editorial/author-profiles.service.js';
 import { PublicArticlesController } from './modules/editorial/public-articles.controller.js';
@@ -83,6 +89,7 @@ export const CONTROLLERS = [
   AdminArticlesController,
   PublicArticlesController,
   AuthorProfilesController,
+  SearchController,
 ];
 
 @Module({})
@@ -119,6 +126,10 @@ export class AppModule {
         PublicArticlesService,
         AuthorProfilesService,
         OutboxService,
+        { provide: SEARCH_PORT, useClass: PostgresSearchAdapter },
+        SearchLexiconService,
+        SearchService,
+        SearchIndexerService,
       ],
     };
   }

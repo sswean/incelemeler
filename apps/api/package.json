@@ -18,11 +18,14 @@
     "seed:demo": "node --env-file-if-exists=../../.env dist/seed/demo-seed.js",
     "openapi:generate": "node scripts/generate-openapi.mjs",
     "admin:create-super-admin": "node --env-file-if-exists=../../.env dist/cli/create-super-admin.js",
-    "worker": "node --env-file-if-exists=../../.env dist/worker.js"
+    "worker": "node --env-file-if-exists=../../.env dist/worker.js",
+    "search:reindex": "node --env-file-if-exists=../../.env dist/cli/search-reindex.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1152.0",
     "@incelemeler/contracts": "workspace:*",
+    "@incelemeler/i18n": "workspace:*",
+    "@incelemeler/routes": "workspace:*",
     "@incelemeler/utils": "workspace:*",
     "@nestjs/common": "12.1.3",
     "@nestjs/core": "12.1.3",

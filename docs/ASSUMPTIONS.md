@@ -65,3 +65,7 @@ Biçim: Ek C-4. "Yüksek" geri alma maliyetli varsayımlar OPEN-QUESTIONS'ta da 
 ## A-016: Önizleme belirteci sorgu parametresinde
 - Tarih: 2026-10-19 · Faz 1 · Gerekçe: URL normalleştirme (REQ-SEO-003) yolu küçük harfe çevirir; büyük/küçük harf duyarlı imzalı belirteç yolda bozulurdu. Önizleme adresi `/onizleme?belirtec=…` (noindex, `Cache-Control: private, no-store`, API'de `X-Robots-Tag: noindex`).
 - Etkilediği REQ'ler: REQ-ICR-005 · Geri alma maliyeti: Düşük · Durum: AÇIK
+
+## A-017: Arama sözlüğü varsayılanları ve demo veri
+- Tarih: 2026-10-19 · Faz 1 · Gerekçe: Ek A7.1 örneklerinin filtreye çevrilmesi için varsayılan niyetler (uygun fiyatlı → fiyat ≤ 2; denize yakın → `beachfront`; çocuklarla → `familyFriendly`; özel gün → `specialOccasion`; rehberli → `guided`; kablosuz → `wireless`), eş anlamlılar ve takma adlar (Kapadokya → Nevşehir, Sultanahmet → Fatih…) platform yapılandırması olarak seed edilir; ilgili filtrelenebilir özellikler kategori şemalarına eklenir. "Hafta sonu", "günlük" gibi ifadeler Faz 1'de filtreye çevrilmez (koleksiyon/kiralama süresi verisi yok) — dolgu ifadesi sayılır. Korpusun beklenen sonuçları `seedDemoListings` içindeki 64 kurgusal "(Demo)" kayıttır (gerçek işletme/yer adı taklidi yok; görsel, puan, fiyat, lisans no yok).
+- Etkilediği REQ'ler: REQ-ARA-006, REQ-ARA-007 · Geri alma maliyeti: Düşük (panelden değiştirilebilir — 6e) · Durum: AÇIK

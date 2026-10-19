@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
-- **Aktif faz: 0** — Temel ve yürüyen iskelet
-- Aktif dilim: Faz 0 kapanışı (rapor: `docs/status-log/FAZ-0-raporu.md`)
+- **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
+- Aktif dilim: Faz 1 dilim 1 — kimlik + roller + denetim kaydı (başlanmadı)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 

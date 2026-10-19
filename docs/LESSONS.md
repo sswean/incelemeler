@@ -10,3 +10,4 @@ Bir ders bir madde; ilk satır tek cümlelik özet. Yanlış çıkan ders silini
 - **Tailwind v4 `@theme inline` içinde değişken kendine referans veremez.** Ham token'lar `--ic-*`, tema eşlemesi `--color-*`.
 - **`minio/minio` imajı bu ortamda çekilemiyor.** Yerel S3 için SeaweedFS.
 - **dependency-cruiser, çözümlenemeyen paketleri yol kuralıyla yakalamaz.** `couldNotResolve` kuralı ve çıplak paket adını da kapsayan desen gerekir.
+- **req:check (a) faz içinde yalnızca çalışılmaya başlanan ZORUNLU REQ'leri denetler; faz kapısında `node scripts/req-check.mjs --gate` tüm ZORUNLU REQ'leri denetler.** Aksi hâlde faz başında CI hep kırmızı olurdu.

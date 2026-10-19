@@ -45,9 +45,12 @@ const errors = [];
 for (const id of refs.keys())
   if (!known.has(id)) errors.push(`(c) Testte geçen ${id} requirements.json'da yok`);
 
-// (a)
+// (a) Faz içinde: çalışılmaya başlanmış (BAŞLANMADI/ERTELENDİ dışı) ZORUNLU REQ'ler bağlı olmalı.
+//     Faz kapısında (`--gate`): aktif fazın TÜM ZORUNLU REQ'leri bağlı olmalı.
+const gate = process.argv.includes('--gate');
 const active = req.requirements.filter((r) => r.phase === activePhase && r.level === 'ZORUNLU');
-for (const r of active) {
+const toCheck = gate ? active : active.filter((r) => !['BAŞLANMADI', 'ERTELENDİ'].includes(r.status));
+for (const r of toCheck) {
   const linked = refs.has(r.id) || manualQa.includes(r.id) || (r.tests ?? []).length > 0;
   const justified =
     ['ERTELENDİ', 'ENGELLİ', 'DOĞRULANAMADI', 'KISMİ'].includes(r.status) && r.notes;
@@ -76,7 +79,7 @@ if (done.length) {
 
 const byStatus = req.requirements.reduce((a, r) => ((a[r.status] = (a[r.status] ?? 0) + 1), a), {});
 console.log(
-  `Aktif faz ${activePhase}: ${active.length} ZORUNLU REQ · testlerde atıf yapılan REQ: ${refs.size} · durumlar: ${JSON.stringify(byStatus)}`,
+  `${gate ? '[faz kapısı] ' : ''}Aktif faz ${activePhase}: ${active.length} ZORUNLU REQ · testlerde atıf yapılan REQ: ${refs.size} · durumlar: ${JSON.stringify(byStatus)}`,
 );
 if (errors.length) {
   console.error(errors.join('\n'));

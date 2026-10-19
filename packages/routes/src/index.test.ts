@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { absoluteUrl, listingPath, normalizePath, parseListingPath } from './index.js';
+import {
+  absoluteUrl,
+  hubPath,
+  listingPath,
+  normalizePath,
+  parseListingPath,
+  RESERVED_SEGMENTS,
+} from './index.js';
 
 describe('[REQ-SEO-003] URL şeması (Ek A15.1)', () => {
   it('tür önekleri', () => {
@@ -39,5 +46,32 @@ describe('[REQ-SEO-003] URL şeması (Ek A15.1)', () => {
       'https://incelemeler.com.tr/mekan/a',
     );
     expect(absoluteUrl('https://incelemeler.com.tr/', '/')).toBe('https://incelemeler.com.tr/');
+  });
+});
+
+describe('[REQ-SEO-003] hub yolları ve ayrılmış sözcükler', () => {
+  it('hub yolu il/ilçe/kategori sırasıyla', () => {
+    expect(hubPath({ province: 'istanbul' })).toBe('/istanbul');
+    expect(hubPath({ province: 'istanbul', category: 'kahvalti-mekanlari' })).toBe(
+      '/istanbul/kahvalti-mekanlari',
+    );
+    expect(hubPath({ province: 'istanbul', district: 'kadikoy', category: 'kafeler' })).toBe(
+      '/istanbul/kadikoy/kafeler',
+    );
+  });
+  it('tür, içerik önekleri ve sabit sayfalar ayrılmış', () => {
+    for (const s of [
+      'mekan',
+      'arac-kiralama',
+      'rehber',
+      'sponsorlu',
+      'ara',
+      'yazar',
+      'hesabim',
+      'git',
+    ]) {
+      expect(RESERVED_SEGMENTS.has(s), s).toBe(true);
+    }
+    expect(RESERVED_SEGMENTS.has('istanbul')).toBe(false);
   });
 });

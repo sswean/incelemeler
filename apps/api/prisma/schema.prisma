@@ -870,3 +870,14 @@ model SearchEvent {
   @@index([queryNorm])
   @@map("search_events")
 }
+
+/// Panelden yönetilen platform ayarları (ör. yayın eşikleri); değer zod ile doğrulanır.
+model PlatformSetting {
+  key       String   @id
+  value     Json
+  version   Int      @default(1)
+  updatedBy String?  @map("updated_by") @db.Uuid
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("platform_settings")
+}

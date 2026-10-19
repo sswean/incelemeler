@@ -47,6 +47,12 @@ export async function articlePages(): Promise<Array<{ loc: string; lastmod: stri
   }));
 }
 
+/** Eşiği sağlayan hub'lar (API süzer; demo ve eşik altı yok). */
+export async function hubPages(): Promise<Array<{ loc: string; lastmod: string }>> {
+  const { data } = await serverApi().GET('/v1/sitemap/hubs');
+  return (data?.data ?? []).map((e) => ({ loc: canonical(e.path), lastmod: e.lastmod }));
+}
+
 export function urlset(entries: Array<{ loc: string; lastmod?: string }>): string {
   return `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries
     .map(

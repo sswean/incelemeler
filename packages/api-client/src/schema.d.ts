@@ -882,6 +882,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/hubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Destinasyon/keşif hub sayfası (il, ilçe, il × kategori, ilçe × kategori); eşiğin altındaysa 404 */
+        get: operations["getHub"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sitemap/hubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Site haritası için eşiği sağlayan hub yolları */
+        get: operations["sitemapHubs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/settings/thresholds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Yayın eşikleri */
+        get: operations["adminGetThresholds"];
+        /** Yayın eşiklerini günceller (sürüm denetimli, denetim kaydı) */
+        put: operations["adminUpdateThresholds"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1969,6 +2021,87 @@ export interface components {
                     label: string;
                 }[];
                 categories: string[];
+            }[];
+        };
+        PublicationThresholds: {
+            provinceCategoryListings: number;
+            provinceCategoryArticles: number;
+            districtCategoryListings: number;
+            districtListings: number;
+            provinceGuides: number;
+            provinceHubs: number;
+        };
+        ThresholdsResponse: {
+            provinceCategoryListings: number;
+            provinceCategoryArticles: number;
+            districtCategoryListings: number;
+            districtListings: number;
+            provinceGuides: number;
+            provinceHubs: number;
+            version: number;
+        };
+        Hub: {
+            /** @enum {string} */
+            kind: "PROVINCE" | "DISTRICT" | "PROVINCE_CATEGORY" | "DISTRICT_CATEGORY";
+            path: string;
+            province: {
+                slug: string;
+                name: string;
+            };
+            district: {
+                slug: string;
+                name: string;
+            } | null;
+            category: {
+                slug: string;
+                name: string;
+            } | null;
+            listingCount: number;
+            listings: {
+                /** @enum {string} */
+                type: "LISTING" | "ARTICLE";
+                id: string;
+                title: string;
+                subtitle: string | null;
+                path: string;
+                /** @enum {string|null} */
+                kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK" | null;
+                /** @enum {string|null} */
+                articleType: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED" | null;
+                status: string | null;
+                priceLevel: number | null;
+                ratingCount: number;
+                distanceKm: number | null;
+                dataOrigin: string;
+            }[];
+            page: number;
+            pageSize: number;
+            articles: {
+                /** @enum {string} */
+                type: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED";
+                slug: string;
+                title: string;
+                summary: string | null;
+            }[];
+            children: {
+                path: string;
+                label: string;
+                count: number;
+            }[];
+            parents: {
+                path: string;
+                label: string;
+                count: number;
+            }[];
+            demoOnly: boolean;
+            /** Format: date-time */
+            lastmod: string | null;
+        };
+        HubSitemap: {
+            data: {
+                path: string;
+                /** Format: date-time */
+                lastmod: string;
             }[];
         };
         ImportPreviewBody: {
@@ -4660,6 +4793,139 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SearchFilters"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getHub: {
+        parameters: {
+            query: {
+                province: string;
+                segment?: string;
+                category?: string;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Hub */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Hub"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    sitemapHubs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Hub yolları */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HubSitemap"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetThresholds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Eşikler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThresholdsResponse"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateThresholds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    provinceCategoryListings: number;
+                    provinceCategoryArticles: number;
+                    districtCategoryListings: number;
+                    districtListings: number;
+                    provinceGuides: number;
+                    provinceHubs: number;
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Eşikler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThresholdsResponse"];
                 };
             };
             /** @description Hata (RFC 9457) */

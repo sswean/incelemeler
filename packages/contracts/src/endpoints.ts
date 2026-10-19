@@ -29,6 +29,7 @@ import {
   ListingUpdateBody,
 } from './listings.js';
 import { MediaAsset, MediaUpdateBody, MediaUploadForm } from './media.js';
+import { Hub, HubQuery, HubSitemap, ThresholdsResponse, ThresholdsUpdateBody } from './hubs.js';
 import {
   SearchFilters,
   SearchQuery,
@@ -685,5 +686,42 @@ export const endpoints: EndpointDef[] = [
     tags: ['search'],
     summary: 'Filtrelenebilir özellikler (filtre paneli)',
     responses: { 200: ok('Filtreler', SearchFilters) },
+  },
+  {
+    method: 'get',
+    path: '/v1/hubs',
+    operationId: 'getHub',
+    tags: ['hubs'],
+    summary:
+      'Destinasyon/keşif hub sayfası (il, ilçe, il × kategori, ilçe × kategori); eşiğin altındaysa 404',
+    query: HubQuery,
+    responses: { 200: ok('Hub', Hub) },
+  },
+  {
+    method: 'get',
+    path: '/v1/sitemap/hubs',
+    operationId: 'sitemapHubs',
+    tags: ['seo'],
+    summary: 'Site haritası için eşiği sağlayan hub yolları',
+    responses: { 200: ok('Hub yolları', HubSitemap) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/settings/thresholds',
+    operationId: 'adminGetThresholds',
+    tags: ['admin', 'hubs'],
+    auth: 'staff-mfa',
+    summary: 'Yayın eşikleri',
+    responses: { 200: ok('Eşikler', ThresholdsResponse) },
+  },
+  {
+    method: 'put',
+    path: '/v1/admin/settings/thresholds',
+    operationId: 'adminUpdateThresholds',
+    tags: ['admin', 'hubs'],
+    auth: 'staff-mfa',
+    summary: 'Yayın eşiklerini günceller (sürüm denetimli, denetim kaydı)',
+    body: ThresholdsUpdateBody,
+    responses: { 200: ok('Eşikler', ThresholdsResponse) },
   },
 ];

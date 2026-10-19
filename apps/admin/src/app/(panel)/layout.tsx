@@ -50,6 +50,14 @@ export default async function PanelLayout({ children }: { children: ReactNode })
           >
             {tr.admin.nav.categories}
           </Link>
+          {user.permissions.includes('taxonomy.manage') ? (
+            <Link
+              href="/ayarlar/esikler"
+              className="min-h-11 content-center text-brand-default underline"
+            >
+              {tr.admin.nav.thresholds}
+            </Link>
+          ) : null}
         </nav>
         <div className="flex flex-wrap items-center gap-4">
           <p>

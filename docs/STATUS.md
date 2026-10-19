@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 6 — arama + filtreler + hub sayfaları (dilim 5 içerik editörü tamamlandı: `docs/status-log/F1-D5.md`)
+- Aktif dilim: Faz 1 dilim 7 — değerlendirmeler + moderasyon + bildir/itiraz (dilim 6 arama/hub tamamlandı: `docs/status-log/F1-D6.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -29,7 +29,12 @@
 - Panel: `/icerikler` (liste, yeni, blok editörü, önizleme bağlantısı), `/yazar-profili`.
 - Web: `/rehber|liste|karsilastir|inceleme|haber|sponsorlu/{slug}` (künye, ticari açıklama, deneyim beyanı, Article JSON-LD), `/onizleme`, `/yazar/{slug}`, metodoloji/politika sayfaları (TASLAK), alt bilgi.
 
+## Dilim 6 özeti (arama + hub'lar)
+- API: `/v1/search` (ayrıştırıcı çipleri, filtreler, geri dönüşler, gevşetme), `/v1/search/suggest`, `/v1/search/filters`, `/v1/hubs`, `/v1/sitemap/hubs`, `/v1/admin/settings/thresholds`. `pnpm search:reindex`.
+- Web: `/ara` (otomatik tamamlama, filtre alt sayfası, çipler), `/{il}`, `/{il}/{ilce|kategori}`, `/{il}/{ilce}/{kategori}` hub'ları. Panel: `/ayarlar/esikler`.
+- Demo: `pnpm seed:demo` 64 kurgusal "(Demo)" listeleme ekler; korpus `docs/requirements/ARA-sorgu-korpusu.json`.
+
 ## Sonraki 3 adım (Faz 1, §9.3 önerilen sıra)
-1. Dilim 6 — Arama + filtreler (attr.* filtrelenebilir özellikler) + hub sayfaları ve yayın eşikleri.
-2. Dilim 7 — Değerlendirmeler + moderasyon + bildirim/itiraz.
-3. Dilim 8 — Dış yönlendirme/affiliate (`/git/`).
+1. Dilim 7 — Değerlendirmeler + moderasyon + bildir/itiraz (rating_stats, Bayes, eşik gösterimi).
+2. Dilim 8 — Dış yönlendirme/affiliate (`/git/`).
+3. Dilim 9 — Sponsorluk kampanyası + yerleşim + olay ölçümü (REQ-ARA-009 değişmezlik testi burada).

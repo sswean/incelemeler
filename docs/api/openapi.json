@@ -5187,6 +5187,242 @@
           }
         }
       }
+    },
+    "/v1/hubs": {
+      "get": {
+        "operationId": "getHub",
+        "summary": "Destinasyon/keşif hub sayfası (il, ilçe, il × kategori, ilçe × kategori); eşiğin altındaysa 404",
+        "tags": [
+          "hubs"
+        ],
+        "parameters": [
+          {
+            "name": "province",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            }
+          },
+          {
+            "name": "segment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hub",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Hub"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sitemap/hubs": {
+      "get": {
+        "operationId": "sitemapHubs",
+        "summary": "Site haritası için eşiği sağlayan hub yolları",
+        "tags": [
+          "seo"
+        ],
+        "responses": {
+          "200": {
+            "description": "Hub yolları",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HubSitemap"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/settings/thresholds": {
+      "get": {
+        "operationId": "adminGetThresholds",
+        "summary": "Yayın eşikleri",
+        "tags": [
+          "admin",
+          "hubs"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Eşikler",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThresholdsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "adminUpdateThresholds",
+        "summary": "Yayın eşiklerini günceller (sürüm denetimli, denetim kaydı)",
+        "tags": [
+          "admin",
+          "hubs"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provinceCategoryListings": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "provinceCategoryArticles": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "districtCategoryListings": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "districtListings": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "provinceGuides": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "provinceHubs": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "provinceCategoryListings",
+                  "provinceCategoryArticles",
+                  "districtCategoryListings",
+                  "districtListings",
+                  "provinceGuides",
+                  "provinceHubs",
+                  "version"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Eşikler",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThresholdsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -10390,6 +10626,417 @@
         },
         "required": [
           "attributes"
+        ],
+        "additionalProperties": false
+      },
+      "PublicationThresholds": {
+        "type": "object",
+        "properties": {
+          "provinceCategoryListings": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "provinceCategoryArticles": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "districtCategoryListings": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "districtListings": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "provinceGuides": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "provinceHubs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          }
+        },
+        "required": [
+          "provinceCategoryListings",
+          "provinceCategoryArticles",
+          "districtCategoryListings",
+          "districtListings",
+          "provinceGuides",
+          "provinceHubs"
+        ],
+        "additionalProperties": false
+      },
+      "ThresholdsResponse": {
+        "type": "object",
+        "properties": {
+          "provinceCategoryListings": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "provinceCategoryArticles": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "districtCategoryListings": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "districtListings": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "provinceGuides": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "provinceHubs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "version": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "provinceCategoryListings",
+          "provinceCategoryArticles",
+          "districtCategoryListings",
+          "districtListings",
+          "provinceGuides",
+          "provinceHubs",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "Hub": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "PROVINCE",
+              "DISTRICT",
+              "PROVINCE_CATEGORY",
+              "DISTRICT_CATEGORY"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "province": {
+            "type": "object",
+            "properties": {
+              "slug": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "slug",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "district": {
+            "nullable": true,
+            "type": "object",
+            "properties": {
+              "slug": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "slug",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "category": {
+            "nullable": true,
+            "type": "object",
+            "properties": {
+              "slug": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "slug",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "listingCount": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "listings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "LISTING",
+                    "ARTICLE"
+                  ]
+                },
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "subtitle": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "kind": {
+                  "nullable": true,
+                  "type": "string",
+                  "enum": [
+                    "PLACE",
+                    "LODGING",
+                    "PRODUCT",
+                    "SERVICE_PROVIDER",
+                    "GUIDE_PERSON",
+                    "EXPERIENCE",
+                    "POI",
+                    "DESTINATION",
+                    "EVENT",
+                    "WORK"
+                  ]
+                },
+                "articleType": {
+                  "nullable": true,
+                  "type": "string",
+                  "enum": [
+                    "GUIDE",
+                    "LIST",
+                    "COMPARISON",
+                    "REVIEW",
+                    "NEWS",
+                    "SPONSORED"
+                  ]
+                },
+                "status": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "priceLevel": {
+                  "nullable": true,
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "ratingCount": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "distanceKm": {
+                  "nullable": true,
+                  "type": "number"
+                },
+                "dataOrigin": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "id",
+                "title",
+                "subtitle",
+                "path",
+                "kind",
+                "articleType",
+                "status",
+                "priceLevel",
+                "ratingCount",
+                "distanceKm",
+                "dataOrigin"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "articles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "GUIDE",
+                    "LIST",
+                    "COMPARISON",
+                    "REVIEW",
+                    "NEWS",
+                    "SPONSORED"
+                  ]
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "summary": {
+                  "nullable": true,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "slug",
+                "title",
+                "summary"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "path",
+                "label",
+                "count"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "parents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "path",
+                "label",
+                "count"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "demoOnly": {
+            "type": "boolean"
+          },
+          "lastmod": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          }
+        },
+        "required": [
+          "kind",
+          "path",
+          "province",
+          "district",
+          "category",
+          "listingCount",
+          "listings",
+          "page",
+          "pageSize",
+          "articles",
+          "children",
+          "parents",
+          "demoOnly",
+          "lastmod"
+        ],
+        "additionalProperties": false
+      },
+      "HubSitemap": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "lastmod": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                }
+              },
+              "required": [
+                "path",
+                "lastmod"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "data"
         ],
         "additionalProperties": false
       },

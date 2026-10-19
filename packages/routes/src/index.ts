@@ -112,3 +112,63 @@ export function absoluteUrl(base: string, path: string): string {
     .toString()
     .replace(/\/$/, path === '/' ? '/' : '');
 }
+
+/**
+ * İl/ilçe/kategori slug'ı olamayacak ilk yol bölümleri (Ek A15.1 kuralları): tür önekleri, içerik önekleri,
+ * sabit sayfalar ve sistem yolları. Hub'lar `/{il}/…` ile başladığından bu sözcüklerle çakışamaz.
+ */
+export const RESERVED_SEGMENTS: ReadonlySet<string> = new Set([
+  ...Object.values(LISTING_PREFIX),
+  CAR_RENTAL_PREFIX,
+  ...Object.values(ARTICLE_PREFIX),
+  ...Object.values(STATIC_PATHS)
+    .map((p) => p.split('/')[1] ?? '')
+    .filter(Boolean),
+  'ara',
+  'onizleme',
+  'yazar',
+  'medya',
+  'sitemaps',
+  'sitemap.xml',
+  'robots.txt',
+  'eposta-dogrula',
+  'parola-sifirla',
+  'kesfet',
+  'firsatlar',
+  'marka',
+  'urunler',
+  'kullanici',
+  'git',
+  'hesap-silme',
+  'kaydedilenler',
+  'bildirimler',
+  'gecmis',
+  'isletmeni-ekle',
+  'isletmeni-sahiplen',
+  'isletme-paneli',
+  'reklam-ve-sponsorluk',
+  'hakkimizda',
+  'iletisim',
+  'sss',
+  'icerik-politikasi',
+  'topluluk-kurallari',
+  'gizlilik',
+  'cerez-tercihleri',
+  'bildir',
+  'kvkk-basvuru',
+  'kunye',
+  'erisilebilirlik',
+  'api',
+  'favicon.ico',
+]);
+
+export interface HubRef {
+  province: string;
+  district?: string | null;
+  category?: string | null;
+}
+
+/** Destinasyon ve keşif hub'ları (Ek A15.1): /{il}, /{il}/{ilce}, /{il}/{kategori}, /{il}/{ilce}/{kategori}. */
+export function hubPath(h: HubRef): string {
+  return `/${[h.province, h.district, h.category].filter(Boolean).join('/')}`;
+}

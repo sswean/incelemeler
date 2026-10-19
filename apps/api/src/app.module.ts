@@ -22,6 +22,9 @@ import { PublicListingsController } from './modules/catalog/public-listings.cont
 import { PublicListingsService } from './modules/catalog/public-listings.service.js';
 import { AdminArticlesController } from './modules/editorial/admin-articles.controller.js';
 import { AdminArticlesService } from './modules/editorial/admin-articles.service.js';
+import { HubsController } from './modules/hubs/hubs.controller.js';
+import { HubsService } from './modules/hubs/hubs.service.js';
+import { ThresholdsService } from './modules/hubs/thresholds.service.js';
 import { PostgresSearchAdapter } from './modules/search/postgres-search.adapter.js';
 import { SearchIndexerService } from './modules/search/search-indexer.service.js';
 import { SearchLexiconService } from './modules/search/search-lexicon.service.js';
@@ -90,6 +93,7 @@ export const CONTROLLERS = [
   PublicArticlesController,
   AuthorProfilesController,
   SearchController,
+  HubsController,
 ];
 
 @Module({})
@@ -130,6 +134,8 @@ export class AppModule {
         SearchLexiconService,
         SearchService,
         SearchIndexerService,
+        ThresholdsService,
+        HubsService,
       ],
     };
   }

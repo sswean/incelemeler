@@ -113,6 +113,7 @@ export const tr = {
       imports: 'İçe aktarma',
       content: 'İçerikler',
       authorProfile: 'Yazar profilim',
+      thresholds: 'Yayın eşikleri',
     },
     noPermission: 'Bu bölümü görüntüleyebilirsin ama değiştirme yetkin yok.',
     saved: 'Değişiklikler kaydedildi.',
@@ -619,6 +620,7 @@ export const tr = {
       kinds_not_in_parent: 'Alt kategori yalnızca üst kategorinin türlerini kullanabilir.',
       kind_in_use: 'Kaldırılan tür alt kategorilerde ya da listelemelerde kullanılıyor.',
       slug_taken: 'Bu adres başka bir kategoride kullanılıyor.',
+      slug_reserved: 'Bu adres bir il/ilçe adıyla ya da ayrılmış bir sözcükle çakışıyor.',
       slug_locked: 'Yayımlanmış kategorinin adresi değiştirilemez.',
       parent_not_published: 'Üst kategori yayında değilken alt kategori yayımlanamaz.',
       sponsorship_restricted: 'YMYL ya da lisans gerektiren kategoride sponsorluk açılamaz.',
@@ -639,6 +641,18 @@ export const tr = {
       criterion_taken: 'Bu adla bir kriter zaten var.',
       invalid: 'Bu alanı kontrol et.',
     },
+  },
+  thresholds: {
+    title: 'Yayın eşikleri',
+    intro:
+      'Hub sayfaları (il, ilçe, il × kategori, ilçe × kategori) bu eşikleri sağlamadan üretilmez; menü, site haritası ve öneriler dışında kalır. Varsayılanlar ana metindeki tablodandır.',
+    provinceCategoryListings: 'İl × kategori: en az yayımlanmış listeleme',
+    provinceCategoryArticles: 'İl × kategori: en az editoryal içerik (hub listelemelerini gömen)',
+    districtCategoryListings: 'İlçe × kategori: en az yayımlanmış listeleme',
+    districtListings: 'İlçe sayfası: en az yayımlanmış listeleme',
+    provinceGuides: 'Destinasyon (il) sayfası: en az rehber',
+    provinceHubs: 'Destinasyon (il) sayfası: en az eşiği sağlayan il × kategori hub’ı',
+    save: 'Eşikleri kaydet',
   },
   authorProfile: {
     title: 'Yazar profilim',
@@ -729,6 +743,26 @@ export const tr = {
       PRODUCT: 'Ürün',
       WORK: 'Eser',
     },
+  },
+  hub: {
+    provinceTitle: '{il}: mekanlar, konaklama ve rehberler',
+    districtTitle: '{ilce}, {il}: mekanlar ve hizmetler',
+    categoryTitle: '{yerde} {kategori}',
+    categoryTitleFallback: '{Kategori} · {yer}',
+    provinceDescription:
+      '{il} için yayımlanmış mekanlar, konaklama seçenekleri ve editoryal rehberler.',
+    categoryDescription:
+      '{yer} bölgesindeki {kategori}: {n} yayımlanmış kayıt. Sıralama ticari ilişkilerden bağımsızdır.',
+    listings: 'Listelemeler',
+    listingCount: '{n} yayımlanmış kayıt',
+    articles: 'Rehberler ve yazılar',
+    children: 'Keşfet',
+    organicNote:
+      'Sıralama editoryal ve kullanıcı sinyallerine göredir; ücretli yerleşim sıralamayı etkilemez.',
+    methodology: 'Nasıl sıralıyoruz?',
+    searchHere: 'Bu bölgede ara',
+    prev: 'Önceki sayfa',
+    next: 'Sonraki sayfa',
   },
   author: {
     expertise: 'Uzmanlık alanları',

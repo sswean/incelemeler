@@ -43,6 +43,7 @@ const extraStaff = [
   ...PROJECTS.map((p) => [`e2e-aktarim-${p}@example.test`, 'E2E Aktarım']),
   ...PROJECTS.map((p) => [`e2e-yazar-${p}@example.test`, 'E2E Yazar', 'AUTHOR']),
   ...PROJECTS.map((p) => [`e2e-editor-${p}@example.test`, 'E2E Editör', 'EDITOR']),
+  ...PROJECTS.map((p) => [`e2e-esik-${p}@example.test`, 'E2E Eşik']),
 ];
 for (const [email, name, role = 'ADMIN'] of extraStaff) {
   const { rows } = await db.query(
@@ -101,6 +102,20 @@ await fixtureListing('e2e-kapanan-lokanta', 'E2E Kapanan Lokanta', {
 });
 await fixtureListing('e2e-kaldirilan-lokanta', 'E2E Kaldırılan Lokanta', { deleted: true });
 await fixtureListing('ornek-lokanta-demo', 'Örnek Lokanta (Demo)', { origin: 'DEMO' });
+// Hub E2E'leri için düşük yayın eşikleri (TEST-FIXTURE; üretim varsayılanları §7.2 — panelden değişir).
+await db.query(
+  `INSERT INTO platform_settings (key, value, version, updated_at) VALUES ('publication_thresholds', $1, 1, now())`,
+  [
+    JSON.stringify({
+      provinceCategoryListings: 3,
+      provinceCategoryArticles: 0,
+      districtCategoryListings: 2,
+      districtListings: 2,
+      provinceGuides: 0,
+      provinceHubs: 1,
+    }),
+  ],
+);
 await db.end();
 // Doğrudan SQL ile eklenen fikstürler outbox'tan geçmez: arama okuma modelini baştan kur (REQ-ARA-002).
 execFileSync('node', ['dist/cli/search-reindex.js'], {

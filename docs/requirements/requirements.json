@@ -719,10 +719,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "TASLAK → GİZLİ → YAYINDA; üst kategori yayında değilken alt kategori yayımlanamaz; gizlenen üstün altları herkese açık listeden çıkar; yayımlanmış slug kilitli.",
+      "acceptance": "TASLAK → GİZLİ → YAYINDA; üst/alt yayın kuralları; yayımlanmış slug kilitli; yayın eşikleri panelden (platform_settings), eşik altı hub üretilmez ve site haritasında yok (hubs.int, E2E hubs.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Yayın eşikleri (§7.2) listeleme sayıları gerektirir → D3/D6."
+      "notes": "Eşik altı kategori önerilerden çıkarılması (öneriler /ara’ya gider) — menü modülleri D11."
     },
     {
       "id": "REQ-KAT-004",
@@ -2315,10 +2315,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "packages/routes (A15.1 önekleri, normalleştirme) + proxy 301 (büyük harf, sondaki eğik çizgi, eski slug, yanlış önek).",
+      "acceptance": "packages/routes (A15.1 önekleri, içerik ve hub yolları, ayrılmış sözcükler) + proxy 301; il slug’ları ayrılmış sözcüklerle, kategori slug’ları il/ilçe adlarıyla çakışmaz (routes test, hubs.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Hub ve içerik yolları ilgili dilimlerde."
+      "notes": "Koleksiyon, ürün kategorisi ve marka yolları ilgili dilimlerde."
     },
     {
       "id": "REQ-SEO-004",
@@ -2327,10 +2327,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "Detay sayfalarında kendine referans canonical.",
+      "acceptance": "Detay, içerik ve hub sayfalarında kendine referans canonical; hub sayfalama varyantları noindex,follow; /ara noindex.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Filtre/sıralama varyantları D6."
+      "notes": "İl × kategori × özellik izin listesi yüzeyleri sonraki dilimlerde."
     },
     {
       "id": "REQ-SEO-005",
@@ -2351,10 +2351,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "Site haritası dizini + listeleme ve içerik bölümleri (≤ 50.000/dosya); demo, kapalı, taslak, silinmiş yok (public-listings.int, articles.int, E2E).",
+      "acceptance": "Site haritası dizini + listeleme, içerik ve hub bölümleri (≤ 50.000/dosya); demo, eşik altı, kapalı, taslak, silinmiş yok (public-listings.int, articles.int, hubs.int, E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Hub, destinasyon ve görsel site haritaları ilgili dilimlerde."
+      "notes": "Destinasyon görsel site haritaları ilgili dilimlerde."
     },
     {
       "id": "REQ-SEO-007",
@@ -2399,22 +2399,22 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "Görünür kırıntı yolu (Ana sayfa › kategori zinciri › listeleme) + BreadcrumbList.",
+      "acceptance": "Listelemede görünür kırıntı + BreadcrumbList; hub’larda Ana sayfa › İl › (İlçe) › Kategori kırıntısı (E2E hubs.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "İl ve kategori hub bağlantıları D6."
+      "notes": "Listeleme kırıntısının il/kategori hub’ına bağlanması D11."
     },
     {
       "id": "REQ-SEO-011",
       "title": "İç bağlantı sistemi",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Hub ↔ alt hub (il → kategori/ilçe → ilçe × kategori) ↔ listelemeler ↔ hub listelemelerini gömen rehberler; içeriklerde gömülü listeleme kartları (hubs.int, E2E hubs.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "\"Bu listelemenin geçtiği rehberler\", \"Yakındaki benzerler\" ve yetim sayfa raporu D11/D12."
     },
     {
       "id": "REQ-SEO-012",
@@ -2423,7 +2423,7 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": "Bulunamayan 404, kaldırılan 410, taşınan 301 (zincirsiz), kapalı işletme 200 + durum bandı (E2E).",
+      "acceptance": "Bulunamayan 404, kaldırılan 410, taşınan 301 (zincirsiz), kapalı işletme 200 + durum bandı; eşik altı/bilinmeyen hub 404 (E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": "Bitmiş etkinlik ve süresi dolmuş fırsat kuralları ilgili dilimlerde."

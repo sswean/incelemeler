@@ -7,6 +7,7 @@ import type {
   CategoryUpdateBody,
   ListingKind,
 } from '@incelemeler/contracts';
+import { RESERVED_SEGMENTS } from '@incelemeler/routes';
 import { slugifyTr } from '@incelemeler/utils';
 import { decodeCursor, encodeCursor, InvalidCursorError } from '../../common/cursor.js';
 import { type FieldError, ProblemException } from '../../common/problem.js';
@@ -322,6 +323,19 @@ export class AdminCategoriesService {
   }
 
   private async assertSlugFree(slug: string): Promise<void> {
+    // Hub yolları /{il}/{ilce|kategori}: kategori slug'ı ilçe/il adıyla ya da ayrılmış sözcükle çakışamaz (Ek A15.1).
+    if (
+      RESERVED_SEGMENTS.has(slug) ||
+      (await this.prisma.adminArea.findFirst({ where: { slug }, select: { id: true } }))
+    ) {
+      throw new ProblemException(HttpStatus.CONFLICT, 'CONFLICT', 'Bu slug ayrılmış', undefined, [
+        {
+          pointer: '/slug',
+          code: 'slug_reserved',
+          message: 'Bu slug bir il/ilçe adıyla ya da ayrılmış bir sözcükle çakışıyor',
+        },
+      ]);
+    }
     if (await this.prisma.category.findUnique({ where: { slug }, select: { id: true } })) {
       throw new ProblemException(
         HttpStatus.CONFLICT,

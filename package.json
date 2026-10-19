@@ -16,7 +16,7 @@
     "test:integration": "turbo run test:integration --concurrency=1",
     "test:e2e": "pnpm --filter @incelemeler/e2e e2e",
     "test:smoke": "pnpm --filter @incelemeler/e2e e2e:smoke",
-    "verify": "pnpm format:check && pnpm lint && pnpm deps:check && pnpm typecheck && pnpm test && pnpm test:integration && pnpm build && pnpm openapi:check && pnpm req:check",
+    "verify": "pnpm format:check && pnpm lint && pnpm deps:check && pnpm migration:check && pnpm ops:check && pnpm typecheck && pnpm test && pnpm test:integration && pnpm build && pnpm openapi:check && pnpm req:check",
     "ci:local": "bash scripts/ci-local.sh",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -28,7 +28,10 @@
     "openapi:check": "node scripts/openapi-check.mjs",
     "req:check": "node scripts/req-check.mjs",
     "tokens:build": "pnpm --filter @incelemeler/tokens build",
-    "deps:check": "depcruise apps packages tests --config .dependency-cruiser.cjs"
+    "deps:check": "depcruise apps packages tests --config .dependency-cruiser.cjs",
+    "migration:check": "node scripts/migration-check.mjs",
+    "restore:drill": "bash scripts/restore-drill.sh",
+    "ops:check": "node scripts/ops-docs-check.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -1,0 +1,5 @@
+{
+  "_açıklama": "REQ-VER-022 / REQ-OPS-004: yıkıcı DDL içeren ve uygulanmış (değiştirilemez) migration'lar. Yeni giriş eklemek yerine yeni migration'da `-- migration-safety: ADR-XXXX gerekçe` satırı kullanılır.",
+  "20261019030024_probe": "Üretim verisi oluşmadan önce (Faz 1, yerel) türetilmiş geo sütununun yeniden kurulması; veri kaybı yok.",
+  "20261019030119_listing_geo_trigger": "Aynı düzeltmenin ikinci adımı: geo, tetikleyiciyle doldurulan düz sütun olarak yeniden eklendi (LESSONS)."
+}

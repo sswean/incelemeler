@@ -34,9 +34,13 @@ jobs:
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm deps:check
+      - run: pnpm migration:check
+      - run: pnpm ops:check
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm test:integration
+      # Kapsam eşikleri (REQ-TST-002)
+      - run: pnpm --filter @incelemeler/api test:coverage
       - run: pnpm build
       - run: pnpm openapi:check
       - run: node scripts/license-check.mjs

@@ -14,6 +14,7 @@ import type { RequestMeta } from '../../common/request-meta.js';
 import { signToken, verifyToken } from '../../common/signed-token.js';
 import { ENV, type EnvToken } from '../../config/env.provider.js';
 import type { CampaignStatus } from '../../generated/prisma/client.js';
+import { OpsService } from '../platform/ops.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { classifyClick } from '../outbound/outbound-url.js';
 import { type ClickHeaders, OutboundService } from '../outbound/outbound.service.js';
@@ -64,6 +65,7 @@ export class SponsoredServingService {
     private readonly rateLimit: RateLimitService,
     @Inject(SEARCH_PORT) private readonly search: SearchPort,
     @Inject(ENV) private readonly env: EnvToken,
+    private readonly ops: OpsService,
   ) {}
 
   private get production() {
@@ -140,6 +142,8 @@ export class SponsoredServingService {
   }
 
   private async serve(ctx: Context, seed: string): Promise<SponsoredItem[]> {
+    // Acil durdurma: "tüm sponsorlu yerleşimleri kapat" (REQ-OPS-009, runbook kampanya-acil-durdurma).
+    if ((await this.ops.current()).sponsoredDisabled) return [];
     const slots = await this.prisma.placementSlot.findMany({
       where: { surface: ctx.surface, enabled: true },
       orderBy: { key: 'asc' },

@@ -204,12 +204,12 @@
       "title": "Merkezi, tipli özellik bayrağı kaydı (§12.8) ve \"entegrasyon yetenek\" bayrakları (ör",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/ops.int.test.ts", "packages/contracts/src/operations.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": "Merkezi tipli özellik bayrağı kaydı yok (F1-D14 denetimi)."
+      "notes": "packages/contracts/src/operations.ts: FEATURE_FLAGS (KAPALI|YALNIZCA_GELISTIRME|MOCK|ACIK, her bayrak REQ'e bağlı), capabilities.* entegrasyon yetenekleri (sağlayıcı yokken KAPALI), featureEnabled (üretimde yalnızca ACIK)."
     },
     {
       "id": "REQ-MIM-018",
@@ -483,9 +483,9 @@
       "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": ["apps/api/test/postgres.ts"],
+      "tests": ["apps/api/test/postgres.ts", "scripts/migration-check.mjs"],
       "lastVerifiedCommit": null,
-      "notes": "Migration'lar boş veritabanına her entegrasyon testinde uygulanır. Eksik: strateji belgesi, önceki sürümden yükseltme testi, yıkıcı DDL denetimi."
+      "notes": "Migration'lar her entegrasyon testinde boş veritabanına uygulanır; `pnpm migration:check` (verify + CI) ADR işaretsiz yıkıcı DDL'i reddeder; genişlet/daralt geri-alma.md'de. Eksik: önceki sürümden yükseltme testi."
     },
     {
       "id": "REQ-VER-023",
@@ -3291,36 +3291,36 @@
       "title": "Barındırma önerisi ADR'de seçenek karşılaştırmasıyla (yönetilen PostgreSQL + konteyner/…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["scripts/ops-docs-check.mjs"],
       "lastVerifiedCommit": null,
-      "notes": "Barındırma ADR'si yok; Q-005 (C) bekliyor."
+      "notes": "ADR-0014: seçenek karşılaştırması (TR içi / AB / karma), ölçüt tablosu, öneri; veri yerleşimi kararı C (Q-005) — karar verilmeden dağıtım yok. IaC isteğe bağlı, yazılmadı."
     },
     {
       "id": "REQ-OPS-004",
       "title": "Sıfır kesintili dağıtım ve migration güvenliği (REQ-VER-022)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["scripts/migration-check.mjs"],
       "lastVerifiedCommit": null,
-      "notes": "Geri alma ve migration güvenliği belgesi/denetimi yok."
+      "notes": "Dağıtım ve geri alma runbook'ları (önceki imaj + geriye uyumlu şema); `pnpm migration:check` işaretsiz yıkıcı DDL'i reddeder (verify + CI). Eksik: önceki sürümden yükseltme testi, gerçek ortamda sıfır kesinti doğrulaması (Q-005)."
     },
     {
       "id": "REQ-OPS-005",
       "title": "Yedekleme",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["scripts/restore-drill.sh"],
       "lastVerifiedCommit": null,
-      "notes": "Yedek/geri yükleme tatbikatı betiği yok."
+      "notes": "Yerel tatbikat `pnpm restore:drill` (yedek 1,8 sn, geri yükleme 1,6 sn, şema güncel, satır sayıları eşit — F1-D17); runbook; staging tatbikatı MQA-005. Eksik: yönetilen yedek/PITR, şifreli ayrı bölge yedek (barındırma kararı)."
     },
     {
       "id": "REQ-OPS-006",
@@ -3351,36 +3351,40 @@
       "title": "Runbook'lar (docs/ops/)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["scripts/ops-docs-check.mjs"],
       "lastVerifiedCommit": null,
-      "notes": "Runbook'lar yok (yalnız dağıtım kontrol listesi)."
+      "notes": "docs/ops/: dağıtım, geri alma, veritabanı geri yükleme, sır rotasyonu, olay müdahalesi, veri ihlali, kampanya acil durdurma, moderasyon yığılması (TASLAK; ortam komutları Q-005 sonrası); `pnpm ops:check` varlıklarını denetler."
     },
     {
       "id": "REQ-OPS-009",
       "title": "Bakım ve özellik anahtarları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "KISMİ",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": ["apps/api/test/sponsorship.int.test.ts"],
+      "tests": [
+        "apps/api/test/ops.int.test.ts",
+        "apps/api/test/sponsorship.int.test.ts",
+        "apps/web/src/proxy.test.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": "Yuva başına sponsorlu kapatma (denetim kayıtlı), entegrasyon DISABLED. Eksik: bakım modu, değerlendirme/kayıt anahtarları, genel sponsorlu anahtarı."
+      "notes": "Panel › İşletim anahtarları: bakım modu (web vekili 503 bakım sayfası, 10 sn önbellek), tüm sponsorlu yerleşimleri kapat, değerlendirme gönderimi, kayıt, dış entegrasyonlar; gerekçeli, sürüm denetimli, denetim kayıtlı (A-032)."
     },
     {
       "id": "REQ-OPS-010",
       "title": "Üretime geçiş kontrol listesi (docs/ops/canliya-gecis.md)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["scripts/ops-docs-check.mjs"],
       "lastVerifiedCommit": null,
-      "notes": "docs/ops/canliya-gecis.md yok."
+      "notes": "docs/ops/canliya-gecis.md: 16 madde, doğrulama yöntemi ve durum sütunu; geçiş C sınıfı."
     },
     {
       "id": "REQ-TST-001",
@@ -3399,12 +3403,12 @@
       "title": "Kapsam eşikleri (anlamlı modüllerde",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/vitest.config.ts", "packages/utils/vitest.config.ts"],
       "lastVerifiedCommit": null,
-      "notes": "Kapsam sağlayıcısı ve eşikler yok."
+      "notes": "@vitest/coverage-v8: utils ≥ %95 satır (ölçülen %100), API genel ≥ %70 satır (ölçülen %87,3); kritik modüller bugünkü dal kapsamında mandal (reviews %73, sponsorship %69, outbound %67, privacy %81, legal %84). Eksik: bu modüllerde ≥ %85 dal."
     },
     {
       "id": "REQ-TST-003",

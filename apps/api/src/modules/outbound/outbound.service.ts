@@ -19,6 +19,7 @@ import type { RequestMeta } from '../../common/request-meta.js';
 import { signToken, verifyToken } from '../../common/signed-token.js';
 import { ENV, type EnvToken } from '../../config/env.provider.js';
 import type { IntegrationProvider, OutboundLink, Prisma } from '../../generated/prisma/client.js';
+import { OpsService } from '../platform/ops.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { can } from '../access/permissions.js';
 import type { AuthContext } from '../identity/auth.context.js';
@@ -83,6 +84,7 @@ export class OutboundService implements OnModuleInit {
     private readonly audit: AuditService,
     private readonly outbox: OutboxService,
     @Inject(ENV) private readonly env: EnvToken,
+    private readonly ops: OpsService,
   ) {}
 
   onModuleInit(): void {
@@ -467,6 +469,8 @@ export class OutboundService implements OnModuleInit {
 
   /** Worker: süresi dolanları kapatır, sırası gelen bağlantıları denetler. */
   async checkDue(limit = 20, now = new Date()): Promise<number> {
+    // Dış entegrasyonlar kapalıyken sağlayıcı sitelerine istek atılmaz (REQ-OPS-009).
+    if ((await this.ops.current()).integrationsDisabled) return 0;
     await this.prisma.outboundLink.updateMany({
       where: { status: 'ACTIVE', validUntil: { lte: now } },
       data: { status: 'EXPIRED' },

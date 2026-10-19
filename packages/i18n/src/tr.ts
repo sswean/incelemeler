@@ -14,6 +14,8 @@ export const common = {
   notFound: 'Sayfa bulunamadı',
   goneTitle: 'Bu sayfa kaldırıldı',
   goneBody: 'Aradığın sayfa artık yayında değil.',
+  maintenanceTitle: 'Kısa bir bakım çalışması yapıyoruz',
+  maintenanceBody: 'Site birkaç dakika içinde yeniden açılacak. Anlayışın için teşekkürler.',
   backHome: 'Ana sayfaya dön',
 } as const;
 
@@ -146,6 +148,7 @@ export const admin = {
     applications: 'Başvurular',
     sanctions: 'Yaptırımlar',
     takedown: 'Hukuki talepler',
+    ops: 'İşletim anahtarları',
     homeEditor: 'Ana sayfa',
     analytics: 'Analitik',
     revenue: 'Gelir raporu',
@@ -1489,6 +1492,25 @@ export const author = {
   noArticles: 'Henüz yayımlanmış içerik yok.',
 } as const;
 
+/** İşletim anahtarları (REQ-OPS-009). */
+export const opsAdmin = {
+  title: 'İşletim anahtarları',
+  intro:
+    "Acil durumlarda işlevleri tek tıkla kapatır. Her değişiklik gerekçeyle denetim kaydına girer; runbook'lar docs/ops/ altındadır.",
+  switches: {
+    maintenanceMode: 'Bakım modu (herkese açık site 503 bakım sayfası gösterir)',
+    sponsoredDisabled: 'Tüm sponsorlu yerleşimleri kapat',
+    reviewsDisabled: 'Değerlendirme gönderimini kapat',
+    registrationDisabled: 'Yeni üye kaydını kapat',
+    integrationsDisabled: 'Dış entegrasyonları durdur (bağlantı sağlığı denetimi dahil)',
+  },
+  reason: 'Gerekçe (denetim kaydına yazılır)',
+  save: 'Anahtarları kaydet',
+  saved: 'Anahtarlar güncellendi.',
+  lastChange: 'Son değişiklik: {date}',
+  never: 'Henüz değiştirilmedi',
+} as const;
+
 /** Hukuki talepler ve bildirim-kaldırma (REQ-GUN-005). Metinler TASLAK (AK-12). */
 export const takedown = {
   title: 'Hukuki talep ve içerik kaldırma bildirimi',
@@ -1879,6 +1901,7 @@ export const tr = {
   hub,
   reviews,
   author,
+  opsAdmin,
   takedown,
   sanctions,
   applications,

@@ -1896,6 +1896,41 @@ export interface paths {
         patch: operations["adminUpdateTakedownRequest"];
         trace?: never;
     };
+    "/v1/ops/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** İşletim durumu: bakım modu, değerlendirme ve kayıt açık mı (web vekili kısa süre önbellekler) */
+        get: operations["opsStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/ops-switches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Acil kapatma anahtarları ve bakım modu */
+        get: operations["adminGetOpsSwitches"];
+        /** Anahtarları değiştirir (gerekçeli, denetim kaydı; sürüm denetimli) */
+        put: operations["adminUpdateOpsSwitches"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/me/legal-acceptances/pending": {
         parameters: {
             query?: never;
@@ -3406,6 +3441,37 @@ export interface components {
         };
         OutboundLinkList: {
             data: components["schemas"]["OutboundLink"][];
+        };
+        OpsSwitches: {
+            maintenanceMode: boolean;
+            sponsoredDisabled: boolean;
+            reviewsDisabled: boolean;
+            registrationDisabled: boolean;
+            integrationsDisabled: boolean;
+        };
+        AdminOpsSwitches: {
+            maintenanceMode: boolean;
+            sponsoredDisabled: boolean;
+            reviewsDisabled: boolean;
+            registrationDisabled: boolean;
+            integrationsDisabled: boolean;
+            version: number;
+            /** Format: date-time */
+            updatedAt: string | null;
+        };
+        OpsSwitchesUpdateBody: {
+            maintenanceMode?: boolean;
+            sponsoredDisabled?: boolean;
+            reviewsDisabled?: boolean;
+            registrationDisabled?: boolean;
+            integrationsDisabled?: boolean;
+            version: number;
+            reason: string;
+        };
+        OpsStatus: {
+            maintenance: boolean;
+            reviewsOpen: boolean;
+            registrationOpen: boolean;
         };
         TakedownCreateBody: {
             /** @enum {string} */
@@ -9755,6 +9821,105 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminTakedown"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    opsStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Durum */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpsStatus"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetOpsSwitches: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Anahtarlar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOpsSwitches"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateOpsSwitches: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    maintenanceMode?: boolean;
+                    sponsoredDisabled?: boolean;
+                    reviewsDisabled?: boolean;
+                    registrationDisabled?: boolean;
+                    integrationsDisabled?: boolean;
+                    version: number;
+                    reason: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOpsSwitches"];
                 };
             };
             /** @description Hata (RFC 9457) */

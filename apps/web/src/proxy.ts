@@ -12,6 +12,7 @@ export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const normalized = normalizePath(pathname);
   if (normalized) return redirect301(request, normalized + search);
+  if (await maintenanceOn()) return maintenance();
 
   const ref = parseListingPath(pathname);
   if (!ref) return withCsp(request);
@@ -55,6 +56,33 @@ function withCsp(request: NextRequest): NextResponse {
     res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   }
   return res;
+}
+
+/** Bakım modu (REQ-OPS-009): API işletim durumu kısa süre önbelleklenir; API'ye ulaşılamazsa bakım sayılmaz. */
+let maintenanceCache: { at: number; on: boolean } | null = null;
+async function maintenanceOn(): Promise<boolean> {
+  if (maintenanceCache && Date.now() - maintenanceCache.at < 10_000) return maintenanceCache.on;
+  const base = process.env.API_INTERNAL_URL ?? 'http://localhost:4000';
+  try {
+    const res = await fetch(`${base}/v1/ops/status`, { cache: 'no-store' });
+    const on = res.ok && ((await res.json()) as { maintenance?: boolean }).maintenance === true;
+    maintenanceCache = { at: Date.now(), on };
+    return on;
+  } catch {
+    return false;
+  }
+}
+
+export function maintenance(): NextResponse {
+  const html = `<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${tr.common.maintenanceTitle} · ${tr.brand.name}</title></head><body><main><h1>${tr.common.maintenanceTitle}</h1><p>${tr.common.maintenanceBody}</p></main></body></html>`;
+  return new NextResponse(html, {
+    status: 503,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Retry-After': '300',
+      'Cache-Control': 'no-store',
+    },
+  });
 }
 
 function redirect301(request: NextRequest, path: string) {

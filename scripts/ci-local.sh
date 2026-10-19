@@ -18,9 +18,13 @@ failed=0
 run "format" pnpm format:check
 run "lint" pnpm lint
 run "deps" pnpm deps:check
+run "migrations" pnpm migration:check
+run "ops-docs" pnpm ops:check
 run "typecheck" pnpm typecheck
 run "unit" pnpm test
 run "integration" pnpm test:integration
+# Kapsam eşikleri (REQ-TST-002): birim + entegrasyon birlikte.
+run "coverage" pnpm --filter @incelemeler/api test:coverage
 run "build" pnpm build
 run "openapi" pnpm openapi:check
 run "licenses" node scripts/license-check.mjs

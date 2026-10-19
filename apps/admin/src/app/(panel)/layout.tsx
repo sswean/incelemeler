@@ -111,6 +111,14 @@ export default async function PanelLayout({ children }: { children: ReactNode })
               {tr.admin.nav.applications}
             </Link>
           ) : null}
+          {user.permissions.some((x) => x === 'system.settings' || x === 'audit.read') ? (
+            <Link
+              href="/ayarlar/isletim"
+              className="min-h-11 content-center text-brand-default underline"
+            >
+              {tr.admin.nav.ops}
+            </Link>
+          ) : null}
           {user.permissions.includes('audit.read') ? (
             <Link
               href="/hukuki-talepler"

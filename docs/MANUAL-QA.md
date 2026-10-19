@@ -32,3 +32,9 @@ Biçim: Ek C-9. Ortamda doğrulanamayan kontroller; durum İnsan sonucu girdiği
   7. Panel girişi + 2FA: alanlar ve hata iletileri okunur; kurtarma kodları listesi okunabilir.
 - Beklenen sonuç: Her adım yalnızca klavye/ekran okuyucu hareketleriyle tamamlanır; içerik ve durum değişiklikleri duyurulur; anlamsız okuma (ör. "yıldız yıldız yıldız") yok.
 - Sonuç: __ · Tarih: __ · Test eden: __ · Ekran okuyucu/sürüm: __
+
+## MQA-005: Staging'de geri yükleme tatbikatı (REQ-OPS-005)
+- Ön koşullar: Staging ortamı (X-002, Q-005), yönetilen veritabanı PITR açık.
+- Adımlar: [docs/ops/veritabani-geri-yukleme.md](ops/veritabani-geri-yukleme.md) "Gerçek geri yükleme" adımlarını staging'de, yeni bir örneğe uygulayın; süreleri ölçün.
+- Beklenen sonuç: Geri yüklenen örnekte migration durumu güncel, duman testleri yeşil; RPO ≤ 15 dk, RTO ≤ 4 saat.
+- Sonuç: __ · Tarih: __ · Test eden: __ · Ölçülen RPO/RTO: __

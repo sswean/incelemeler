@@ -13,16 +13,21 @@ import { parseBody } from '../../common/zod-body.js';
 import { requestMeta } from '../../common/request-meta.js';
 import { parseId } from '../../common/ids.js';
 import { Auth, type AuthContext, Public, RequireAuth } from './auth.context.js';
+import { OpsService } from '../platform/ops.service.js';
 import { AuthService } from './auth.service.js';
 
 @Controller('v1/auth')
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(
+    private readonly auth: AuthService,
+    private readonly ops: OpsService,
+  ) {}
 
   @Post('register')
   @Public()
   @HttpCode(202)
   async register(@Body() body: unknown, @Req() req: Request) {
+    await this.ops.assertOpen('registrationDisabled');
     await this.auth.register(parseBody(RegisterBody, body), requestMeta(req));
     return { accepted: true as const };
   }

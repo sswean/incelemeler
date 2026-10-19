@@ -43,6 +43,7 @@ import {
   ProviderUpdateBody,
 } from './outbound.js';
 import { ConsentBody } from './consent.js';
+import { AdminOpsSwitches, OpsStatus, OpsSwitchesUpdateBody } from './operations.js';
 import {
   AdminTakedown,
   AdminTakedownCreateBody,
@@ -1485,6 +1486,34 @@ export const endpoints: EndpointDef[] = [
       'İnceleme, işlem (değerlendirme hedefinde hukuki gerekçeyle kaldırma) ya da gerekçeli ret; talep edene e-posta, denetim kaydı',
     body: TakedownUpdateBody,
     responses: { 200: ok('Güncellendi', AdminTakedown) },
+  },
+  {
+    method: 'get',
+    path: '/v1/ops/status',
+    operationId: 'opsStatus',
+    tags: ['platform'],
+    summary:
+      'İşletim durumu: bakım modu, değerlendirme ve kayıt açık mı (web vekili kısa süre önbellekler)',
+    responses: { 200: ok('Durum', OpsStatus) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/ops-switches',
+    operationId: 'adminGetOpsSwitches',
+    tags: ['admin', 'platform'],
+    auth: 'staff-mfa',
+    summary: 'Acil kapatma anahtarları ve bakım modu',
+    responses: { 200: ok('Anahtarlar', AdminOpsSwitches) },
+  },
+  {
+    method: 'put',
+    path: '/v1/admin/ops-switches',
+    operationId: 'adminUpdateOpsSwitches',
+    tags: ['admin', 'platform'],
+    auth: 'staff-mfa',
+    summary: 'Anahtarları değiştirir (gerekçeli, denetim kaydı; sürüm denetimli)',
+    body: OpsSwitchesUpdateBody,
+    responses: { 200: ok('Güncellendi', AdminOpsSwitches) },
   },
   {
     method: 'get',

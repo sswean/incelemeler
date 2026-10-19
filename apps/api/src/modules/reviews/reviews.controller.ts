@@ -32,6 +32,7 @@ import { parseBody } from '../../common/zod-body.js';
 import { parseQuery } from '../../common/zod-query.js';
 import { Auth, type AuthContext, Public, RequireAuth } from '../identity/auth.context.js';
 import { AuthService } from '../identity/auth.service.js';
+import { OpsService } from '../platform/ops.service.js';
 import { ModerationService } from './moderation.service.js';
 import { ReviewsService } from './reviews.service.js';
 
@@ -41,6 +42,7 @@ export class ReviewsController {
     private readonly reviews: ReviewsService,
     private readonly moderation: ModerationService,
     private readonly auth: AuthService,
+    private readonly ops: OpsService,
   ) {}
 
   @Get('listings/:id/reviews')
@@ -64,7 +66,8 @@ export class ReviewsController {
   @HttpCode(201)
   @RequireAuth({ level: 'session' })
   async create(@Auth() ctx: AuthContext, @Body() body: unknown, @Req() req: Request) {
-    // Yetki (yaptırım) denetimi gövde doğrulamasından önce.
+    // İşletim anahtarı ve yetki (yaptırım) denetimi gövde doğrulamasından önce (REQ-OPS-009, REQ-GUN-007).
+    await this.ops.assertOpen('reviewsDisabled');
     await this.reviews.assertNotRestricted(ctx.userId);
     return this.reviews.create(ctx, parseBody(ReviewCreateBody, body), requestMeta(req));
   }
@@ -77,6 +80,7 @@ export class ReviewsController {
     @Body() body: unknown,
     @Req() req: Request,
   ) {
+    await this.ops.assertOpen('reviewsDisabled');
     await this.reviews.assertNotRestricted(ctx.userId);
     return this.reviews.update(
       ctx,

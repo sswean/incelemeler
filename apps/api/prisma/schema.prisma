@@ -127,6 +127,7 @@ model Organization {
   updatedAt  DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
   version    Int              @default(1)
   listings   Listing[]
+  campaigns  Campaign[]
 
   @@map("organizations")
 }
@@ -188,6 +189,7 @@ model Listing {
   ratingStats         ListingRatingStats?
   outboundLinks       OutboundLink[]
   reviewDrafts        ReviewDraft[]
+  campaignPlacements  CampaignPlacement[]
 
   @@index([kind, status, primaryCategoryId])
   @@index([organizationId])
@@ -919,49 +921,50 @@ enum ModerationMode {
 /// Kullanıcı değerlendirmesi. Üye başına listeleme başına 1 aktif kayıt (kısmi benzersiz indeks — migration).
 /// Editör puanıyla birleştirilmez; ayrı tablo/alan (REQ-VER-004).
 model Review {
-  id              String             @id @default(uuid(7)) @db.Uuid
-  listingId       String             @map("listing_id") @db.Uuid
-  listing         Listing            @relation(fields: [listingId], references: [id], onDelete: Restrict)
-  userId          String             @map("user_id") @db.Uuid
-  user            User               @relation("ReviewAuthor", fields: [userId], references: [id], onDelete: Restrict)
-  rating          Int                @db.SmallInt
+  id              String                 @id @default(uuid(7)) @db.Uuid
+  listingId       String                 @map("listing_id") @db.Uuid
+  listing         Listing                @relation(fields: [listingId], references: [id], onDelete: Restrict)
+  userId          String                 @map("user_id") @db.Uuid
+  user            User                   @relation("ReviewAuthor", fields: [userId], references: [id], onDelete: Restrict)
+  rating          Int                    @db.SmallInt
   title           String?
   body            String
   /// [{ criterionId, rating }]
-  criteriaRatings Json               @default("[]") @map("criteria_ratings")
+  criteriaRatings Json                   @default("[]") @map("criteria_ratings")
   /// YYYY-AA (ürün dışı türlerde zorunlu)
-  experienceMonth String?            @map("experience_month")
-  usageDuration   String?            @map("usage_duration")
-  visitContext    String?            @map("visit_context")
-  verification    ReviewVerification @default(SELF_DECLARED)
+  experienceMonth String?                @map("experience_month")
+  usageDuration   String?                @map("usage_duration")
+  visitContext    String?                @map("visit_context")
+  verification    ReviewVerification     @default(SELF_DECLARED)
   /// Teşvik beyanı: evetse etiketli yayımlanır, ortalamaya girmez.
   incentivized    Boolean
   /// "Deneyim bana ait" ve "çıkar ilişkim yok" beyanlarının zamanı.
-  declaredAt      DateTime           @map("declared_at") @db.Timestamptz(3)
+  declaredAt      DateTime               @map("declared_at") @db.Timestamptz(3)
   status          ReviewStatus
-  moderationMode  ModerationMode     @map("moderation_mode")
-  riskScore       Int                @default(0) @map("risk_score")
+  moderationMode  ModerationMode         @map("moderation_mode")
+  riskScore       Int                    @default(0) @map("risk_score")
   /// Otomatik kontrol sinyalleri [{ code, weight, detail }] — tek başına ceza vermez.
-  signals         Json               @default("[]")
+  signals         Json                   @default("[]")
   /// Son moderasyon incelemesi tamamlandı mı (POST modunda).
-  reviewedAt      DateTime?          @map("reviewed_at") @db.Timestamptz(3)
-  reasonCode      String?            @map("reason_code")
-  reasonNote      String?            @map("reason_note")
-  moderatedById   String?            @map("moderated_by") @db.Uuid
-  moderatedBy     User?              @relation("ReviewModerator", fields: [moderatedById], references: [id], onDelete: Restrict)
-  moderatedAt     DateTime?          @map("moderated_at") @db.Timestamptz(3)
-  language        String             @default("tr")
-  dataOrigin      DataOrigin         @default(USER) @map("data_origin")
+  reviewedAt      DateTime?              @map("reviewed_at") @db.Timestamptz(3)
+  reasonCode      String?                @map("reason_code")
+  reasonNote      String?                @map("reason_note")
+  moderatedById   String?                @map("moderated_by") @db.Uuid
+  moderatedBy     User?                  @relation("ReviewModerator", fields: [moderatedById], references: [id], onDelete: Restrict)
+  moderatedAt     DateTime?              @map("moderated_at") @db.Timestamptz(3)
+  language        String                 @default("tr")
+  dataOrigin      DataOrigin             @default(USER) @map("data_origin")
   /// İstemci IP öneki (kısaltılmış; hız/küme sinyali — Ek A17).
-  ipPrefix        String?            @map("ip_prefix")
-  createdAt       DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
-  submittedAt     DateTime           @default(now()) @map("submitted_at") @db.Timestamptz(3)
-  publishedAt     DateTime?          @map("published_at") @db.Timestamptz(3)
-  editedAt        DateTime?          @map("edited_at") @db.Timestamptz(3)
-  updatedAt       DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
-  version         Int                @default(1)
+  ipPrefix        String?                @map("ip_prefix")
+  createdAt       DateTime               @default(now()) @map("created_at") @db.Timestamptz(3)
+  submittedAt     DateTime               @default(now()) @map("submitted_at") @db.Timestamptz(3)
+  publishedAt     DateTime?              @map("published_at") @db.Timestamptz(3)
+  editedAt        DateTime?              @map("edited_at") @db.Timestamptz(3)
+  updatedAt       DateTime               @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version         Int                    @default(1)
   revisions       ReviewRevision[]
   appeals         ModerationAppeal[]
+  removalRequests ReviewRemovalRequest[]
 
   @@index([listingId, status, publishedAt(sort: Desc)])
   @@index([userId, createdAt])
@@ -1181,4 +1184,162 @@ model OutboundClick {
   @@index([linkId, createdAt])
   @@index([sessionHash, linkId, createdAt])
   @@map("outbound_clicks")
+}
+
+enum PlacementSurface {
+  SEARCH
+  CATEGORY_LIST
+  LISTING_DETAIL
+  HOME
+}
+
+enum CampaignStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  SCHEDULED
+  LIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+  CANCELLED
+}
+
+enum CreativeApproval {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SponsoredEventType {
+  SERVED
+  VIEWED
+  CLICK
+}
+
+/// Yuva kataloğu (REQ-SPN-001): render noktası kodda sabit; sınırlar SURFACE_CAPS'i aşamaz (REQ-SPN-004).
+model PlacementSlot {
+  id           String              @id @default(uuid(7)) @db.Uuid
+  key          String              @unique
+  surface      PlacementSurface
+  name         String
+  /// Görsel sıra (1 tabanlı, organik + sponsorlu birleşik listede).
+  positions    Int[]
+  maxItems     Int                 @map("max_items")
+  /// Boş = tüm listeleme türleri.
+  allowedKinds ListingKind[]       @map("allowed_kinds")
+  enabled      Boolean             @default(true)
+  createdAt    DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version      Int                 @default(1)
+  placements   CampaignPlacement[]
+
+  @@map("placement_slots")
+}
+
+/// Kampanya (Ek A8.4). Tutar yalnızca `campaigns.amount` yetkisiyle görülür/değişir.
+model Campaign {
+  id                    String              @id @default(uuid(7)) @db.Uuid
+  name                  String
+  sponsorId             String              @map("sponsor_id") @db.Uuid
+  sponsor               Organization        @relation(fields: [sponsorId], references: [id], onDelete: Restrict)
+  status                CampaignStatus      @default(DRAFT)
+  startsAt              DateTime            @map("starts_at") @db.Timestamptz(3)
+  endsAt                DateTime            @map("ends_at") @db.Timestamptz(3)
+  budgetKurus           BigInt?             @map("budget_kurus")
+  currency              String              @default("TRY")
+  contractRef           String?             @map("contract_ref")
+  salesApprovedById     String?             @map("sales_approved_by") @db.Uuid
+  salesApprovedAt       DateTime?           @map("sales_approved_at") @db.Timestamptz(3)
+  editorialApprovedById String?             @map("editorial_approved_by") @db.Uuid
+  editorialApprovedAt   DateTime?           @map("editorial_approved_at") @db.Timestamptz(3)
+  dataOrigin            DataOrigin          @default(EDITORIAL) @map("data_origin")
+  createdById           String?             @map("created_by") @db.Uuid
+  createdAt             DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version               Int                 @default(1)
+  placements            CampaignPlacement[]
+  creatives             Creative[]
+
+  @@index([status, startsAt, endsAt])
+  @@map("campaigns")
+}
+
+/// Yerleşim: yuva + öne çıkarılan listeleme + bağlamsal hedefleme (kategori/bölge; kişisel sinyal yok — REQ-SPN-012).
+model CampaignPlacement {
+  id               String           @id @default(uuid(7)) @db.Uuid
+  campaignId       String           @map("campaign_id") @db.Uuid
+  campaign         Campaign         @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  slotId           String           @map("slot_id") @db.Uuid
+  slot             PlacementSlot    @relation(fields: [slotId], references: [id], onDelete: Restrict)
+  listingId        String           @map("listing_id") @db.Uuid
+  listing          Listing          @relation(fields: [listingId], references: [id], onDelete: Restrict)
+  targetCategoryId String?          @map("target_category_id") @db.Uuid
+  targetAreaId     String?          @map("target_area_id") @db.Uuid
+  priority         Int              @default(0)
+  weight           Int              @default(1)
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  events           SponsoredEvent[]
+
+  @@index([slotId])
+  @@index([listingId])
+  @@map("campaign_placements")
+}
+
+/// Kreatif (REQ-SPN-001): metin editoryal onaydan geçmeden gösterilmez; etiket türü sabit sözlükten.
+model Creative {
+  id           String             @id @default(uuid(7)) @db.Uuid
+  campaignId   String             @map("campaign_id") @db.Uuid
+  campaign     Campaign           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  title        String
+  body         String?
+  labelType    CommercialRelation @default(SPONSORED) @map("label_type")
+  approval     CreativeApproval   @default(PENDING)
+  reviewedById String?            @map("reviewed_by") @db.Uuid
+  reviewedAt   DateTime?          @map("reviewed_at") @db.Timestamptz(3)
+  createdAt    DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version      Int                @default(1)
+
+  @@map("creatives")
+}
+
+/// Sponsorlu yerleşim olayı (REQ-SPN-009/010): ham IP yok; bot/önceden getirme/personel/demo işaretli;
+/// `counted` = raporlara giren (tekilleştirme sonrası).
+model SponsoredEvent {
+  id          BigInt             @id @default(autoincrement())
+  createdAt   DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  placementId String             @map("placement_id") @db.Uuid
+  placement   CampaignPlacement  @relation(fields: [placementId], references: [id], onDelete: Cascade)
+  type        SponsoredEventType
+  surface     PlacementSurface
+  sessionHash String?            @map("session_hash")
+  bot         Boolean            @default(false)
+  prefetch    Boolean            @default(false)
+  demo        Boolean            @default(false)
+  counted     Boolean
+
+  @@index([placementId, type, createdAt])
+  @@index([sessionHash, placementId, type, createdAt])
+  @@map("sponsored_events")
+}
+
+/// Sponsor bağlantılı listelemenin değerlendirmesini kaldırma: ikinci moderatör onayı (REQ-GUN-004).
+model ReviewRemovalRequest {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  reviewId      String    @map("review_id") @db.Uuid
+  review        Review    @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  /// Bildirimden geldiyse bildirim kimliği.
+  reportId      String?   @map("report_id") @db.Uuid
+  requestedById String    @map("requested_by") @db.Uuid
+  reasonCode    String    @map("reason_code")
+  note          String?
+  /// PENDING | CONFIRMED | DECLINED
+  status        String    @default("PENDING")
+  decidedById   String?   @map("decided_by") @db.Uuid
+  decidedAt     DateTime? @map("decided_at") @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([status, createdAt])
+  @@map("review_removal_requests")
 }

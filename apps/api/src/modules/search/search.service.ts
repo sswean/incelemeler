@@ -9,6 +9,7 @@ import type {
 import { normalizeTr } from '@incelemeler/utils';
 import { ProblemException } from '../../common/problem.js';
 import { ENV, type EnvToken } from '../../config/env.provider.js';
+import { SponsoredServingService } from '../sponsorship/sponsored-serving.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { mergeIntentFilters, parseQuery } from './query-parser.js';
 import { SearchLexiconService } from './search-lexicon.service.js';
@@ -41,6 +42,7 @@ export class SearchService {
     private readonly lexicon: SearchLexiconService,
     @Inject(SEARCH_PORT) private readonly port: SearchPort,
     @Inject(ENV) private readonly env: EnvToken,
+    private readonly sponsored: SponsoredServingService,
   ) {}
 
   private get excludeDemo() {
@@ -179,6 +181,17 @@ export class SearchService {
         : [];
 
     await this.recordEvent(q, criteria, total);
+    // Sponsorlu yerleşimler organik sonuçtan sonra ve ondan bağımsız hesaplanır (REQ-SPN-002, REQ-ARA-009).
+    // Yalnızca içerik aranırken (type=ARTICLE) listeleme yerleşimi gösterilmez.
+    const sponsored = criteria.docTypes.includes('LISTING')
+      ? await this.sponsored.forList({
+          surface: 'SEARCH',
+          criteria,
+          organicCount: rows.length,
+          categoryId: criteria.categoryId,
+          provinceId: criteria.provinceId,
+        })
+      : [];
     return {
       data: rows.map((r) => ({
         type: r.docType,
@@ -193,7 +206,9 @@ export class SearchService {
         ratingCount: r.ratingCount,
         distanceKm: r.distanceKm,
         dataOrigin: r.dataOrigin,
+        commercial: { type: 'NONE' as const },
       })),
+      sponsored,
       total,
       page: q.page,
       pageSize: q.pageSize,

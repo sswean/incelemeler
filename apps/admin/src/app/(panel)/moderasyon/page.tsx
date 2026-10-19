@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 
 const M = tr.moderation;
 const R = tr.reviews;
-const QUEUES = ['pending', 'post', 'reports', 'appeals'] as const;
+const QUEUES = ['pending', 'post', 'reports', 'appeals', 'removals'] as const;
 type Queue = (typeof QUEUES)[number];
 type Item = ModerationQueue['data'][number];
 
@@ -57,14 +57,19 @@ function Decision({ item, queue }: { item: Item; queue: Queue }) {
             { value: 'DISMISS', label: M.dismiss, reason: false },
             { value: 'REMOVE_TARGET', label: M.removeTarget, reason: true },
           ]
-        : [
-            { value: 'UPHELD', label: M.uphold, reason: false },
-            {
-              value: 'OVERTURNED',
-              label: M.overturn,
-              reason: item.appeal?.against === 'REPORT_DECISION',
-            },
-          ];
+        : item.kind === 'REMOVAL'
+          ? [
+              { value: 'CONFIRM', label: M.confirmRemoval, reason: false },
+              { value: 'DECLINE', label: M.declineRemoval, reason: false },
+            ]
+          : [
+              { value: 'UPHELD', label: M.uphold, reason: false },
+              {
+                value: 'OVERTURNED',
+                label: M.overturn,
+                reason: item.appeal?.against === 'REPORT_DECISION',
+              },
+            ];
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {actions.map((a) => (
@@ -127,6 +132,7 @@ export default async function ModerationPage({
     <div className="space-y-6">
       <PageTitle>{M.title}</PageTitle>
       {sp.durum === 'karar' ? <Alert kind="success">{M.decided}</Alert> : null}
+      {sp.durum === 'ikinci-onay' ? <Alert kind="info">{M.secondApproval}</Alert> : null}
       {sp.hata ? <Alert kind="error">{errorMessage(sp.hata)}</Alert> : null}
       <nav aria-label={M.title} className="flex flex-wrap gap-2">
         {QUEUES.map((q) => (
@@ -175,6 +181,12 @@ export default async function ModerationPage({
                   {R.reportReasons[item.report.reason]} ·{' '}
                   {M.reportCount.replace('{n}', String(item.report.count))}
                   {item.report.description ? ` — ${item.report.description}` : ''}
+                </p>
+              ) : null}
+              {item.removal ? (
+                <p className="text-sm" data-testid="removal-request">
+                  {M.removalRequested}: {R.reasons[item.removal.reasonCode]}
+                  {item.removal.note ? ` — ${item.removal.note}` : ''}
                 </p>
               ) : null}
               {item.appeal ? (

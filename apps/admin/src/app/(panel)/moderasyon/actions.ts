@@ -40,15 +40,21 @@ export async function decideAction(form: FormData): Promise<void> {
               note,
             },
           })
-        : await client.POST('/v1/admin/moderation/appeals/{id}/decision', {
-            params: { path: { id } },
-            body: {
-              outcome: action as 'UPHELD' | 'OVERTURNED',
-              reasonCode: reasonCode as never,
-              note: note ?? '',
-            },
-          });
-  redirect(
-    `/moderasyon?kuyruk=${queue}&${res.data ? 'durum=karar' : `hata=${problemCode(res.error)}`}`,
-  );
+        : kind === 'REMOVAL'
+          ? await client.POST('/v1/admin/moderation/removals/{id}/decision', {
+              params: { path: { id } },
+              body: { action: action as 'CONFIRM' | 'DECLINE', note },
+            })
+          : await client.POST('/v1/admin/moderation/appeals/{id}/decision', {
+              params: { path: { id } },
+              body: {
+                outcome: action as 'UPHELD' | 'OVERTURNED',
+                reasonCode: reasonCode as never,
+                note: note ?? '',
+              },
+            });
+  const done = res.data
+    ? `durum=${'secondApprovalRequired' in res.data && res.data.secondApprovalRequired ? 'ikinci-onay' : 'karar'}`
+    : `hata=${problemCode(res.error)}`;
+  redirect(`/moderasyon?kuyruk=${queue}&${done}`);
 }

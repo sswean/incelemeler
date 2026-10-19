@@ -16,6 +16,7 @@ import { serverApi } from '../../lib/api';
 import { canonical, jsonLdScript, robots } from '../../lib/seo';
 import { RatingSummaryView } from '../reviews/rating-summary';
 import { ReviewListView } from '../reviews/review-list';
+import { SponsoredBox } from '../sponsored/box';
 import { breadcrumbJsonLd, listingJsonLd } from './json-ld';
 
 const T = tr.listingPage;
@@ -454,6 +455,9 @@ export async function ListingPage(
           </>
         ) : null}
       </section>
+
+      {/* Rakip sponsorlu kutu: alt yarıda, benzer seçenekler listesinin dışında (A8.3). */}
+      <SponsoredBox listingId={l.id} />
 
       <footer className="space-y-1 border-t border-border-default pt-4 text-sm text-text-secondary">
         {verified ? (

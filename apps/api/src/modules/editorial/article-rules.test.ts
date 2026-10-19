@@ -29,7 +29,7 @@ describe('[REQ-ICR-004] [REQ-ICR-007] [REQ-ICR-008] içerik kuralları', () => {
     expect(codes({ type: 'LIST' })).toEqual(['selection_method_required']);
     expect(codes({ type: 'REVIEW' })).toEqual(['experience_required']);
   });
-  it('sponsorlu ilişki yalnız sponsorlu içerik türünde; sponsorlu içerik inceleme gibi sunulamaz', () => {
+  it('[REQ-SPN-007] sponsorlu ilişki yalnız sponsorlu içerik türünde; sponsorlu içerik inceleme gibi sunulamaz', () => {
     expect(codes({ commercialRelation: 'SPONSORED' })).toEqual(['sponsored_type_required']);
     expect(codes({ type: 'SPONSORED' })).toEqual(['sponsored_relation_required']);
     expect(

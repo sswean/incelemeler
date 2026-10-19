@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { SearchHit, SearchResponse } from '@incelemeler/contracts';
+import { CommercialLabel } from '../../components/sponsored/label';
+import { SponsoredCard } from '../../components/sponsored/sponsored-card';
+import { mergeSponsored } from '../../lib/sponsored';
 import { tr } from '@incelemeler/i18n';
 import { STATIC_PATHS } from '@incelemeler/routes';
 import { FilterSheet } from '../../components/search/filter-sheet';
@@ -70,6 +73,7 @@ function Hit({ h }: { h: SearchHit }) {
     <li className="rounded-lg border border-border-default p-4" data-testid="search-hit">
       <h3 className="font-semibold">
         <Link href={h.path} className="text-brand-default underline">
+          <CommercialLabel commercial={h.commercial} />
           {h.title}
         </Link>
       </h3>
@@ -334,9 +338,13 @@ export default async function SearchPage(props: Props) {
                 </div>
               ) : (
                 <ol className="space-y-3">
-                  {result.data.map((h) => (
-                    <Hit key={`${h.type}-${h.id}`} h={h} />
-                  ))}
+                  {mergeSponsored(result.data, result.sponsored).map((m) =>
+                    m.kind === 'organic' ? (
+                      <Hit key={`${m.hit.type}-${m.hit.id}`} h={m.hit} />
+                    ) : (
+                      <SponsoredCard key={m.sponsored.placementId} s={m.sponsored} />
+                    ),
+                  )}
                 </ol>
               )}
               {pages > 1 ? (

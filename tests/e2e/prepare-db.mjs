@@ -46,6 +46,8 @@ const extraStaff = [
   ...PROJECTS.map((p) => [`e2e-esik-${p}@example.test`, 'E2E Eşik']),
   ...PROJECTS.map((p) => [`e2e-moderator-${p}@example.test`, 'E2E Moderatör', 'MODERATOR']),
   ...PROJECTS.map((p) => [`e2e-ortaklik-${p}@example.test`, 'E2E Ortaklık']),
+  ...PROJECTS.map((p) => [`e2e-satis-${p}@example.test`, 'E2E Satış', 'SALES']),
+  ...PROJECTS.map((p) => [`e2e-spn-editor-${p}@example.test`, 'E2E Sponsorluk Editörü', 'EDITOR']),
 ];
 for (const [email, name, role = 'ADMIN'] of extraStaff) {
   const { rows } = await db.query(

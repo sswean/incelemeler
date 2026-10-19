@@ -11,7 +11,8 @@ import { ProblemException } from '../../common/problem.js';
 import { ENV, type EnvToken } from '../../config/env.provider.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { referencedIds } from '../editorial/article-rules.js';
-import { SEARCH_PORT, type SearchPort } from '../search/search.port.js';
+import { SEARCH_PORT, type SearchCriteria, type SearchPort } from '../search/search.port.js';
+import { SponsoredServingService } from '../sponsorship/sponsored-serving.service.js';
 import { ThresholdsService } from './thresholds.service.js';
 
 const PAGE_SIZE = 24;
@@ -62,6 +63,7 @@ export class HubsService {
     private readonly thresholds: ThresholdsService,
     @Inject(SEARCH_PORT) private readonly search: SearchPort,
     @Inject(ENV) private readonly env: EnvToken,
+    private readonly sponsored: SponsoredServingService,
   ) {}
 
   private get production() {
@@ -108,7 +110,7 @@ export class HubsService {
       .filter((a) => [...a.listingIds].some((id) => listingIds.has(id)))
       .sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
 
-    const { rows } = await this.search.query({
+    const criteria: SearchCriteria = {
       tokens: [],
       docTypes: ['LISTING'],
       kind: null,
@@ -125,6 +127,15 @@ export class HubsService {
       limit: PAGE_SIZE,
       fuzzy: false,
       matchAny: false,
+    };
+    const { rows } = await this.search.query(criteria);
+    // Sponsorlu yerleşim ayrı dizi; hub bağlamıyla (il/ilçe/kategori) eşleşen adaylardan (REQ-SPN-002/004).
+    const sponsored = await this.sponsored.forList({
+      surface: 'CATEGORY_LIST',
+      criteria,
+      organicCount: rows.length,
+      categoryId: category?.id ?? null,
+      provinceId: province.id,
     });
 
     const p = { slug: province.slug, name: province.name };
@@ -196,7 +207,9 @@ export class HubsService {
         ratingCount: r.ratingCount,
         distanceKm: null,
         dataOrigin: r.dataOrigin,
+        commercial: { type: 'NONE' as const },
       })),
+      sponsored,
       page: q.page,
       pageSize: PAGE_SIZE,
       articles: articles.slice(0, 6).map((a) => ({

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ArticleType } from './content.js';
-import { SearchHit } from './search.js';
+import { SearchHit, SponsoredItem } from './search.js';
 
 /**
  * Yayın eşikleri (§7.2; panelden ayarlanır). Eşiğin altındaki hub sayfası üretilmez; menü, site haritası ve
@@ -69,6 +69,8 @@ export const Hub = z
     listingCount: z.number().int(),
     /** Organik sıralı listelemeler (ticari sinyal yok; sponsorlu yerleşim ayrı ve etiketli — D9). */
     listings: z.array(SearchHit),
+    /** Sponsorlu yerleşimler ayrı dizi; hub'ın il/ilçe/kategori bağlamıyla eşleşir (REQ-SPN-002/004). */
+    sponsored: z.array(SponsoredItem),
     page: z.number().int(),
     pageSize: z.number().int(),
     articles: z.array(

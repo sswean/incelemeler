@@ -16,6 +16,7 @@ import type { Request, Response } from 'express';
 import {
   AppealCreateBody,
   AppealDecisionBody,
+  RemovalDecisionBody,
   ModerationQueueQuery,
   ReportCreateBody,
   ReportDecisionBody,
@@ -181,6 +182,23 @@ export class ReviewsController {
       ctx,
       parseId(id),
       parseBody(AppealDecisionBody, body),
+      requestMeta(req),
+    );
+  }
+
+  @Post('admin/moderation/removals/:id/decision')
+  @HttpCode(200)
+  @RequireAuth({ level: 'staff-mfa', permission: 'reviews.moderate' })
+  decideRemoval(
+    @Auth() ctx: AuthContext,
+    @Param('id') id: string,
+    @Body() body: unknown,
+    @Req() req: Request,
+  ) {
+    return this.moderation.decideRemoval(
+      ctx,
+      parseId(id),
+      parseBody(RemovalDecisionBody, body),
       requestMeta(req),
     );
   }

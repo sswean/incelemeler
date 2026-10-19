@@ -29,6 +29,9 @@ import { ReviewsController } from './modules/reviews/reviews.controller.js';
 import { ReviewsService } from './modules/reviews/reviews.service.js';
 import { OutboundController } from './modules/outbound/outbound.controller.js';
 import { OutboundService } from './modules/outbound/outbound.service.js';
+import { CampaignsService } from './modules/sponsorship/campaigns.service.js';
+import { SponsoredServingService } from './modules/sponsorship/sponsored-serving.service.js';
+import { SponsorshipController } from './modules/sponsorship/sponsorship.controller.js';
 import { HubsController } from './modules/hubs/hubs.controller.js';
 import { HubsService } from './modules/hubs/hubs.service.js';
 import { ThresholdsService } from './modules/hubs/thresholds.service.js';
@@ -103,6 +106,7 @@ export const CONTROLLERS = [
   HubsController,
   ReviewsController,
   OutboundController,
+  SponsorshipController,
 ];
 
 @Module({})
@@ -150,6 +154,8 @@ export class AppModule {
         ModerationService,
         RatingStatsService,
         OutboundService,
+        SponsoredServingService,
+        CampaignsService,
       ],
     };
   }

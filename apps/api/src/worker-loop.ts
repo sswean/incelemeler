@@ -3,6 +3,7 @@ import type { INestApplicationContext } from '@nestjs/common';
 import { AdminArticlesService } from './modules/editorial/admin-articles.service.js';
 import { OutboundService } from './modules/outbound/outbound.service.js';
 import { OutboxService } from './modules/outbox/outbox.service.js';
+import { CampaignsService } from './modules/sponsorship/campaigns.service.js';
 
 /** Outbox + zamanlanmış yayın döngüsü (ADR-0010); `isRunning` false olunca durur. */
 export async function runWorkerLoop(
@@ -12,7 +13,9 @@ export async function runWorkerLoop(
   const outbox = app.get(OutboxService);
   const articles = app.get(AdminArticlesService);
   const outbound = app.get(OutboundService);
+  const campaigns = app.get(CampaignsService);
   let nextHealthCheck = 0;
+  let nextCampaignTick = 0;
   const logger = new Logger('Worker');
   logger.log('Outbox işleyicisi başladı');
   while (isRunning()) {
@@ -24,6 +27,13 @@ export async function runWorkerLoop(
     await articles.publishDue().catch((e: unknown) => {
       logger.error(JSON.stringify({ event: 'worker.schedule_error', message: String(e) }));
     });
+    // Kampanya durumları (rapor için; sunum zaman penceresine ayrıca bakar — REQ-SPN-005).
+    if (Date.now() >= nextCampaignTick) {
+      nextCampaignTick = Date.now() + 15_000;
+      await campaigns.tick().catch((e: unknown) => {
+        logger.error(JSON.stringify({ event: 'worker.campaigns_error', message: String(e) }));
+      });
+    }
     // Dış bağlantı sağlığı ve süre sonu (REQ-AFF-007): 10 dakikada bir küçük parti.
     if (Date.now() >= nextHealthCheck) {
       nextHealthCheck = Date.now() + 10 * 60_000;

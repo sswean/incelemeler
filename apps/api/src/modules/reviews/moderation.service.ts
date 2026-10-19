@@ -6,6 +6,7 @@ import type {
   ModerationQueue,
   ModerationReason,
   ReportCreateBody,
+  RemovalDecisionBody,
   ReportDecisionBody,
   ReviewDecisionBody,
 } from '@incelemeler/contracts';
@@ -17,6 +18,7 @@ import type { AuthContext } from '../identity/auth.context.js';
 import { OutboxService } from '../outbox/outbox.service.js';
 import { AuditService } from '../platform/audit.service.js';
 import { RateLimitService } from '../platform/rate-limit.service.js';
+import { SponsoredServingService } from '../sponsorship/sponsored-serving.service.js';
 import { APPEAL_WINDOW_DAYS, ReviewsService } from './reviews.service.js';
 
 type Tx = Prisma.TransactionClient;
@@ -50,9 +52,12 @@ export class ModerationService {
     private readonly audit: AuditService,
     private readonly rateLimit: RateLimitService,
     private readonly reviews: ReviewsService,
+    private readonly sponsored: SponsoredServingService,
   ) {}
 
-  async queue(queue: 'pending' | 'post' | 'reports' | 'appeals'): Promise<ModerationQueue> {
+  async queue(
+    queue: 'pending' | 'post' | 'reports' | 'appeals' | 'removals',
+  ): Promise<ModerationQueue> {
     const include = {
       user: { select: { id: true, displayName: true } },
       listing: { select: { id: true, name: true } },
@@ -82,6 +87,7 @@ export class ModerationService {
       }),
       reports: await this.prisma.contentReport.count({ where: { status: 'OPEN' } }),
       appeals: await this.prisma.moderationAppeal.count({ where: { status: 'OPEN' } }),
+      removals: await this.prisma.reviewRemovalRequest.count({ where: { status: 'PENDING' } }),
     };
     let data: ModerationQueue['data'] = [];
     if (queue === 'pending' || queue === 'post') {
@@ -135,6 +141,27 @@ export class ModerationService {
           };
         })
         .sort((a, b) => b.priority - a.priority || b.ageHours - a.ageHours);
+    } else if (queue === 'removals') {
+      const rows = await this.prisma.reviewRemovalRequest.findMany({
+        where: { status: 'PENDING' },
+        include: { review: { include } },
+        orderBy: { createdAt: 'asc' },
+        take: 100,
+      });
+      data = rows.map((r) => ({
+        kind: 'REMOVAL' as const,
+        id: r.id,
+        review: reviewDto(r.review),
+        report: null,
+        appeal: null,
+        removal: {
+          requestedById: r.requestedById,
+          reasonCode: r.reasonCode as ModerationReason,
+          note: r.note,
+        },
+        ageHours: age(r.createdAt),
+        priority: 0,
+      }));
     } else {
       const appeals = await this.prisma.moderationAppeal.findMany({
         where: { status: 'OPEN' },
@@ -171,7 +198,7 @@ export class ModerationService {
     id: string,
     body: z.infer<typeof ReviewDecisionBody>,
     meta: RequestMeta,
-  ): Promise<{ ok: true }> {
+  ): Promise<{ ok: true; secondApprovalRequired?: boolean }> {
     const r = await this.prisma.review.findUnique({ where: { id } });
     if (!r) throw notFound();
     this.assertNoConflict(ctx, r);
@@ -201,6 +228,10 @@ export class ModerationService {
       if (!['PUBLISHED', 'PENDING'].includes(r.status))
         throw conflict('Bu değerlendirme kaldırılamaz');
       data = { status: 'REMOVED' };
+      if (await this.sponsored.isSponsorLinked(r.listingId)) {
+        await this.requestRemoval(ctx, r.id, null, body.reasonCode!, body.note, meta);
+        return { ok: true, secondApprovalRequired: true };
+      }
     }
     await this.prisma.$transaction(async (tx) => {
       const updated = await tx.review.update({
@@ -278,7 +309,7 @@ export class ModerationService {
     id: string,
     body: z.infer<typeof ReportDecisionBody>,
     meta: RequestMeta,
-  ): Promise<{ ok: true }> {
+  ): Promise<{ ok: true; secondApprovalRequired?: boolean }> {
     const report = await this.prisma.contentReport.findUnique({ where: { id } });
     if (!report || report.status !== 'OPEN') throw notFound();
     const review = await this.prisma.review.findUniqueOrThrow({ where: { id: report.targetId } });
@@ -287,6 +318,14 @@ export class ModerationService {
       throw invalid([
         { pointer: '/reasonCode', code: 'required', message: 'Gerekçe kodu zorunlu' },
       ]);
+    }
+    if (
+      body.action === 'REMOVE_TARGET' &&
+      review.status === 'PUBLISHED' &&
+      (await this.sponsored.isSponsorLinked(review.listingId))
+    ) {
+      await this.requestRemoval(ctx, review.id, id, body.reasonCode!, body.note, meta);
+      return { ok: true, secondApprovalRequired: true };
     }
     await this.prisma.$transaction(async (tx) => {
       if (body.action === 'DISMISS') {
@@ -460,6 +499,91 @@ export class ModerationService {
   }
 
   /** REQ-GUN-009: moderatör kendi değerlendirmesini modere edemez. */
+  /**
+   * Sponsor bağlantılı listelemede kaldırma talebi (REQ-GUN-004): içerik yayında kalır; ikinci, farklı bir
+   * moderatör onaylayınca kaldırılır.
+   */
+  private async requestRemoval(
+    ctx: AuthContext,
+    reviewId: string,
+    reportId: string | null,
+    reasonCode: string,
+    note: string | null | undefined,
+    meta: RequestMeta,
+  ) {
+    const pending = await this.prisma.reviewRemovalRequest.findFirst({
+      where: { reviewId, status: 'PENDING' },
+    });
+    if (pending) throw conflict('Bu değerlendirme için ikinci onay bekleyen kaldırma talebi var');
+    await this.prisma.$transaction(async (tx) => {
+      const req = await tx.reviewRemovalRequest.create({
+        data: { reviewId, reportId, requestedById: ctx.userId, reasonCode, note: note ?? null },
+      });
+      await this.record(tx, ctx, 'moderation.review.removal_requested', 'review', reviewId, meta, {
+        requestId: req.id,
+        reasonCode,
+        sponsorLinked: true,
+      });
+    });
+  }
+
+  async decideRemoval(
+    ctx: AuthContext,
+    id: string,
+    body: z.infer<typeof RemovalDecisionBody>,
+    meta: RequestMeta,
+  ): Promise<{ ok: true }> {
+    const req = await this.prisma.reviewRemovalRequest.findUnique({
+      where: { id },
+      include: { review: true },
+    });
+    if (!req || req.status !== 'PENDING') throw notFound();
+    if (req.requestedById === ctx.userId) {
+      throw forbidden('second_approver_required', 'Kaldırma talebini açan moderatör onaylayamaz');
+    }
+    this.assertNoConflict(ctx, req.review);
+    const now = new Date();
+    await this.prisma.$transaction(async (tx) => {
+      const claimed = await tx.reviewRemovalRequest.updateMany({
+        where: { id, status: 'PENDING' },
+        data: {
+          status: body.action === 'CONFIRM' ? 'CONFIRMED' : 'DECLINED',
+          decidedById: ctx.userId,
+          decidedAt: now,
+        },
+      });
+      if (claimed.count === 0) throw notFound();
+      if (body.action === 'CONFIRM') {
+        if (!['PUBLISHED', 'PENDING'].includes(req.review.status)) {
+          throw conflict('Bu değerlendirme kaldırılamaz');
+        }
+        const updated = await tx.review.update({
+          where: { id: req.reviewId },
+          data: {
+            status: 'REMOVED',
+            reasonCode: req.reasonCode,
+            reasonNote: req.note,
+            moderatedById: ctx.userId,
+            moderatedAt: now,
+            version: { increment: 1 },
+          },
+        });
+        await this.closeReports(tx, ctx, req.reviewId, 'UPHELD', req.reasonCode, req.note);
+        await this.reviews.changed(tx, updated, req.review.status);
+      }
+      await this.record(
+        tx,
+        ctx,
+        `moderation.review.removal_${body.action === 'CONFIRM' ? 'confirmed' : 'declined'}`,
+        'review',
+        req.reviewId,
+        meta,
+        { requestId: id, requestedById: req.requestedById, note: body.note ?? null },
+      );
+    });
+    return { ok: true };
+  }
+
   private assertNoConflict(ctx: AuthContext, r: Pick<Review, 'userId'>) {
     if (r.userId === ctx.userId) {
       throw forbidden('conflict_of_interest', 'Kendi değerlendirmeni modere edemezsin');

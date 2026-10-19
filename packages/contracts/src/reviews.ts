@@ -230,11 +230,11 @@ export const ModerationSignal = z.object({
 });
 
 export const ModerationQueueQuery = z.object({
-  queue: z.enum(['pending', 'post', 'reports', 'appeals']).default('pending'),
+  queue: z.enum(['pending', 'post', 'reports', 'appeals', 'removals']).default('pending'),
 });
 
 export const ModerationItem = z.object({
-  kind: z.enum(['REVIEW', 'REPORT', 'APPEAL']),
+  kind: z.enum(['REVIEW', 'REPORT', 'APPEAL', 'REMOVAL']),
   id: z.string(),
   review: z.object({
     id: z.string(),
@@ -258,6 +258,15 @@ export const ModerationItem = z.object({
   appeal: z
     .object({ statement: z.string(), against: z.enum(['REVIEW_DECISION', 'REPORT_DECISION']) })
     .nullable(),
+  /** Sponsor bağlantılı değerlendirmede ikinci onay bekleyen kaldırma (REQ-GUN-004). */
+  removal: z
+    .object({
+      requestedById: z.string(),
+      reasonCode: ModerationReason,
+      note: z.string().nullable(),
+    })
+    .nullable()
+    .optional(),
   /** SLA: ilk kayıttan bu yana geçen saat (REQ-GUN-001). */
   ageHours: z.number(),
   priority: z.number().int(),
@@ -284,7 +293,17 @@ export const AppealDecisionBody = z.object({
   reasonCode: ModerationReason.optional(),
   note: z.string().trim().min(5).max(1000),
 });
-export const DecisionAck = z.object({ ok: z.literal(true) }).meta({ id: 'DecisionAck' });
+export const DecisionAck = z
+  .object({
+    ok: z.literal(true),
+    /** Sponsor bağlantılı listelemede kaldırma ikinci moderatör onayına gitti (REQ-GUN-004). */
+    secondApprovalRequired: z.boolean().optional(),
+  })
+  .meta({ id: 'DecisionAck' });
+export const RemovalDecisionBody = z.object({
+  action: z.enum(['CONFIRM', 'DECLINE']),
+  note: z.string().trim().max(1000).nullable().optional(),
+});
 
 /** Değerlendirme formu bağlamı: listeleme, kategori kriterleri ve türe göre zorunlu alanlar (A6.3). */
 export const ReviewFormContext = z

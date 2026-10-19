@@ -1140,6 +1140,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/moderation/removals/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sponsor bağlantılı değerlendirmenin kaldırılmasına ikinci onay (talebi açan moderatör onaylayamaz) */
+        post: operations["adminDecideRemoval"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/outbound/{id}/resolve": {
         parameters: {
             query?: never;
@@ -1254,6 +1271,247 @@ export interface paths {
         put?: never;
         /** Bağlantı sağlığını şimdi denetler (SSRF korumalı) */
         post: operations["adminCheckOutboundLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/listings/{id}/sponsored": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listeleme detayındaki rakip sponsorlu kutu (≤ 1; aynı kategori ve il bağlamı; organik içeriği etkilemez) */
+        get: operations["listingSponsored"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sponsored/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Görüntülenen gösterim (≥ %50, ≥ 1 sn); imzalı belirteçle, kişisel veri yok */
+        post: operations["sponsoredEvent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sponsored/{id}/click": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sponsorlu yerleşim tıklaması: hedef yol (yalnızca kayıttan) — /git/s/ işleyicisi kullanır */
+        get: operations["sponsoredClick"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/placement-slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Yuva kataloğu (kodda sabit üst sınırlarla) */
+        get: operations["adminListPlacementSlots"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/placement-slots/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Yuvayı günceller; sınırlar yalnızca düşürülebilir (A8.3) */
+        patch: operations["adminUpdatePlacementSlot"];
+        trace?: never;
+    };
+    "/v1/admin/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kuruluşlar (sponsor seçimi) */
+        get: operations["adminListOrganizations"];
+        put?: never;
+        /** Kuruluş ekler */
+        post: operations["adminCreateOrganization"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/campaigns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kampanyalar */
+        get: operations["adminListCampaigns"];
+        put?: never;
+        /** Kampanya taslağı oluşturur */
+        post: operations["adminCreateCampaign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/campaigns/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kampanya ayrıntısı (tutar yalnızca yetkiliye) */
+        get: operations["adminGetCampaign"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Kampanyayı günceller (sürüm denetimli; denetim kaydı) */
+        patch: operations["adminUpdateCampaign"];
+        trace?: never;
+    };
+    "/v1/admin/campaigns/{id}/transition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Yaşam döngüsü eylemi (gönder, satış/editoryal onay, planla, duraklat…) */
+        post: operations["adminTransitionCampaign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/campaigns/{id}/placements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Yerleşim ekler (sponsorluğa kapalı kategori reddedilir) */
+        post: operations["adminAddPlacement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/campaign-placements/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Yerleşimi kaldırır (yalnızca yayına girmemiş kampanyada) */
+        delete: operations["adminDeletePlacement"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/campaigns/{id}/creatives": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Kreatif ekler (editoryal onay bekler) */
+        post: operations["adminAddCreative"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/creatives/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Kreatif editoryal kararı */
+        post: operations["adminReviewCreative"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/campaigns/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kampanya raporu (görüntülenen gösterim esas; yalnızca gerçek olaylar) */
+        get: operations["adminCampaignReport"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2262,6 +2520,39 @@ export interface components {
                 publishedAt: string | null;
             }[];
         };
+        SponsoredItem: {
+            position: number;
+            placementId: string;
+            item: {
+                /** @enum {string} */
+                type: "LISTING" | "ARTICLE";
+                id: string;
+                title: string;
+                subtitle: string | null;
+                path: string;
+                /** @enum {string|null} */
+                kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK" | null;
+                /** @enum {string|null} */
+                articleType: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED" | null;
+                status: string | null;
+                priceLevel: number | null;
+                ratingCount: number;
+                distanceKm: number | null;
+                dataOrigin: string;
+                commercial: {
+                    /** @enum {string} */
+                    type: "NONE";
+                } | {
+                    /** @enum {string} */
+                    type: "SPONSORED";
+                    sponsor: string;
+                    label: string;
+                    why: string;
+                };
+            };
+            clickHref: string;
+            impressionToken: string;
+        };
         SearchResponse: {
             data: {
                 /** @enum {string} */
@@ -2279,6 +2570,16 @@ export interface components {
                 ratingCount: number;
                 distanceKm: number | null;
                 dataOrigin: string;
+                commercial: {
+                    /** @enum {string} */
+                    type: "NONE";
+                } | {
+                    /** @enum {string} */
+                    type: "SPONSORED";
+                    sponsor: string;
+                    label: string;
+                    why: string;
+                };
             }[];
             total: number;
             page: number;
@@ -2313,6 +2614,7 @@ export interface components {
                 label: string;
                 count: number;
             }[];
+            sponsored: components["schemas"]["SponsoredItem"][];
         };
         SuggestResponse: {
             places: {
@@ -2399,7 +2701,18 @@ export interface components {
                 ratingCount: number;
                 distanceKm: number | null;
                 dataOrigin: string;
+                commercial: {
+                    /** @enum {string} */
+                    type: "NONE";
+                } | {
+                    /** @enum {string} */
+                    type: "SPONSORED";
+                    sponsor: string;
+                    label: string;
+                    why: string;
+                };
             }[];
+            sponsored: components["schemas"]["SponsoredItem"][];
             page: number;
             pageSize: number;
             articles: {
@@ -2492,6 +2805,154 @@ export interface components {
         };
         OutboundLinkList: {
             data: components["schemas"]["OutboundLink"][];
+        };
+        PlacementSlot: {
+            id: string;
+            key: string;
+            /** @enum {string} */
+            surface: "SEARCH" | "CATEGORY_LIST" | "LISTING_DETAIL" | "HOME";
+            name: string;
+            positions: number[];
+            maxItems: number;
+            allowedKinds: ("PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK")[];
+            enabled: boolean;
+            cap: {
+                maxItems: number;
+                firstTenMax: number;
+            };
+            version: number;
+        };
+        PlacementSlotList: {
+            data: components["schemas"]["PlacementSlot"][];
+        };
+        OrganizationSummary: {
+            id: string;
+            /** @enum {string} */
+            type: "BUSINESS" | "BRAND" | "CHAIN" | "OPERATOR" | "ADVERTISER";
+            slug: string;
+            name: string;
+            dataOrigin: string;
+        };
+        OrganizationList: {
+            data: components["schemas"]["OrganizationSummary"][];
+        };
+        Campaign: {
+            id: string;
+            name: string;
+            sponsor: {
+                id: string;
+                name: string;
+            };
+            /** @enum {string} */
+            status: "DRAFT" | "PENDING_APPROVAL" | "APPROVED" | "SCHEDULED" | "LIVE" | "PAUSED" | "COMPLETED" | "ARCHIVED" | "CANCELLED";
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt: string;
+            budgetKurus: number | null;
+            currency: string;
+            contractRef: string | null;
+            /** Format: date-time */
+            salesApprovedAt: string | null;
+            /** Format: date-time */
+            editorialApprovedAt: string | null;
+            dataOrigin: string;
+            placements: {
+                id: string;
+                slot: {
+                    id: string;
+                    key: string;
+                    name: string;
+                    /** @enum {string} */
+                    surface: "SEARCH" | "CATEGORY_LIST" | "LISTING_DETAIL" | "HOME";
+                };
+                listing: {
+                    id: string;
+                    slug: string;
+                    name: string;
+                };
+                targetCategory: {
+                    slug: string;
+                    name: string;
+                } | null;
+                targetArea: {
+                    slug: string;
+                    name: string;
+                } | null;
+                priority: number;
+                weight: number;
+            }[];
+            creatives: {
+                id: string;
+                title: string;
+                body: string | null;
+                /** @enum {string} */
+                approval: "PENDING" | "APPROVED" | "REJECTED";
+                version: number;
+            }[];
+            version: number;
+        };
+        CampaignList: {
+            data: {
+                id: string;
+                name: string;
+                sponsor: {
+                    id: string;
+                    name: string;
+                };
+                /** @enum {string} */
+                status: "DRAFT" | "PENDING_APPROVAL" | "APPROVED" | "SCHEDULED" | "LIVE" | "PAUSED" | "COMPLETED" | "ARCHIVED" | "CANCELLED";
+                /** Format: date-time */
+                startsAt: string;
+                /** Format: date-time */
+                endsAt: string;
+                dataOrigin: string;
+            }[];
+        };
+        CampaignReport: {
+            campaignId: string;
+            /** Format: date-time */
+            generatedAt: string;
+            /** Format: date-time */
+            lastEventAt: string | null;
+            totals: {
+                served: number;
+                viewed: number;
+                clicks: number;
+                ctr: number | null;
+            };
+            daily: {
+                served: number;
+                viewed: number;
+                clicks: number;
+                ctr: number | null;
+                date: string;
+            }[];
+            bySlot: {
+                served: number;
+                viewed: number;
+                clicks: number;
+                ctr: number | null;
+                slot: string;
+                /** @enum {string} */
+                surface: "SEARCH" | "CATEGORY_LIST" | "LISTING_DETAIL" | "HOME";
+            }[];
+            share: {
+                slot: string;
+                servedShare: number | null;
+            }[];
+            /** @enum {string|null} */
+            conversions: null;
+            excluded: number;
+        };
+        SponsoredClick: {
+            path: string;
+        };
+        ListingSponsored: {
+            data: components["schemas"]["SponsoredItem"][];
+        };
+        SponsoredEventAck: {
+            accepted: boolean;
         };
         ReviewDraft: {
             listingId: string;
@@ -2601,7 +3062,7 @@ export interface components {
         ModerationQueue: {
             data: {
                 /** @enum {string} */
-                kind: "REVIEW" | "REPORT" | "APPEAL";
+                kind: "REVIEW" | "REPORT" | "APPEAL" | "REMOVAL";
                 id: string;
                 review: {
                     id: string;
@@ -2643,6 +3104,12 @@ export interface components {
                     /** @enum {string} */
                     against: "REVIEW_DECISION" | "REPORT_DECISION";
                 } | null;
+                removal?: {
+                    requestedById: string;
+                    /** @enum {string} */
+                    reasonCode: "NOT_PERSONAL_EXPERIENCE" | "HATE_OR_HARASSMENT" | "THREAT" | "PERSONAL_DATA" | "DOXXING" | "ADVERTISING_OR_SPAM" | "OFF_TOPIC" | "COPIED_CONTENT" | "UNDECLARED_INCENTIVE" | "HEALTH_CLAIM" | "CONFLICT_OF_INTEREST" | "DUPLICATE" | "LEGAL_REQUEST" | "COURT_ORDER" | "USER_REQUEST";
+                    note: string | null;
+                } | null;
                 ageHours: number;
                 priority: number;
             }[];
@@ -2653,6 +3120,7 @@ export interface components {
         DecisionAck: {
             /** @enum {boolean} */
             ok: true;
+            secondApprovalRequired?: boolean;
         };
         ReviewFormContext: {
             listing: {
@@ -5919,7 +6387,7 @@ export interface operations {
     adminModerationQueue: {
         parameters: {
             query?: {
-                queue?: "pending" | "post" | "reports" | "appeals";
+                queue?: "pending" | "post" | "reports" | "appeals" | "removals";
             };
             header?: never;
             path?: never;
@@ -6047,6 +6515,45 @@ export interface operations {
                     /** @enum {string} */
                     reasonCode?: "NOT_PERSONAL_EXPERIENCE" | "HATE_OR_HARASSMENT" | "THREAT" | "PERSONAL_DATA" | "DOXXING" | "ADVERTISING_OR_SPAM" | "OFF_TOPIC" | "COPIED_CONTENT" | "UNDECLARED_INCENTIVE" | "HEALTH_CLAIM" | "CONFLICT_OF_INTEREST" | "DUPLICATE" | "LEGAL_REQUEST" | "COURT_ORDER" | "USER_REQUEST";
                     note: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Karar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionAck"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminDecideRemoval: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    action: "CONFIRM" | "DECLINE";
+                    note?: string | null;
                 };
             };
         };
@@ -6378,6 +6885,616 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OutboundLink"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    listingSponsored: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Yerleşimler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingSponsored"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    sponsoredEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    token: string;
+                    /** @enum {string} */
+                    type: "VIEWED";
+                    /** @default false */
+                    automated?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Alındı */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SponsoredEventAck"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    sponsoredClick: {
+        parameters: {
+            query?: {
+                ctx?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Hedef */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SponsoredClick"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListPlacementSlots: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Yuvalar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlacementSlotList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdatePlacementSlot: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    positions?: number[];
+                    maxItems?: number;
+                    enabled?: boolean;
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlacementSlot"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListOrganizations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Kuruluşlar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganizationList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateOrganization: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    type: "BUSINESS" | "BRAND" | "CHAIN" | "OPERATOR" | "ADVERTISER";
+                    name: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganizationSummary"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListCampaigns: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Kampanyalar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateCampaign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    /** Format: uuid */
+                    sponsorId: string;
+                    /** Format: date-time */
+                    startsAt: string;
+                    /** Format: date-time */
+                    endsAt: string;
+                    budgetKurus?: number | null;
+                    contractRef?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Campaign"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetCampaign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Kampanya */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Campaign"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateCampaign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name?: string;
+                    /** Format: uuid */
+                    sponsorId?: string;
+                    /** Format: date-time */
+                    startsAt?: string;
+                    /** Format: date-time */
+                    endsAt?: string;
+                    budgetKurus?: number | null;
+                    contractRef?: string | null;
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Campaign"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminTransitionCampaign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    action: "submit" | "approve_sales" | "approve_editorial" | "return_to_draft" | "schedule" | "pause" | "resume" | "complete" | "archive" | "cancel";
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Campaign"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminAddPlacement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: uuid */
+                    slotId: string;
+                    listingSlug: string;
+                    targetCategorySlug?: string | null;
+                    targetProvinceSlug?: string | null;
+                    /** @default 0 */
+                    priority?: number;
+                    /** @default 1 */
+                    weight?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Campaign"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminDeletePlacement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Campaign"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminAddCreative: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    title: string;
+                    body?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Campaign"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminReviewCreative: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    decision: "APPROVED" | "REJECTED";
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Campaign"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCampaignReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Rapor */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CampaignReport"];
                 };
             };
             /** @description Hata (RFC 9457) */

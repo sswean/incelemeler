@@ -54,6 +54,11 @@ export interface SearchCriteria {
   fuzzy: boolean;
   /** Kelimeler VE (varsayılan) ya da VEYA ile birleşir (VE sonuçsuzsa VEYA denenir). */
   matchAny: boolean;
+  /**
+   * Yalnızca bu belgeler arasında ara (sponsorlu aday alaka denetimi: aday organik ölçütlerle eşleşmeli —
+   * REQ-SPN-004). Organik sorgularda hiç verilmez.
+   */
+  refIds?: string[];
 }
 
 export interface SearchRow {

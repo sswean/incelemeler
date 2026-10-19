@@ -8,6 +8,9 @@ import { lowerTr, upperTr, withCase } from '@incelemeler/utils';
 import { serverApi } from '../../lib/api';
 import { canonical, jsonLdScript, robots } from '../../lib/seo';
 import { breadcrumbJsonLd } from '../listing/json-ld';
+import { CommercialLabel } from '../sponsored/label';
+import { SponsoredCard } from '../sponsored/sponsored-card';
+import { mergeSponsored } from '../../lib/sponsored';
 
 const H = tr.hub;
 export type HubParams = { il: string; bolum?: string; kategori?: string };
@@ -201,23 +204,30 @@ export async function HubRoute(props: HubProps) {
           {H.listings}
         </h2>
         <ol className="grid gap-3 sm:grid-cols-2" data-testid="hub-listings">
-          {hub.listings.map((l) => (
-            <li key={l.id} className="rounded-lg border border-border-default p-4">
-              <Link href={l.path} className="font-semibold text-brand-default underline">
-                {l.title}
-              </Link>
-              <p className="text-sm text-text-secondary">
-                {[l.subtitle, l.priceLevel ? '₺'.repeat(l.priceLevel) : null]
-                  .filter(Boolean)
-                  .join(' · ')}
-              </p>
-              {l.status === 'CLOSED_PERMANENTLY' ? (
-                <p className="text-sm font-medium">{tr.search.closed}</p>
-              ) : (
-                <p className="text-sm">{tr.search.noReviews}</p>
-              )}
-            </li>
-          ))}
+          {mergeSponsored(hub.listings, hub.sponsored).map((m) => {
+            if (m.kind === 'sponsored') {
+              return <SponsoredCard key={m.sponsored.placementId} s={m.sponsored} />;
+            }
+            const l = m.hit;
+            return (
+              <li key={l.id} className="rounded-lg border border-border-default p-4">
+                <Link href={l.path} className="font-semibold text-brand-default underline">
+                  <CommercialLabel commercial={l.commercial} />
+                  {l.title}
+                </Link>
+                <p className="text-sm text-text-secondary">
+                  {[l.subtitle, l.priceLevel ? '₺'.repeat(l.priceLevel) : null]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+                {l.status === 'CLOSED_PERMANENTLY' ? (
+                  <p className="text-sm font-medium">{tr.search.closed}</p>
+                ) : (
+                  <p className="text-sm">{tr.search.noReviews}</p>
+                )}
+              </li>
+            );
+          })}
         </ol>
         {pages > 1 ? (
           <nav aria-label={fill(tr.search.page, { n: page })} className="flex justify-between">

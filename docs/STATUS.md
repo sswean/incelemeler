@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 9 — sponsorluk kampanyası + yerleşim (dilim 8 dış yönlendirme: `docs/status-log/F1-D8.md`)
+- Aktif dilim: Faz 1 dilim 10 — favoriler + hesap/KVKK + CMP (dilim 9 sponsorluk: `docs/status-log/F1-D9.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -42,7 +42,11 @@
 - API: `/v1/outbound/{id}/resolve` (hedef yalnızca kayıttan, izinli alan adı, imzalı bağlam, asenkron tıklama kaydı), `/v1/admin/integration-providers`, `/v1/admin/listings/{id}/outbound-links`, `/v1/admin/outbound-links` (+ `/check`); sağlık denetimi worker'da.
 - Web: `/git/{id}` → 302 (no-store, noindex); listeleme CTA'ları kayıtlı bağlantıdan, ticari olanlar `rel="sponsored"` + "Ortaklık bağlantısı" etiketi. Panel: listelemede "Dış bağlantılar", `/entegrasyonlar`.
 
+## Dilim 9 özeti (sponsorluk)
+- API: `/v1/admin/placement-slots|organizations|campaigns` (+ yerleşim, kreatif, geçiş, rapor), `/v1/listings/{id}/sponsored`, `/v1/sponsored/events`, `/v1/sponsored/{id}/click`; arama ve hub yanıtında ayrı `sponsored` dizisi; moderasyonda sponsor bağlantılı kaldırmaya ikinci onay (`/v1/admin/moderation/removals/{id}/decision`).
+- Web: arama ve hub'da etiketli sponsorlu kart ("Neden bunu görüyorum?"), listeleme detayında rakip kutu, görüntülenme ölçümü, `/git/s/{id}`. Hub sayfaları dinamik (ADR-0013). Panel: `/kampanyalar`, `/ayarlar/yuvalar`, moderasyonda "İkinci onay" kuyruğu.
+
 ## Sonraki 3 adım (Faz 1, §9.3 önerilen sıra)
-1. Dilim 9 — Sponsorluk kampanyası + yerleşim + olay ölçümü (REQ-ARA-009, REQ-GUN-004 ikinci onay).
-2. Dilim 10 — Favoriler, hesap/KVKK talepleri, CMP.
+1. Dilim 10 — Favoriler, hesap/KVKK talepleri (erişim/silme/taşıma), CMP (çerez tercih merkezi).
+2. Dilim 11 — Ana sayfa modülleri (sponsorlu ana sayfa yuvası dahil).
 3. Dilim 7 kalanları — değerlendirme fotoğrafları/EXIF, hukuki talepler, yaptırımlar (D13 öncesi).

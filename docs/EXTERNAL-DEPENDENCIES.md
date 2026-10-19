@@ -40,6 +40,7 @@ Hiçbiri henüz sağlanmamıştır. Her biri için İnsan'dan beklenen eylem C s
 | X-029 | Eser meta veri kaynağı (film/kitap/oyun; lisanslı) | 4 | Tür kapalı |
 | X-030 | Marka tescili ve logo tasarımı | 1 | Geçici kelime işareti |
 | X-031 | Git uzak deposu + CI çalıştırıcısı (dal koruması dahil) | 0 | Yerel `pnpm ci:local` |
+| X-032 | Görüntülenen gösterim tanımının endüstri standardıyla (IAB/MRC) birincil kaynaktan doğrulanması | 1 | ≥ %50, ≥ 1 sn tanımı (A-021) |
 
 ## Faz 0 notları
 

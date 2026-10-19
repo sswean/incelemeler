@@ -36,6 +36,24 @@ export const SearchQuery = z.object({
 });
 export type SearchQuery = z.infer<typeof SearchQuery>;
 
+/**
+ * Kart ticari ilişki alanı (REQ-SPN-003): her kart DTO'sunda ZORUNLU ve null olamaz; `NONE` dışındaysa
+ * etiket kartta otomatik basılır (metinler sabit sözlükten — Ek A8.2).
+ */
+export const CardCommercial = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('NONE') }),
+  z.object({
+    type: z.literal('SPONSORED'),
+    /** Sponsor kuruluşun adı. */
+    sponsor: z.string(),
+    /** Görünür etiket ("Sponsorlu"). */
+    label: z.string(),
+    /** "Neden bunu görüyorum?" açıklaması. */
+    why: z.string(),
+  }),
+]);
+export type CardCommercial = z.infer<typeof CardCommercial>;
+
 export const SearchHit = z.object({
   type: z.enum(['LISTING', 'ARTICLE']),
   id: z.string(),
@@ -49,8 +67,26 @@ export const SearchHit = z.object({
   ratingCount: z.number().int(),
   distanceKm: z.number().nullable(),
   dataOrigin: z.string(),
+  commercial: CardCommercial,
 });
 export type SearchHit = z.infer<typeof SearchHit>;
+
+/**
+ * Sponsorlu yerleşim öğesi (REQ-SPN-002): `position` organik + sponsorlu birleşik listedeki 1 tabanlı sıradır;
+ * organik öğelerin sırası ve numarası sponsoru saymaz.
+ */
+export const SponsoredItem = z
+  .object({
+    position: z.number().int(),
+    placementId: z.string(),
+    item: SearchHit,
+    /** Tıklama dış yönlendirme servisi üzerinden ölçülür (REQ-SPN-009). */
+    clickHref: z.string(),
+    /** Görüntülenme olayı için imzalı belirteç (kişisel veri içermez). */
+    impressionToken: z.string(),
+  })
+  .meta({ id: 'SponsoredItem' });
+export type SponsoredItem = z.infer<typeof SponsoredItem>;
 
 /** Ayrıştırıcının uyguladığı filtreler — arayüzde kaldırılabilir çip olarak gösterilir (Ek A7.1). */
 export const SearchInterpretation = z.object({
@@ -96,6 +132,8 @@ export const SearchResponse = z
     /** Tam metin sonuçları azsa benzerlik geri dönüşü kullanıldı (REQ-ARA-005). */
     fuzzyFallback: z.boolean(),
     relaxations: z.array(SearchRelaxation),
+    /** Sponsorlu yerleşimler organik listeye eklenmez; ayrı dizi (REQ-SPN-002). */
+    sponsored: z.array(SponsoredItem),
   })
   .meta({ id: 'SearchResponse' });
 export type SearchResponse = z.infer<typeof SearchResponse>;

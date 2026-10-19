@@ -96,6 +96,7 @@ export class PostgresSearchAdapter implements SearchPort {
       where.push(Prisma.sql`d.attributes @> ${JSON.stringify({ [key]: value })}::jsonb`);
     }
     if (c.excludeDemo) where.push(Prisma.sql`d.data_origin <> 'DEMO'`);
+    if (c.refIds) where.push(Prisma.sql`d.ref_id = ANY(${c.refIds}::uuid[])`);
 
     const distance = c.near
       ? Prisma.sql`ST_Distance(d.geo, ST_SetSRID(ST_MakePoint(${c.near.lng}, ${c.near.lat}), 4326)::geography) / 1000.0`

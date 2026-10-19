@@ -918,7 +918,6 @@ export const tr = {
       'Kararı veren moderatörden farklı bir moderatör inceler. 14 gün içinde bir kez itiraz edebilirsin.',
     appealDeadline: 'Son itiraz tarihi: {tarih}',
     appealStates: {
-      NONE: '',
       AVAILABLE: 'İtiraz edilebilir',
       OPEN: 'İtiraz edildi',
       UPHELD: 'İtiraz sonuçlandı: karar korundu',

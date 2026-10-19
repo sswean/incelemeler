@@ -31,7 +31,31 @@ export async function loginAction(form: FormData): Promise<void> {
     );
   }
   await setSessionCookie(data.sessionToken, data.expiresAt);
+  // Esaslı değişiklik sonrası yeniden kabul (REQ-KVK-004): bir sonraki girişte.
+  const { data: pending } = await (
+    await api(data.sessionToken)
+  ).GET('/v1/me/legal-acceptances/pending');
+  if (pending?.data.length) {
+    redirect(`/kosullar/kabul?sonra=${encodeURIComponent(next ?? '/hesabim')}`);
+  }
   redirect(next ?? '/hesabim');
+}
+
+export async function acceptLegalAction(form: FormData): Promise<void> {
+  const token = await getSessionToken();
+  if (!token) redirect('/giris');
+  const next = safeNext(str(form, 'sonra')) ?? '/hesabim';
+  if (str(form, 'confirm') !== '1') {
+    redirect(`/kosullar/kabul?hata=VALIDATION_FAILED&sonra=${encodeURIComponent(next)}`);
+  }
+  const versionIds = form.getAll('versionId').filter((v): v is string => typeof v === 'string');
+  const { data, error } = await (
+    await api(token)
+  ).POST('/v1/me/legal-acceptances', { body: { versionIds } });
+  if (!data) {
+    redirect(`/kosullar/kabul?hata=${problemCode(error)}&sonra=${encodeURIComponent(next)}`);
+  }
+  redirect(next);
 }
 
 export async function registerAction(form: FormData): Promise<void> {

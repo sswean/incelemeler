@@ -38,6 +38,18 @@ export const accountEmails = {
   }),
 };
 
+/** KVKK başvuru bildirimleri (TASLAK metinler). */
+export const privacyEmails = {
+  verifyRequest: (link: string) => ({
+    subject: 'KVKK başvurunu doğrula',
+    text: `Merhaba,\n\nKişisel verilerinle ilgili bir başvuru aldık. Başvurunun sana ait olduğunu doğrulamak için bu bağlantıyı 72 saat içinde aç:\n${link}\n\nBu başvuruyu sen yapmadıysan bu e-postayı yok sayabilirsin.`,
+  }),
+  received: (days: number) => ({
+    subject: 'KVKK başvurunu aldık',
+    text: `Merhaba,\n\nBaşvurunu aldık ve kaydettik. En geç ${days} gün içinde sana yanıt vereceğiz.`,
+  }),
+};
+
 /** Değerlendirme ve moderasyon bildirimleri (A6.4: her geçişte işlemsel e-posta; TASLAK metinler). */
 export const reviewEmails = {
   pending: (listing: string) => ({

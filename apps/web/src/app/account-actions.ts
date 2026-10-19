@@ -57,3 +57,27 @@ export async function cancelDeletionAction(form: FormData): Promise<void> {
   ).POST('/v1/account-deletion/cancel', { body: { token: str(form, 'belirtec') } });
   redirect(data ? '/hesap-silme?durum=iptal' : `/hesap-silme?hata=${problemCode(error)}`);
 }
+
+/** KVKK başvurusu (REQ-KVK-022): oturum varsa hesaba bağlanır; yoksa e-postayla doğrulanır. */
+export async function dataRequestAction(form: FormData): Promise<void> {
+  const token = await getSessionToken();
+  const email = str(form, 'email');
+  const { data, error } = await (
+    await api(token)
+  ).POST('/v1/data-requests', {
+    body: {
+      type: str(form, 'type') as 'INFO',
+      description: str(form, 'description'),
+      ...(email ? { email } : {}),
+    },
+  });
+  if (!data) redirect(`/kvkk-basvuru?hata=${problemCode(error)}`);
+  redirect(`/kvkk-basvuru?durum=${data.verificationRequired ? 'dogrula' : 'alindi'}`);
+}
+
+export async function verifyDataRequestAction(form: FormData): Promise<void> {
+  const { error } = await (
+    await api()
+  ).POST('/v1/data-requests/verify', { body: { token: str(form, 'belirtec') } });
+  redirect(error ? `/kvkk-basvuru?hata=${problemCode(error)}` : '/kvkk-basvuru?durum=dogrulandi');
+}

@@ -25,6 +25,7 @@ const FOOTER_LINKS: Array<[string, string]> = [
   [STATIC_PATHS.terms, tr.footer.terms],
   [STATIC_PATHS.privacy, tr.footer.privacy],
   ['/cerez-tercihleri', tr.footer.cookies],
+  ['/kvkk-basvuru', tr.footer.dataRequest],
 ];
 
 export default async function RootLayout({ children }: { children: ReactNode }) {

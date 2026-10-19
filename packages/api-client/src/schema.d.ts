@@ -1656,6 +1656,144 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/data-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** KVKK başvurusu (/kvkk-basvuru): oturum varsa doğrulanmış; girişsizse e-postaya doğrulama bağlantısı */
+        post: operations["createDataRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/data-requests/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Girişsiz başvurunun e-posta bağlantısıyla doğrulanması */
+        post: operations["verifyDataRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/legal-acceptances/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Esaslı değişiklik sonrası yeniden kabul bekleyen hukuki metinler */
+        get: operations["pendingLegalAcceptances"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/legal-acceptances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Hukuki metin sürümlerini kabul eder */
+        post: operations["acceptLegalDocuments"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/data-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** KVKK başvuruları: süre sayacı, 20./27. gün uyarıları, süresi geçen sayısı */
+        get: operations["adminListDataRequests"];
+        put?: never;
+        /** Başka kanaldan gelen başvurunun elle kaydı */
+        post: operations["adminCreateDataRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/data-requests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Başvuru durumu, yanıt notu ya da gerekçeli ret */
+        patch: operations["adminUpdateDataRequest"];
+        trace?: never;
+    };
+    "/v1/admin/settings/compliance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Uyum ayarları (yanıt ve saklama süreleri — doğrulanacak varsayılanlar) */
+        get: operations["adminGetCompliance"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/breaches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Veri ihlali kayıtları (plan TASLAK) */
+        get: operations["adminListBreaches"];
+        put?: never;
+        /** İhlal kaydı açar (bildirim kararı İnsan onayıyla) */
+        post: operations["adminCreateBreach"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2943,6 +3081,81 @@ export interface components {
         };
         OutboundLinkList: {
             data: components["schemas"]["OutboundLink"][];
+        };
+        DataRequestAck: {
+            /** @enum {boolean} */
+            accepted: true;
+            verificationRequired: boolean;
+        };
+        AdminDataRequest: {
+            id: string;
+            /** @enum {string} */
+            type: "INFO" | "ACCESS" | "RECTIFICATION" | "ERASURE" | "OBJECTION" | "COMPENSATION";
+            /** @enum {string} */
+            channel: "WEB_FORM" | "IN_APP" | "MANUAL";
+            email: string;
+            description: string;
+            identityVerified: boolean;
+            /** @enum {string} */
+            status: "RECEIVED" | "IN_PROGRESS" | "ANSWERED" | "REJECTED";
+            /** Format: date-time */
+            receivedAt: string;
+            /** Format: date-time */
+            dueAt: string;
+            daysElapsed: number;
+            /** @enum {string} */
+            alert: "NONE" | "WARN_20" | "WARN_27" | "OVERDUE";
+            /** Format: date-time */
+            answeredAt: string | null;
+            responseNote: string | null;
+            /** @enum {string|null} */
+            rejectionReason: "IDENTITY_NOT_VERIFIED" | "NOT_PERSONAL_DATA" | "LEGAL_OBLIGATION" | "MANIFESTLY_UNFOUNDED" | null;
+            version: number;
+        };
+        AdminDataRequestList: {
+            data: components["schemas"]["AdminDataRequest"][];
+            overdue: number;
+        };
+        ComplianceConfig: {
+            dsrResponseDays: number;
+            accountDeletionDays: number;
+            retention: {
+                expiredTokensDays: number;
+                expiredSessionsDays: number;
+                reviewDraftsDays: number;
+                searchEventsDays: number;
+                clickSessionHashDays: number;
+                consentIpHashDays: number;
+            };
+            version: number;
+        };
+        PendingAcceptances: {
+            data: {
+                id: string;
+                /** @enum {string} */
+                docType: "TERMS" | "PRIVACY_NOTICE" | "COOKIE_POLICY";
+                version: string;
+                /** Format: date-time */
+                effectiveAt: string;
+                draft: boolean;
+            }[];
+        };
+        BreachIncident: {
+            id: string;
+            /** Format: date-time */
+            detectedAt: string;
+            summary: string;
+            /** @enum {string} */
+            stage: "DETECTED" | "CONTAINED" | "ASSESSED" | "NOTIFIED" | "CLOSED";
+            dataCategories: string[];
+            affectedCount: number | null;
+            /** Format: date-time */
+            notifyDeadline: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        BreachList: {
+            data: components["schemas"]["BreachIncident"][];
         };
         FavoriteList: {
             data: {
@@ -8079,6 +8292,355 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    createDataRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    type: "INFO" | "ACCESS" | "RECTIFICATION" | "ERASURE" | "OBJECTION" | "COMPENSATION";
+                    /** Format: email */
+                    email?: string;
+                    description: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Kabul edildi */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataRequestAck"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    verifyDataRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    token: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Kabul edildi */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    pendingLegalAcceptances: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Bekleyenler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingAcceptances"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    acceptLegalDocuments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    versionIds: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Bekleyenler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingAcceptances"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListDataRequests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Başvurular */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDataRequestList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateDataRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    type: "INFO" | "ACCESS" | "RECTIFICATION" | "ERASURE" | "OBJECTION" | "COMPENSATION";
+                    /** Format: email */
+                    email: string;
+                    description: string;
+                    /** Format: date-time */
+                    receivedAt?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDataRequest"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateDataRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    status: "RECEIVED" | "IN_PROGRESS" | "ANSWERED" | "REJECTED";
+                    responseNote?: string | null;
+                    /** @enum {string|null} */
+                    rejectionReason?: "IDENTITY_NOT_VERIFIED" | "NOT_PERSONAL_DATA" | "LEGAL_OBLIGATION" | "MANIFESTLY_UNFOUNDED" | null;
+                    identityVerified?: boolean;
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDataRequest"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetCompliance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ayarlar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComplianceConfig"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListBreaches: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Kayıtlar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateBreach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: date-time */
+                    detectedAt: string;
+                    summary: string;
+                    /** @default [] */
+                    dataCategories?: string[];
+                    affectedCount?: number | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachIncident"];
                 };
             };
             /** @description Hata (RFC 9457) */

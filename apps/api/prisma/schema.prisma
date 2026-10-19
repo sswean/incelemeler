@@ -260,6 +260,8 @@ model User {
   outboundLinks       OutboundLink[]
   decidedAppeals      ModerationAppeal[]    @relation("AppealDecider")
   favorites           Favorite[]
+  legalAcceptances    LegalAcceptance[]
+  dataRequests        DataSubjectRequest[]  @relation("DsrRequester")
 
   @@index([status])
   @@map("users")
@@ -1378,4 +1380,110 @@ model ConsentRecord {
   @@index([anonymousId, createdAt])
   @@index([userId])
   @@map("consent_records")
+}
+
+enum DataRequestType {
+  INFO
+  ACCESS
+  RECTIFICATION
+  ERASURE
+  OBJECTION
+  COMPENSATION
+}
+
+enum DataRequestStatus {
+  RECEIVED
+  IN_PROGRESS
+  ANSWERED
+  REJECTED
+}
+
+/// KVKK başvuruları (REQ-KVK-022): yanıt süresi `compliance` ayarından; gereksiz kimlik verisi istenmez.
+model DataSubjectRequest {
+  id               String            @id @default(uuid(7)) @db.Uuid
+  type             DataRequestType
+  /// WEB_FORM | IN_APP | MANUAL
+  channel          String
+  userId           String?           @map("user_id") @db.Uuid
+  user             User?             @relation("DsrRequester", fields: [userId], references: [id], onDelete: SetNull)
+  email            String
+  description      String
+  /// Oturumla ya da kayıtlı e-postaya gönderilen bağlantıyla doğrulandı mı.
+  identityVerified Boolean           @default(false) @map("identity_verified")
+  status           DataRequestStatus @default(RECEIVED)
+  receivedAt       DateTime          @default(now()) @map("received_at") @db.Timestamptz(3)
+  dueAt            DateTime          @map("due_at") @db.Timestamptz(3)
+  answeredAt       DateTime?         @map("answered_at") @db.Timestamptz(3)
+  responseNote     String?           @map("response_note")
+  rejectionReason  String?           @map("rejection_reason")
+  handledById      String?           @map("handled_by") @db.Uuid
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version          Int               @default(1)
+
+  @@index([status, dueAt])
+  @@map("data_subject_requests")
+}
+
+/// Hukuki metin sürümleri (REQ-KVK-004). `approvedBy` boşsa metin TASLAK'tır.
+model LegalDocumentVersion {
+  id          String            @id @default(uuid(7)) @db.Uuid
+  /// TERMS | PRIVACY_NOTICE | COOKIE_POLICY
+  docType     String            @map("doc_type")
+  version     String
+  effectiveAt DateTime          @map("effective_at") @db.Timestamptz(3)
+  contentHash String            @map("content_hash")
+  /// Esaslı değişiklik: üyeler bir sonraki girişte yeniden kabul eder.
+  material    Boolean           @default(false)
+  approvedBy  String?           @map("approved_by")
+  approvedAt  DateTime?         @map("approved_at") @db.Timestamptz(3)
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  acceptances LegalAcceptance[]
+
+  @@unique([docType, version])
+  @@map("legal_document_versions")
+}
+
+model LegalAcceptance {
+  userId     String               @map("user_id") @db.Uuid
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  versionId  String               @map("version_id") @db.Uuid
+  version    LegalDocumentVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  acceptedAt DateTime             @default(now()) @map("accepted_at") @db.Timestamptz(3)
+  channel    String               @default("WEB")
+
+  @@id([userId, versionId])
+  @@map("legal_acceptances")
+}
+
+/// İmha kaydı (REQ-KVK-023): periyodik saklama işinin her çalışmasında kategori başına.
+model DestructionLog {
+  id       BigInt   @id @default(autoincrement())
+  ranAt    DateTime @default(now()) @map("ran_at") @db.Timestamptz(3)
+  category String
+  /// DELETE | ANONYMIZE
+  method   String
+  count    Int
+  cutoff   DateTime @db.Timestamptz(3)
+
+  @@index([ranAt])
+  @@map("destruction_logs")
+}
+
+/// Veri ihlali kaydı (REQ-KVK-024; plan TASLAK). Bildirim kararı İnsan onayıyla (C sınıfı).
+model BreachIncident {
+  id             String    @id @default(uuid(7)) @db.Uuid
+  detectedAt     DateTime  @map("detected_at") @db.Timestamptz(3)
+  summary        String
+  /// DETECTED | CONTAINED | ASSESSED | NOTIFIED | CLOSED
+  stage          String    @default("DETECTED")
+  dataCategories String[]  @map("data_categories")
+  affectedCount  Int?      @map("affected_count")
+  notifyDeadline DateTime? @map("notify_deadline") @db.Timestamptz(3)
+  rootCause      String?   @map("root_cause")
+  createdById    String?   @map("created_by") @db.Uuid
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("breach_incidents")
 }

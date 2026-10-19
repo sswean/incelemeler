@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 10 — favoriler + hesap/KVKK + CMP (dilim 9 sponsorluk: `docs/status-log/F1-D9.md`)
+- Aktif dilim: Faz 1 dilim 11 — ana sayfa modülleri (dilim 10 hesap/KVKK/CMP: `docs/status-log/F1-D10.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -53,7 +53,11 @@
 ## Dilim 10b özeti (çerez onayı)
 - Web: alt bant (üç eşit düğme), `/cerez-tercihleri` tercih merkezi (footer), `ConsentGate`; API `/v1/consents` (`consent_records`).
 
+## Dilim 10c özeti (KVKK başvuruları, hukuki sürümler, saklama)
+- API: `/v1/data-requests` (+ `/verify`), `/v1/me/legal-acceptances` (+ `/pending`), `/v1/admin/data-requests`, `/v1/admin/settings/compliance`, `/v1/admin/breaches`; günlük imha işi (`destruction_logs`).
+- Web: `/kvkk-basvuru` (+ `/dogrula`), `/kosullar/kabul`; footer bağlantısı. Panel: `/kvkk-basvurulari`. Belgeler: `docs/legal/` (TASLAK), `docs/ops/dagitim-kontrol-listesi.md`.
+
 ## Sonraki 3 adım (Faz 1, §9.3 önerilen sıra)
-1. Dilim 10c — Hukuki belge sürümleri + yeniden kabul, KVKK başvuruları (data_subject_requests), saklama/imha işi, ihlal planı (TASLAK).
-2. Dilim 11 — Ana sayfa modülleri (sponsorlu ana sayfa yuvası dahil).
-3. Dilim 7 kalanları — değerlendirme fotoğrafları/EXIF, hukuki talepler, yaptırımlar (D13 öncesi).
+1. Dilim 11 — Ana sayfa modülleri (sponsorlu ana sayfa yuvası dahil).
+2. Dilim 12 — Analitik olay sözlüğü ve panolar (rıza kapısı arkasında).
+3. Dilim 13 — Sertleştirme (performans bütçeleri, erişilebilirlik, güvenlik taraması) + Dilim 7 kalanları.

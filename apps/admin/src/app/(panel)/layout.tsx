@@ -74,6 +74,14 @@ export default async function PanelLayout({ children }: { children: ReactNode })
               {tr.admin.nav.campaigns}
             </Link>
           ) : null}
+          {user.permissions.includes('audit.read') ? (
+            <Link
+              href="/kvkk-basvurulari"
+              className="min-h-11 content-center text-brand-default underline"
+            >
+              {tr.admin.nav.dataRequests}
+            </Link>
+          ) : null}
           {user.permissions.includes('campaigns.manage') ? (
             <Link
               href="/ayarlar/yuvalar"

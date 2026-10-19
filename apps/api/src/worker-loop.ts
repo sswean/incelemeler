@@ -4,6 +4,7 @@ import { AccountService } from './modules/account/account.service.js';
 import { AdminArticlesService } from './modules/editorial/admin-articles.service.js';
 import { OutboundService } from './modules/outbound/outbound.service.js';
 import { OutboxService } from './modules/outbox/outbox.service.js';
+import { RetentionService } from './modules/privacy/retention.service.js';
 import { CampaignsService } from './modules/sponsorship/campaigns.service.js';
 
 /** Outbox + zamanlanmış yayın döngüsü (ADR-0010); `isRunning` false olunca durur. */
@@ -16,6 +17,8 @@ export async function runWorkerLoop(
   const outbound = app.get(OutboundService);
   const campaigns = app.get(CampaignsService);
   const account = app.get(AccountService);
+  const retention = app.get(RetentionService);
+  let nextRetention = 0;
   let nextHealthCheck = 0;
   let nextCampaignTick = 0;
   const logger = new Logger('Worker');
@@ -45,6 +48,13 @@ export async function runWorkerLoop(
       // Geri alma penceresi dolan hesap silmeleri (REQ-KVK-021).
       await account.purgeDue().catch((e: unknown) => {
         logger.error(JSON.stringify({ event: 'worker.account_purge_error', message: String(e) }));
+      });
+    }
+    // Periyodik imha (REQ-KVK-023): günde bir.
+    if (Date.now() >= nextRetention) {
+      nextRetention = Date.now() + 24 * 3_600_000;
+      await retention.run().catch((e: unknown) => {
+        logger.error(JSON.stringify({ event: 'worker.retention_error', message: String(e) }));
       });
     }
     if (n === 0) await new Promise((r) => setTimeout(r, 1000));

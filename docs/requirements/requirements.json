@@ -657,12 +657,12 @@
       "title": "Kullanıcı verilerini makine tarafından okunabilir biçimde (JSON) dışa aktarabilir",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "KISMİ",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": "Hesabım › Verilerimi indir: JSON dışa aktarma; parola karması/token yok (account.int, account.spec).",
+      "acceptance": "Self-servis JSON dışa aktarma (account.int, account.spec); erişim/kopya başvuruları süre takibiyle data_subject_requests'te (privacy.int, privacy.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Talep kaydı ve süre takibi (data_subject_requests) D10c'de."
+      "notes": ""
     },
     {
       "id": "REQ-HSP-013",
@@ -2793,12 +2793,12 @@
       "title": "legal_document_versions (tür, sürüm, yürürlük tarihi, içerik özeti/hash, onaylayan huku…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "legal_document_versions (özet, onaylayan, onay tarihi) + legal_acceptances; kayıtta kabul; esaslı değişiklikte yeniden kabul API'si (privacy.int); dağıtım kontrol listesinde onaysız metin kırmızı madde.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yeniden kabul sayfasının E2E'si: esaslı sürüm paralel E2E girişlerini etkilediğinden ayrı projede (D13)."
     },
     {
       "id": "REQ-KVK-010",
@@ -2889,48 +2889,48 @@
       "title": "data_subject_requests",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "/kvkk-basvuru (oturum ya da e-posta doğrulaması, gereksiz kimlik verisi yok), panelde elle kayıt, süre sayacı, 20./27. gün uyarıları, süresi geçen kırmızı alarm, gerekçeli ret şablonu (privacy.int, privacy.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Uygulama içi form Faz 2; süreler A-024'e göre doğrulanacak."
     },
     {
       "id": "REQ-KVK-023",
       "title": "Saklama ve imha politikası",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Saklama/imha politikası (TASLAK) + günlük imha işi + destruction_logs (privacy.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Süreler ve mevzuat üst sınırı hukuken doğrulanacak; yedek imhası X-002 sonrası."
     },
     {
       "id": "REQ-KVK-024",
       "title": "Veri ihlali müdahale planı (docs/legal/ihlal-mudahale-plani.md, TASLAK)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "İhlal müdahale planı (TASLAK) + breach_incidents kaydı ve yönetici API'si (privacy.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Panel arayüzü, aşama geçişleri ve tatbikat kaydı sonraya; bildirim C sınıfı."
     },
     {
       "id": "REQ-KVK-025",
       "title": "Veri minimizasyonu",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Ham IP saklanmaz (karma/önek), oturum karmaları ve rıza IP karmaları süre sonunda anonimleşir (privacy.int, outbound.int, sponsorship.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Doğrulama belgeleri akışı (işletme doğrulama) Faz 3."
     },
     {
       "id": "REQ-KVK-026",

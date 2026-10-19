@@ -32,6 +32,11 @@ import { OutboundService } from './modules/outbound/outbound.service.js';
 import { AccountController } from './modules/account/account.controller.js';
 import { AccountService } from './modules/account/account.service.js';
 import { ConsentService } from './modules/account/consent.service.js';
+import { ComplianceService } from './modules/privacy/compliance.service.js';
+import { LegalService } from './modules/privacy/legal.service.js';
+import { PrivacyController } from './modules/privacy/privacy.controller.js';
+import { PrivacyService } from './modules/privacy/privacy.service.js';
+import { RetentionService } from './modules/privacy/retention.service.js';
 import { CampaignsService } from './modules/sponsorship/campaigns.service.js';
 import { SponsoredServingService } from './modules/sponsorship/sponsored-serving.service.js';
 import { SponsorshipController } from './modules/sponsorship/sponsorship.controller.js';
@@ -111,6 +116,7 @@ export const CONTROLLERS = [
   OutboundController,
   SponsorshipController,
   AccountController,
+  PrivacyController,
 ];
 
 @Module({})
@@ -162,6 +168,10 @@ export class AppModule {
         CampaignsService,
         AccountService,
         ConsentService,
+        ComplianceService,
+        LegalService,
+        PrivacyService,
+        RetentionService,
       ],
     };
   }

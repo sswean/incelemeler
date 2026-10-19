@@ -11,6 +11,7 @@ import { permissionsOf } from '../access/permissions.js';
 import { ProblemException } from '../../common/problem.js';
 import type { RequestMeta } from '../../common/request-meta.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { LegalService } from '../privacy/legal.service.js';
 import { AuditService } from '../platform/audit.service.js';
 import { RateLimitedException, RateLimitService } from '../platform/rate-limit.service.js';
 import { EMAIL_PORT, type EmailPort } from '../notifications/email.port.js';
@@ -74,6 +75,7 @@ export class AuthService {
     private readonly rateLimit: RateLimitService,
     @Inject(EMAIL_PORT) private readonly email: EmailPort,
     @Inject(ENV) private readonly env: EnvToken,
+    private readonly legal: LegalService,
   ) {}
 
   // ── Üyelik ──
@@ -100,6 +102,7 @@ export class AuthService {
         termsVersion: body.termsVersion,
       },
     });
+    await this.legal.recordRegistration(user.id);
     const token = await this.issueEmailToken(user.id, 'VERIFY_EMAIL', VERIFY_TOKEN_TTL);
     const t = emailTemplates.verifyEmail(
       user.displayName,

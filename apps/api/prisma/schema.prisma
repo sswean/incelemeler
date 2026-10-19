@@ -236,6 +236,10 @@ model User {
   sessions            Session[]
   uploadedMedia       MediaAsset[]
   importBatches       ImportBatch[]
+  authoredArticles    Article[]             @relation("ArticleAuthor")
+  editedArticles      Article[]             @relation("ArticleEditor")
+  contentRevisions    ContentRevision[]
+  authorProfile       AuthorProfile?
   emailTokens         EmailToken[]
   mfaFactor           MfaFactor?
   recoveryCodes       RecoveryCode[]
@@ -653,4 +657,113 @@ model ImportBatch {
 
   @@index([createdAt])
   @@map("import_batches")
+}
+
+enum ArticleType {
+  GUIDE
+  LIST
+  COMPARISON
+  REVIEW
+  NEWS
+  SPONSORED
+}
+
+enum ArticleStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CommercialRelation {
+  NONE
+  GIFTED
+  SPONSORED
+  AFFILIATE
+}
+
+enum ExperienceType {
+  TESTED_IN_PERSON
+  VISITED
+  STAYED
+  USED_LONG_TERM
+  RESEARCH_ONLY
+}
+
+/// Editoryal içerik (REQ-ICR-001…009): gövde zod şemalı JSON blok dizisi.
+model Article {
+  id                      String             @id @default(uuid(7)) @db.Uuid
+  type                    ArticleType
+  slug                    String             @unique
+  title                   String
+  summary                 String?
+  body                    Json               @default("[]")
+  heroMediaId             String?            @map("hero_media_id") @db.Uuid
+  sources                 Json               @default("[]")
+  status                  ArticleStatus      @default(DRAFT)
+  /// Menfaat beyanı sorusu yanıtlandı mı (REQ-ICR-008)
+  interestDeclared        Boolean            @default(false) @map("interest_declared")
+  commercialRelation      CommercialRelation @default(NONE) @map("commercial_relation")
+  experienceType          ExperienceType?    @map("experience_type")
+  experienceNote          String?            @map("experience_note")
+  selectionMethod         String?            @map("selection_method")
+  authorId                String             @map("author_id") @db.Uuid
+  author                  User               @relation("ArticleAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  editorId                String?            @map("editor_id") @db.Uuid
+  editor                  User?              @relation("ArticleEditor", fields: [editorId], references: [id], onDelete: Restrict)
+  /// Sponsorlu içerikte ticari açıklama kontrolünü yapan yönetici (REQ-ICR-005)
+  disclosureCheckedById   String?            @map("disclosure_checked_by_id") @db.Uuid
+  scheduledAt             DateTime?          @map("scheduled_at") @db.Timestamptz(3)
+  publishedAt             DateTime?          @map("published_at") @db.Timestamptz(3)
+  lastSignificantUpdateAt DateTime?          @map("last_significant_update_at") @db.Timestamptz(3)
+  /// [{ date, note }] — güncelleme notları ve düzeltmeler (REQ-ICR-006/009)
+  updateNotes             Json               @default("[]") @map("update_notes")
+  corrections             Json               @default("[]")
+  dataOrigin              DataOrigin         @default(EDITORIAL) @map("data_origin")
+  createdAt               DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt               DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt               DateTime?          @map("deleted_at") @db.Timestamptz(3)
+  version                 Int                @default(1)
+  revisions               ContentRevision[]
+
+  @@index([status, type, publishedAt])
+  @@index([authorId])
+  @@index([status, scheduledAt])
+  @@map("articles")
+}
+
+/// İçerik revizyonları (REQ-VER-015): her kayıtta önceki hâlin anlık görüntüsü.
+model ContentRevision {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  articleId   String   @map("article_id") @db.Uuid
+  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  version     Int
+  snapshot    Json
+  actorId     String   @map("actor_id") @db.Uuid
+  actor       User     @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  changeNote  String?  @map("change_note")
+  significant Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@unique([articleId, version])
+  @@map("content_revisions")
+}
+
+/// Yazar/editör profili (REQ-ICR-011).
+model AuthorProfile {
+  userId    String   @id @map("user_id") @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  slug      String   @unique
+  title     String?
+  bio       String?
+  expertise String[]
+  ethics    String?
+  links     Json     @default("[]")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version   Int      @default(1)
+
+  @@map("author_profiles")
 }

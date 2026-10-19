@@ -658,6 +658,93 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/articles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** İçerikler (yazar yalnız kendininkileri görür) */
+        get: operations["adminListArticles"];
+        put?: never;
+        /** İçerik taslağı oluşturur */
+        post: operations["adminCreateArticle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/articles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** İçerik ayrıntısı ve gönderim/yayın için eksikler */
+        get: operations["adminGetArticle"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** İçeriği günceller; önceki hâl revizyon olarak saklanır */
+        patch: operations["adminUpdateArticle"];
+        trace?: never;
+    };
+    "/v1/admin/articles/{id}/transition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Yayın akışı geçişi (incelemeye gönder, onayla, zamanla, yayımla, arşivle) */
+        post: operations["adminTransitionArticle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/articles/{id}/corrections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Yayındaki içeriğe görünür düzeltme notu ekler */
+        post: operations["adminCorrectArticle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/articles/{id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** İmzalı, süreli önizleme bağlantısı (noindex) */
+        post: operations["adminPreviewArticle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1227,6 +1314,304 @@ export interface components {
                 /** Format: date-time */
                 rolledBackAt: string | null;
             }[];
+        };
+        ArticleCreateBody: {
+            /** @enum {string} */
+            type: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED";
+            title: string;
+            slug?: string;
+        };
+        ArticleUpdateBody: {
+            version: number;
+            title?: string;
+            slug?: string;
+            summary?: string | null;
+            body?: ({
+                /** @enum {string} */
+                type: "heading";
+                level: 2 | 3;
+                text: string;
+            } | {
+                /** @enum {string} */
+                type: "paragraph";
+                content: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "list";
+                ordered: boolean;
+                items: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[][];
+            } | {
+                /** @enum {string} */
+                type: "image";
+                /** Format: uuid */
+                mediaId: string;
+                caption?: string;
+            } | {
+                /** @enum {string} */
+                type: "gallery";
+                mediaIds: string[];
+            } | {
+                /** @enum {string} */
+                type: "table";
+                header: string[];
+                rows: string[][];
+                caption?: string;
+            } | {
+                /** @enum {string} */
+                type: "listingCard";
+                /** Format: uuid */
+                listingId: string;
+                note?: string;
+            } | {
+                /** @enum {string} */
+                type: "infoBox";
+                /** @enum {string} */
+                tone: "tip" | "warning";
+                content: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "prosCons";
+                pros: string[];
+                cons: string[];
+            } | {
+                /** @enum {string} */
+                type: "faq";
+                items: {
+                    question: string;
+                    answer: {
+                        text: string;
+                        bold?: boolean;
+                        italic?: boolean;
+                        /** Format: uri */
+                        href?: string;
+                    }[];
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "quote";
+                content: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[];
+                attribution?: string;
+            })[];
+            /** Format: uuid */
+            heroMediaId?: string | null;
+            sources?: {
+                title: string;
+                /** Format: uri */
+                url?: string;
+                /** Format: date */
+                accessedAt?: string;
+            }[];
+            interestDeclared?: boolean;
+            /** @enum {string} */
+            commercialRelation?: "NONE" | "GIFTED" | "SPONSORED" | "AFFILIATE";
+            /** @enum {string|null} */
+            experienceType?: "TESTED_IN_PERSON" | "VISITED" | "STAYED" | "USED_LONG_TERM" | "RESEARCH_ONLY" | null;
+            experienceNote?: string | null;
+            selectionMethod?: string | null;
+            significantChange?: boolean;
+            changeNote?: string;
+        };
+        ArticleTransitionBody: {
+            version: number;
+            /** @enum {string} */
+            to: "DRAFT" | "IN_REVIEW" | "APPROVED" | "SCHEDULED" | "PUBLISHED" | "ARCHIVED";
+            /** Format: date-time */
+            scheduledAt?: string;
+        };
+        ArticleCorrectionBody: {
+            version: number;
+            note: string;
+        };
+        AdminArticle: {
+            id: string;
+            /** @enum {string} */
+            type: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED";
+            slug: string;
+            title: string;
+            summary: string | null;
+            body: ({
+                /** @enum {string} */
+                type: "heading";
+                level: 2 | 3;
+                text: string;
+            } | {
+                /** @enum {string} */
+                type: "paragraph";
+                content: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "list";
+                ordered: boolean;
+                items: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[][];
+            } | {
+                /** @enum {string} */
+                type: "image";
+                /** Format: uuid */
+                mediaId: string;
+                caption?: string;
+            } | {
+                /** @enum {string} */
+                type: "gallery";
+                mediaIds: string[];
+            } | {
+                /** @enum {string} */
+                type: "table";
+                header: string[];
+                rows: string[][];
+                caption?: string;
+            } | {
+                /** @enum {string} */
+                type: "listingCard";
+                /** Format: uuid */
+                listingId: string;
+                note?: string;
+            } | {
+                /** @enum {string} */
+                type: "infoBox";
+                /** @enum {string} */
+                tone: "tip" | "warning";
+                content: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "prosCons";
+                pros: string[];
+                cons: string[];
+            } | {
+                /** @enum {string} */
+                type: "faq";
+                items: {
+                    question: string;
+                    answer: {
+                        text: string;
+                        bold?: boolean;
+                        italic?: boolean;
+                        /** Format: uri */
+                        href?: string;
+                    }[];
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "quote";
+                content: {
+                    text: string;
+                    bold?: boolean;
+                    italic?: boolean;
+                    /** Format: uri */
+                    href?: string;
+                }[];
+                attribution?: string;
+            })[];
+            heroMediaId: string | null;
+            sources: {
+                title: string;
+                /** Format: uri */
+                url?: string;
+                /** Format: date */
+                accessedAt?: string;
+            }[];
+            /** @enum {string} */
+            status: "DRAFT" | "IN_REVIEW" | "APPROVED" | "SCHEDULED" | "PUBLISHED" | "ARCHIVED";
+            interestDeclared: boolean;
+            /** @enum {string} */
+            commercialRelation: "NONE" | "GIFTED" | "SPONSORED" | "AFFILIATE";
+            /** @enum {string|null} */
+            experienceType: "TESTED_IN_PERSON" | "VISITED" | "STAYED" | "USED_LONG_TERM" | "RESEARCH_ONLY" | null;
+            experienceNote: string | null;
+            selectionMethod: string | null;
+            author: {
+                id: string;
+                displayName: string;
+            };
+            editor: {
+                id: string;
+                displayName: string;
+            } | null;
+            /** Format: date-time */
+            scheduledAt: string | null;
+            /** Format: date-time */
+            publishedAt: string | null;
+            /** Format: date-time */
+            lastSignificantUpdateAt: string | null;
+            updateNotes: {
+                /** Format: date-time */
+                date: string;
+                note: string;
+            }[];
+            corrections: {
+                /** Format: date-time */
+                date: string;
+                note: string;
+            }[];
+            /** Format: date-time */
+            updatedAt: string;
+            version: number;
+            blockers: {
+                pointer: string;
+                code: string;
+            }[];
+        };
+        AdminArticleSummary: {
+            id: string;
+            /** @enum {string} */
+            type: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED";
+            slug: string;
+            title: string;
+            /** @enum {string} */
+            status: "DRAFT" | "IN_REVIEW" | "APPROVED" | "SCHEDULED" | "PUBLISHED" | "ARCHIVED";
+            authorName: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        AdminArticleList: {
+            data: components["schemas"]["AdminArticleSummary"][];
+            page: components["schemas"]["PageInfo"];
+        };
+        PreviewLink: {
+            url: string;
+            /** Format: date-time */
+            expiresAt: string;
         };
         PublicListing: {
             id: string;
@@ -3171,6 +3556,368 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SitemapPage"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListArticles: {
+        parameters: {
+            query?: {
+                type?: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED";
+                status?: "DRAFT" | "IN_REVIEW" | "APPROVED" | "SCHEDULED" | "PUBLISHED" | "ARCHIVED";
+                mine?: "1";
+                limit?: number;
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description İçerikler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticleList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    type: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED";
+                    title: string;
+                    slug?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticle"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description İçerik */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticle"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    title?: string;
+                    slug?: string;
+                    summary?: string | null;
+                    body?: ({
+                        /** @enum {string} */
+                        type: "heading";
+                        level: 2 | 3;
+                        text: string;
+                    } | {
+                        /** @enum {string} */
+                        type: "paragraph";
+                        content: {
+                            text: string;
+                            bold?: boolean;
+                            italic?: boolean;
+                            /** Format: uri */
+                            href?: string;
+                        }[];
+                    } | {
+                        /** @enum {string} */
+                        type: "list";
+                        ordered: boolean;
+                        items: {
+                            text: string;
+                            bold?: boolean;
+                            italic?: boolean;
+                            /** Format: uri */
+                            href?: string;
+                        }[][];
+                    } | {
+                        /** @enum {string} */
+                        type: "image";
+                        /** Format: uuid */
+                        mediaId: string;
+                        caption?: string;
+                    } | {
+                        /** @enum {string} */
+                        type: "gallery";
+                        mediaIds: string[];
+                    } | {
+                        /** @enum {string} */
+                        type: "table";
+                        header: string[];
+                        rows: string[][];
+                        caption?: string;
+                    } | {
+                        /** @enum {string} */
+                        type: "listingCard";
+                        /** Format: uuid */
+                        listingId: string;
+                        note?: string;
+                    } | {
+                        /** @enum {string} */
+                        type: "infoBox";
+                        /** @enum {string} */
+                        tone: "tip" | "warning";
+                        content: {
+                            text: string;
+                            bold?: boolean;
+                            italic?: boolean;
+                            /** Format: uri */
+                            href?: string;
+                        }[];
+                    } | {
+                        /** @enum {string} */
+                        type: "prosCons";
+                        pros: string[];
+                        cons: string[];
+                    } | {
+                        /** @enum {string} */
+                        type: "faq";
+                        items: {
+                            question: string;
+                            answer: {
+                                text: string;
+                                bold?: boolean;
+                                italic?: boolean;
+                                /** Format: uri */
+                                href?: string;
+                            }[];
+                        }[];
+                    } | {
+                        /** @enum {string} */
+                        type: "quote";
+                        content: {
+                            text: string;
+                            bold?: boolean;
+                            italic?: boolean;
+                            /** Format: uri */
+                            href?: string;
+                        }[];
+                        attribution?: string;
+                    })[];
+                    /** Format: uuid */
+                    heroMediaId?: string | null;
+                    sources?: {
+                        title: string;
+                        /** Format: uri */
+                        url?: string;
+                        /** Format: date */
+                        accessedAt?: string;
+                    }[];
+                    interestDeclared?: boolean;
+                    /** @enum {string} */
+                    commercialRelation?: "NONE" | "GIFTED" | "SPONSORED" | "AFFILIATE";
+                    /** @enum {string|null} */
+                    experienceType?: "TESTED_IN_PERSON" | "VISITED" | "STAYED" | "USED_LONG_TERM" | "RESEARCH_ONLY" | null;
+                    experienceNote?: string | null;
+                    selectionMethod?: string | null;
+                    significantChange?: boolean;
+                    changeNote?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticle"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminTransitionArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    /** @enum {string} */
+                    to: "DRAFT" | "IN_REVIEW" | "APPROVED" | "SCHEDULED" | "PUBLISHED" | "ARCHIVED";
+                    /** Format: date-time */
+                    scheduledAt?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticle"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCorrectArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    note: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Eklendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminArticle"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminPreviewArticle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Bağlantı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviewLink"];
                 };
             };
             /** @description Hata (RFC 9457) */

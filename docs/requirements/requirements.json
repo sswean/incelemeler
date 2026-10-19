@@ -393,12 +393,12 @@
       "title": "Revizyonlar",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "content_revisions: her güncellemede önceki hâl, aktör, not ve anlamlı değişiklik işareti.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "listing_revisions ve geri alma arayüzü D13."
     },
     {
       "id": "REQ-VER-016",
@@ -873,24 +873,24 @@
       "title": "Blok tabanlı içerik editörü (özel geliştirme",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "İçerik JSON blok dizisi; her blok tipinin zod şeması packages/contracts (content.ts); API yazımda doğrular.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Panel blok editörü (5b), web/mobil render (5c, Faz 2)."
     },
     {
       "id": "REQ-ICR-002",
       "title": "Blok tipleri (Faz 1)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Faz 1 blokları: başlık, paragraf (kalın/italik/bağlantı), liste, görsel, galeri, tablo, listeleme kartı, bilgi kutusu, artılar–eksiler, SSS, alıntı.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Karşılaştırma tablosu ve harita (D6), puan kutusu (D7), CTA (D8), ticari açıklama ve sponsorlu yuva (D9)."
     },
     {
       "id": "REQ-ICR-003",
@@ -909,72 +909,72 @@
       "title": "İçerik türleri ve şablonları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Türler: Rehber, Liste (seçim yöntemi zorunlu), Karşılaştırma, İnceleme (deneyim beyanı zorunlu), Haber, Sponsorlu (ilişki zorunlu, inceleme gibi sunulamaz) — article-rules.test, articles.int.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Şablonlar (5c); listede sponsorlu öğe yasağı D9."
     },
     {
       "id": "REQ-ICR-005",
       "title": "Yayın akışı",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "TASLAK → İNCELEMEDE → ONAYLANDI → ZAMANLANDI → YAYINDA → ARŞİV; yazar yayımlayamaz; sponsorluda yönetici kontrolü; imzalı süreli önizleme; zamanlanmış yayın worker'da (articles.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "GÜNCELLENİYOR ara durumu A-014; önizleme sayfası (5c)."
     },
     {
       "id": "REQ-ICR-006",
       "title": "Her içerikte",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Yayın tarihi, son anlamlı güncelleme, değişiklik notu zorunluluğu, kaynaklar alanı (articles.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Görünür gösterim ve yazar sayfası bağlantısı (5c)."
     },
     {
       "id": "REQ-ICR-007",
       "title": "Deneyim beyanı (v1 §14)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "İncelemede deneyim beyanı zorunlu; sponsorlu içerikte deneyim/puan iddiası engelli.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Görünür gösterim (5c); editör puanı kuralı D7."
     },
     {
       "id": "REQ-ICR-008",
       "title": "Menfaat beyanı",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Menfaat beyanı sorusu yanıtlanmadan incelemeye gönderilemez; GIFTED/SPONSORED/AFFILIATE ilişkisi.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Otomatik etiket basımı (5c, D9)."
     },
     {
       "id": "REQ-ICR-009",
       "title": "Düzeltme politikası",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Düzeltme notu yalnızca yayındaki içeriğe, denetim kaydıyla (articles.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Sayfada görünür gösterim (5c)."
     },
     {
       "id": "REQ-ICR-010",

@@ -20,16 +20,25 @@ describe('[REQ-MIM-006] OpenAPI üretimi', () => {
     }
   });
   it('[REQ-MIM-009] sponsorlu sıralama parametresi yoktur', () => {
-    // Hiçbir uç noktanın sorgu parametresi (adı ya da izinli değerleri) sponsorluğa göre sıralama/filtre sunmaz.
-    // Kategori yönetimindeki `sponsorshipAllowed` bayrağı bir sıralama parametresi değildir.
+    // (1) Hiçbir uç noktada sıralama parametresi sponsorluk değeri kabul etmez ve hiçbir parametrenin adı
+    //     sponsorluk içermez. (2) Herkese açık (panel dışı) uç noktaların sorgu parametrelerinde sponsorluk
+    //     hiç geçmez. Panelde içerik türü filtresi (tür = Sponsorlu içerik) bir sıralama değildir.
     const paths = (doc as { paths: Record<string, Record<string, { parameters?: unknown[] }>> })
       .paths;
-    const queryParams = Object.values(paths)
-      .flatMap((item) => Object.values(item))
-      .flatMap((op) => (op.parameters ?? []) as Array<{ in: string }>)
-      .filter((p) => p.in === 'query');
-    expect(queryParams.length).toBeGreaterThan(0);
-    for (const p of queryParams) expect(JSON.stringify(p).toLowerCase()).not.toContain('sponsor');
+    let checked = 0;
+    for (const [path, item] of Object.entries(paths)) {
+      for (const op of Object.values(item)) {
+        for (const p of (op.parameters ?? []) as Array<{ in: string; name: string }>) {
+          if (p.in !== 'query') continue;
+          checked++;
+          expect(p.name.toLowerCase(), path).not.toContain('sponsor');
+          if (/sort|sira|order/i.test(p.name) || !path.startsWith('/v1/admin/')) {
+            expect(JSON.stringify(p).toLowerCase(), `${path} ${p.name}`).not.toContain('sponsor');
+          }
+        }
+      }
+    }
+    expect(checked).toBeGreaterThan(0);
   });
 });
 

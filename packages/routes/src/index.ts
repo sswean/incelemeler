@@ -71,6 +71,26 @@ export function normalizePath(path: string): string | null {
   return p === path ? null : p;
 }
 
+export type ArticleType = 'GUIDE' | 'LIST' | 'COMPARISON' | 'REVIEW' | 'NEWS' | 'SPONSORED';
+
+/** Yazı türü → URL öneki (Ek A15.1; NEWS ve SPONSORED için A-014). */
+export const ARTICLE_PREFIX: Record<ArticleType, string> = {
+  GUIDE: 'rehber',
+  LIST: 'liste',
+  COMPARISON: 'karsilastir',
+  REVIEW: 'inceleme',
+  NEWS: 'haber',
+  SPONSORED: 'sponsorlu',
+};
+
+export function articlePath(ref: { type: ArticleType; slug: string }): string {
+  return `/${ARTICLE_PREFIX[ref.type]}/${ref.slug}`;
+}
+
+export function authorPath(slug: string): string {
+  return `/yazar/${slug}`;
+}
+
 export const STATIC_PATHS = {
   home: '/',
   search: '/ara',
@@ -80,6 +100,10 @@ export const STATIC_PATHS = {
   terms: '/kullanim-kosullari',
   privacy: '/kvkk-aydinlatma-metni',
   sitemap: '/sitemap.xml',
+  methodology: '/nasil-degerlendiriyoruz',
+  independence: '/editoryal-bagimsizlik',
+  sponsoredPolicy: '/sponsorlu-icerik-politikasi',
+  corrections: '/duzeltme-politikasi',
 } as const;
 
 /** Mutlak URL (canonical, site haritası, JSON-LD). */

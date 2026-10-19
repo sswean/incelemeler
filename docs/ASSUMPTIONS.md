@@ -53,3 +53,7 @@ Biçim: Ek C-4. "Yüksek" geri alma maliyetli varsayımlar OPEN-QUESTIONS'ta da 
 ## A-013: Destinasyon listelemeleri `/destinasyon/{slug}`; harita yerine "Yol tarifi al" dış bağlantısı
 - Tarih: 2026-10-19 · Faz 1 · Gerekçe: A15.1'de il/ilçe destinasyon yolları (`/{il}`, `/{il}/{ilce}`) hub dilimine (D6) aittir; il olmayan destinasyon listelemeleri (ör. tatil bölgesi) için ayrı önek. Harita sağlayıcısı (X-005) seçilmediğinden yol tarifi koordinatla dış harita bağlantısıdır (X-005 "erişim yokken davranış").
 - Etkilediği REQ'ler: REQ-SEO-003, REQ-LST-003 · Geri alma maliyeti: Düşük · Durum: AÇIK
+
+## A-014: İçerik akışı ayrıntıları
+- Tarih: 2026-10-19 · Faz 1 · Gerekçe: (1) A15.1'de olmayan türler için önek: Haber `/haber/{slug}`, Sponsorlu içerik `/sponsorlu/{slug}` (ticari ilişki URL'de de açık). (2) Sponsorlu içerikte "ticari açıklama kontrolü" adımı, İNCELEMEDE → ONAYLANDI geçişinin yönetici (`campaigns.amount` izni: yönetici/süper yönetici) tarafından yapılmasıyla karşılanır; kontrol eden kaydedilir. (3) "GÜNCELLENİYOR" ara durumu yerine yayındaki içerik editör tarafından doğrudan güncellenir; her güncellemede önceki hâl revizyon olarak saklanır ve değişiklik notu zorunludur (aşamalı taslak sürüm D13'te değerlendirilecek).
+- Etkilediği REQ'ler: REQ-ICR-004/005, REQ-SEO-003 · Geri alma maliyeti: Orta · Durum: AÇIK

@@ -145,6 +145,8 @@ test.describe('Faz 1 · editoryal içerik', () => {
       page.getByText('Bayes puanı = (C × m + puanların toplamı) / (C + n)'),
     ).toBeVisible();
     await expect(page.getByText('Kaynaklardan derlendi — denenmedi')).toBeVisible();
+    // İstemci içi geçişte <title> akışla gelir; tarama ondan sonra.
+    await expect(page).toHaveTitle(/Nasıl değerlendiriyoruz/);
     expect(await seriousViolations(page)).toEqual([]);
     for (const path of [
       '/editoryal-bagimsizlik',

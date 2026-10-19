@@ -143,7 +143,8 @@ describe('dış yönlendirme (REQ-AFF-001…007)', () => {
       .expect(400);
   });
 
-  it('[REQ-AFF-005] [REQ-KVK-013] tıklama (çerezsiz, sunucu tarafı): ham IP yok, 30 sn tekilleştirme, bot ve önceden getirme sayılmaz', async () => {
+  it('[REQ-AFF-005] [REQ-KVK-013] [REQ-ANL-003] tıklama (çerezsiz, sunucu tarafı): ham IP yok, 30 sn tekilleştirme, bot ve önceden getirme sayılmaz', async () => {
+    await sleep(300); // önceki testin yanıtı bekletmeden yazılan tıklama kaydı otursun
     await t.prisma.outboundClick.deleteMany();
     const hit = (headers: Record<string, string>) =>
       http()
@@ -156,12 +157,15 @@ describe('dış yönlendirme (REQ-AFF-001…007)', () => {
     await hit({ 'User-Agent': BROWSER, 'Sec-Purpose': 'prefetch' });
     await sleep(200);
     const clicks = await t.prisma.outboundClick.findMany({ orderBy: { id: 'asc' } });
-    expect(clicks.map((c) => [c.counted, c.bot, c.prefetch])).toEqual([
-      [true, false, false],
-      [false, false, false],
-      [false, true, false],
-      [false, false, true],
-    ]);
+    // Kayıtlar yanıtı bekletmeden yazılır; sıra değil sonuç doğrulanır: tam bir sayılan tıklama.
+    expect(clicks.map((c) => [c.counted, c.bot, c.prefetch]).sort()).toEqual(
+      [
+        [true, false, false],
+        [false, false, false],
+        [false, true, false],
+        [false, false, true],
+      ].sort(),
+    );
     expect(clicks[0]!.sessionHash).toMatch(/^[0-9a-f]{64}$/);
     expect(
       JSON.stringify(clicks, (_k, v: unknown) => (typeof v === 'bigint' ? v.toString() : v)),
@@ -176,6 +180,25 @@ describe('dış yönlendirme (REQ-AFF-001…007)', () => {
       ).body,
     );
     expect(listed.data.find((x) => x.id === link.id)?.clicks30d).toBe(1);
+  });
+
+  it('[REQ-AFF-005] eşzamanlı aynı tıklamalar tek sayılır (denetle-sonra-yaz yarışı yok)', async () => {
+    await sleep(300);
+    await t.prisma.outboundClick.deleteMany();
+    await Promise.all(
+      Array.from({ length: 6 }, () =>
+        http()
+          .get(`/v1/outbound/${link.id}/resolve`)
+          .set({ 'X-Forwarded-For': '203.0.113.9', 'User-Agent': BROWSER })
+          .expect(200),
+      ),
+    );
+    await expect
+      .poll(() => t.prisma.outboundClick.count({ where: { linkId: link.id } }), { timeout: 3000 })
+      .toBe(6);
+    expect(await t.prisma.outboundClick.count({ where: { linkId: link.id, counted: true } })).toBe(
+      1,
+    );
   });
 
   it('[REQ-AFF-002] kayıttaki hedef izinli alan dışına çıkarsa yönlendirme yapılmaz ve alarm üretilir', async () => {

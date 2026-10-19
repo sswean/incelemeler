@@ -18,6 +18,7 @@ import { RatingSummaryView } from '../reviews/rating-summary';
 import { ReviewListView } from '../reviews/review-list';
 import { SponsoredBox } from '../sponsored/box';
 import { FavoriteButton } from '../account/favorite-button';
+import { OutboundEvents, PageEvents } from '../analytics/page-events';
 import { breadcrumbJsonLd, listingJsonLd } from './json-ld';
 
 const T = tr.listingPage;
@@ -210,6 +211,13 @@ export async function ListingPage(
 
   return (
     <article className="mx-auto max-w-3xl space-y-8" data-testid="listing-page">
+      <PageEvents
+        name="listing_viewed"
+        props={{ listingId: l.id, kind: l.kind }}
+        demo={l.dataOrigin === 'DEMO'}
+        engaged="listing"
+      />
+      <OutboundEvents listingId={l.id} demo={l.dataOrigin === 'DEMO'} />
       {ld ? (
         <>
           <script
@@ -284,6 +292,7 @@ export async function ListingPage(
                 <li key={c} className="flex flex-col items-start gap-1">
                   <a
                     href={href}
+                    data-cta={c}
                     {...(external
                       ? {
                           target: '_blank',

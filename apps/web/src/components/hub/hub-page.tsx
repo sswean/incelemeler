@@ -8,6 +8,7 @@ import { lowerTr, upperTr, withCase } from '@incelemeler/utils';
 import { serverApi } from '../../lib/api';
 import { canonical, jsonLdScript, robots } from '../../lib/seo';
 import { breadcrumbJsonLd } from '../listing/json-ld';
+import { PageEvents } from '../analytics/page-events';
 import { CommercialLabel } from '../sponsored/label';
 import { SponsoredCard } from '../sponsored/sponsored-card';
 import { mergeSponsored } from '../../lib/sponsored';
@@ -115,6 +116,7 @@ export async function HubRoute(props: HubProps) {
 
   return (
     <div className="space-y-8" data-testid="hub-page">
+      <PageEvents name="category_viewed" props={{ hubPath: hub.path }} demo={hub.demoOnly} />
       {hub.demoOnly ? null : (
         <script
           type="application/ld+json"

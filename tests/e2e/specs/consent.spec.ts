@@ -89,4 +89,40 @@ test.describe('Faz 1 · çerez onayı (E2E-016)', () => {
     expect(v2.split('.')[1]).toBe(v1.split('.')[1]);
     expect(v2).toMatch(/\.000\.\d+$/);
   });
+
+  test('[REQ-KVK-014] [REQ-ANL-001] (c) yalnızca analitik kabulünde birinci taraf analitik istekleri başlar', async ({
+    page,
+    browser,
+  }) => {
+    const listing = `${web}/mekan/ornek-moda-ocakbasi-demo`;
+    // Reddeden ziyaretçi: listeleme sayfasında analitik isteği yok.
+    const rejected: string[] = [];
+    page.on('request', (r) => {
+      if (r.url().includes('/olay/analitik')) rejected.push(r.url());
+    });
+    await page.goto(`${web}/`);
+    await page.getByRole('button', { name: 'Tümünü reddet' }).click();
+    // Sayfanın istemci etkileri (rakip kutu isteği) tamamlanana kadar bekle; analitik olayı aynı anda gönderilirdi.
+    const settled = page.waitForResponse((r) => r.url().includes('/olay/sponsorlu-kutu'));
+    await page.goto(listing);
+    await expect(page.getByTestId('listing-page')).toBeVisible();
+    await settled;
+    expect(rejected).toEqual([]);
+
+    // Yalnızca analitik onayı: görüntüleme olayı birinci taraf vekile gider.
+    const ctx = await browser.newContext();
+    const p2 = await ctx.newPage();
+    await p2.goto(`${web}/cerez-tercihleri`);
+    const form = p2.getByRole('form', { name: 'Çerez tercihleri' });
+    await form.getByLabel(/^Analitik/).check();
+    await form.getByRole('button', { name: 'Tercihlerimi kaydet' }).click();
+    await expect(form.getByRole('status')).toHaveText('Tercihlerin kaydedildi.');
+    // sendBeacon gövdesi tarayıcı otomasyonunda okunamıyor; içerik doğrulaması entegrasyon testinde.
+    const sent = p2.waitForResponse((r) => r.url().endsWith('/olay/analitik'));
+    await p2.goto(listing);
+    const res = await sent;
+    expect(res.status()).toBe(202);
+    expect(res.request().method()).toBe('POST');
+    await ctx.close();
+  });
 });

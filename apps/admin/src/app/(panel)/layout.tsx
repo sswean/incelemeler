@@ -83,6 +83,19 @@ export default async function PanelLayout({ children }: { children: ReactNode })
             </Link>
           ) : null}
           {user.permissions.includes('audit.read') ? (
+            <Link href="/analitik" className="min-h-11 content-center text-brand-default underline">
+              {tr.admin.nav.analytics}
+            </Link>
+          ) : null}
+          {user.permissions.includes('campaigns.amount') ? (
+            <Link
+              href="/raporlar/gelir"
+              className="min-h-11 content-center text-brand-default underline"
+            >
+              {tr.admin.nav.revenue}
+            </Link>
+          ) : null}
+          {user.permissions.includes('audit.read') ? (
             <Link
               href="/kvkk-basvurulari"
               className="min-h-11 content-center text-brand-default underline"

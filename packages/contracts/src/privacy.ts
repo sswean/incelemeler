@@ -90,6 +90,7 @@ export const ComplianceConfig = z
       searchEventsDays: z.number().int().min(1),
       clickSessionHashDays: z.number().int().min(1),
       consentIpHashDays: z.number().int().min(1),
+      analyticsEventsDays: z.number().int().min(1),
     }),
     version: z.number().int(),
   })

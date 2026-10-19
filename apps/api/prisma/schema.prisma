@@ -1525,3 +1525,32 @@ model HomeModule {
   @@index([enabled, position])
   @@map("home_modules")
 }
+
+/// Rızalı birinci taraf olaylar (REQ-ANL-001): kişisel veri yok; bot/personel/demo işaretli ve raporsuz.
+/// Aylık bölümleme veri hacmi gerektiğinde (A-026). Saklama sonrası `analytics_daily`'e toplulaştırılır.
+model AnalyticsEvent {
+  id          BigInt   @id @default(autoincrement())
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  name        String
+  anonymousId String   @map("anonymous_id") @db.Uuid
+  sessionId   String   @map("session_id") @db.Uuid
+  path        String
+  props       Json     @default("{}")
+  bot         Boolean  @default(false)
+  staff       Boolean  @default(false)
+  demo        Boolean  @default(false)
+
+  @@index([name, createdAt])
+  @@index([createdAt])
+  @@map("analytics_events")
+}
+
+/// Saklama süresi dolan olayların günlük toplamı (kişisel veri ve oturum kimliği yok).
+model AnalyticsDaily {
+  day   DateTime @db.Date
+  name  String
+  count Int
+
+  @@id([day, name])
+  @@map("analytics_daily")
+}

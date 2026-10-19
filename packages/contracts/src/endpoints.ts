@@ -44,6 +44,14 @@ import {
 } from './outbound.js';
 import { ConsentBody } from './consent.js';
 import {
+  AdminDashboard,
+  AnalyticsIngestBody,
+  AnalyticsOverview,
+  AnalyticsOverviewQuery,
+  RevenueQuery,
+  RevenueReport,
+} from './analytics.js';
+import {
   AdminHomeModule,
   AdminHomeModuleList,
   HomeModuleUpdateBody,
@@ -1414,5 +1422,45 @@ export const endpoints: EndpointDef[] = [
       'Modülü günceller (sıra, görünürlük, kaynak ayarı); sponsorlu sınırları aşan yapılandırma reddedilir',
     body: HomeModuleUpdateBody,
     responses: { 200: ok('Güncellendi', AdminHomeModule) },
+  },
+  {
+    method: 'post',
+    path: '/v1/analytics/events',
+    operationId: 'ingestAnalyticsEvent',
+    tags: ['analytics'],
+    summary:
+      'Rızalı birinci taraf olay (web vekili çağırır; anonim kimlik tercih çerezinden); bot/personel/demo işaretlenir',
+    body: AnalyticsIngestBody,
+    responses: { 202: ok('Kabul edildi', Accepted) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/analytics/overview',
+    operationId: 'adminAnalyticsOverview',
+    tags: ['admin', 'analytics'],
+    auth: 'staff-mfa',
+    summary: 'Panolar: yalnızca gerçek kayıtlardan; veri yoksa null',
+    query: AnalyticsOverviewQuery,
+    responses: { 200: ok('Pano', AnalyticsOverview) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/dashboard',
+    operationId: 'adminDashboard',
+    tags: ['admin', 'analytics'],
+    auth: 'staff-mfa',
+    summary: 'Genel pano: bekleyen işler ve son 7 gün özetleri (gerçek sayaçlar)',
+    responses: { 200: ok('Pano', AdminDashboard) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/reports/revenue',
+    operationId: 'adminRevenueReport',
+    tags: ['admin', 'analytics'],
+    auth: 'staff-mfa',
+    summary:
+      'Gelir raporu: elle girilen sponsorluk tutarları (yalnızca yönetici); affiliate verisi yoksa null',
+    query: RevenueQuery,
+    responses: { 200: ok('Rapor', RevenueReport) },
   },
 ];

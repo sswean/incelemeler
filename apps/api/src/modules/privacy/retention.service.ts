@@ -80,6 +80,22 @@ export class RetentionService {
           }),
       },
       {
+        // Olay verisi süre sonunda günlük toplama dönüştürülüp silinir (REQ-ANL-006).
+        category: 'analytics_events',
+        method: 'DELETE',
+        cutoff: before(r.analyticsEventsDays),
+        run: async (c) => {
+          await this.prisma.$executeRaw`
+            INSERT INTO analytics_daily (day, name, count)
+            SELECT (created_at AT TIME ZONE 'Europe/Istanbul')::date, name, count(*)::int
+            FROM analytics_events
+            WHERE created_at < ${c} AND NOT bot AND NOT staff AND NOT demo
+            GROUP BY 1, 2
+            ON CONFLICT (day, name) DO UPDATE SET count = analytics_daily.count + EXCLUDED.count`;
+          return this.prisma.analyticsEvent.deleteMany({ where: { createdAt: { lt: c } } });
+        },
+      },
+      {
         category: 'consent_records.ip_hash',
         method: 'ANONYMIZE',
         cutoff: before(r.consentIpHashDays),

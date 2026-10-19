@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { PageEvents } from '../analytics/page-events';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound, permanentRedirect } from 'next/navigation';
@@ -77,6 +78,15 @@ export function ArticleView({ a, preview = false }: { a: PublicArticle; preview?
   ];
   return (
     <article className="mx-auto max-w-3xl space-y-6" data-testid="article-page">
+      {/* Önizleme (personel) trafiği ölçülmez (REQ-ANL-005). */}
+      {preview ? null : (
+        <PageEvents
+          name="content_viewed"
+          props={{ articleId: a.id }}
+          demo={a.dataOrigin === 'DEMO'}
+          engaged="content"
+        />
+      )}
       {ld ? (
         <>
           <script

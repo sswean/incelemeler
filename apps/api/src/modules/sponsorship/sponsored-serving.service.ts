@@ -308,31 +308,36 @@ export class SponsoredServingService {
     const { bot, prefetch } = classifyClick(headers);
     const sessionHash = this.outbound.sessionHash(headers.ip, headers.userAgent);
     const flaggedBot = bot || body.automated;
-    const recent =
-      flaggedBot || prefetch || t.d
-        ? null
-        : await this.prisma.sponsoredEvent.findFirst({
-            where: {
-              placementId: t.pl,
-              type: 'VIEWED',
-              sessionHash,
-              counted: true,
-              createdAt: { gte: new Date(Date.now() - VIEW_DEDUPE_MS) },
-            },
-            select: { id: true },
-          });
-    const counted = !flaggedBot && !prefetch && !t.d && !recent;
-    await this.prisma.sponsoredEvent.create({
-      data: {
-        placementId: t.pl,
-        type: 'VIEWED',
-        surface: t.s,
-        sessionHash,
-        bot: flaggedBot,
-        prefetch,
-        demo: t.d,
-        counted,
-      },
+    const counted = await this.prisma.$transaction(async (tx) => {
+      // Aynı oturum + yerleşim için denetle-sonra-yaz yarışını önler.
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`view:${t.pl}:${sessionHash}`}, 0))`;
+      const recent =
+        flaggedBot || prefetch || t.d
+          ? null
+          : await tx.sponsoredEvent.findFirst({
+              where: {
+                placementId: t.pl,
+                type: 'VIEWED',
+                sessionHash,
+                counted: true,
+                createdAt: { gte: new Date(Date.now() - VIEW_DEDUPE_MS) },
+              },
+              select: { id: true },
+            });
+      const ok = !flaggedBot && !prefetch && !t.d && !recent;
+      await tx.sponsoredEvent.create({
+        data: {
+          placementId: t.pl,
+          type: 'VIEWED',
+          surface: t.s,
+          sessionHash,
+          bot: flaggedBot,
+          prefetch,
+          demo: t.d,
+          counted: ok,
+        },
+      });
+      return ok;
     });
     return { accepted: counted };
   }
@@ -385,31 +390,34 @@ export class SponsoredServingService {
   ) {
     const { bot, prefetch } = classifyClick(h);
     const sessionHash = this.outbound.sessionHash(h.ip, h.userAgent);
-    const recent =
-      bot || prefetch || demo || !live
-        ? null
-        : await this.prisma.sponsoredEvent.findFirst({
-            where: {
-              placementId,
-              type: 'CLICK',
-              sessionHash,
-              counted: true,
-              createdAt: { gte: new Date(Date.now() - CLICK_DEDUPE_MS) },
-            },
-            select: { id: true },
-          });
     const slot = surface ?? (await this.slotSurface(placementId));
-    await this.prisma.sponsoredEvent.create({
-      data: {
-        placementId,
-        type: 'CLICK',
-        surface: slot,
-        sessionHash,
-        bot,
-        prefetch,
-        demo,
-        counted: live && !bot && !prefetch && !demo && !recent,
-      },
+    await this.prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`sclick:${placementId}:${sessionHash}`}, 0))`;
+      const recent =
+        bot || prefetch || demo || !live
+          ? null
+          : await tx.sponsoredEvent.findFirst({
+              where: {
+                placementId,
+                type: 'CLICK',
+                sessionHash,
+                counted: true,
+                createdAt: { gte: new Date(Date.now() - CLICK_DEDUPE_MS) },
+              },
+              select: { id: true },
+            });
+      await tx.sponsoredEvent.create({
+        data: {
+          placementId,
+          type: 'CLICK',
+          surface: slot,
+          sessionHash,
+          bot,
+          prefetch,
+          demo,
+          counted: live && !bot && !prefetch && !demo && !recent,
+        },
+      });
     });
   }
 

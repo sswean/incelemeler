@@ -38,6 +38,8 @@ import { PrivacyController } from './modules/privacy/privacy.controller.js';
 import { PrivacyService } from './modules/privacy/privacy.service.js';
 import { RetentionService } from './modules/privacy/retention.service.js';
 import { HomeController } from './modules/home/home.controller.js';
+import { AnalyticsController } from './modules/analytics/analytics.controller.js';
+import { AnalyticsService } from './modules/analytics/analytics.service.js';
 import { HomeService } from './modules/home/home.service.js';
 import { CampaignsService } from './modules/sponsorship/campaigns.service.js';
 import { SponsoredServingService } from './modules/sponsorship/sponsored-serving.service.js';
@@ -120,6 +122,7 @@ export const CONTROLLERS = [
   AccountController,
   PrivacyController,
   HomeController,
+  AnalyticsController,
 ];
 
 @Module({})
@@ -176,6 +179,7 @@ export class AppModule {
         PrivacyService,
         RetentionService,
         HomeService,
+        AnalyticsService,
       ],
     };
   }

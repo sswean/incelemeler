@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { createContext, type ReactNode, useContext, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 import type { ConsentState } from '@incelemeler/contracts';
 import { tr } from '@incelemeler/i18n';
 import { STATIC_PATHS } from '@incelemeler/routes';
+import { landingSource, sendEvent } from '../../lib/analytics-client';
 import { type ConsentChoice, saveConsent } from '../../lib/consent-client';
 
 const T = tr.consent;
@@ -80,13 +82,26 @@ export function ConsentProvider({
 }) {
   const [consent, setConsent] = useState<ConsentState | null>(initial);
   const [bannerOpen, setBannerOpen] = useState(initial === null);
+  // Tercih merkezinde bant gösterilmez (aynı kararı iki yerde sormayalım; düğmeleri örtmesin).
+  const onPreferences = usePathname() === '/cerez-tercihleri';
   const save = async (choice: ConsentChoice) => {
     setConsent(await saveConsent(consent, choice));
   };
+  // Giriş olayı: sekme başına bir kez, yalnızca analitik onayıyla (REQ-ANL-002).
+  useEffect(() => {
+    if (!consent?.analytics) return;
+    try {
+      if (sessionStorage.getItem('incelemeler-giris')) return;
+      sessionStorage.setItem('incelemeler-giris', '1');
+    } catch {
+      return;
+    }
+    sendEvent('landing', { source: landingSource(document.referrer, location.hostname) });
+  }, [consent?.analytics]);
   return (
     <ConsentContext.Provider value={{ consent, save }}>
       {children}
-      {bannerOpen ? <Banner onDone={() => setBannerOpen(false)} /> : null}
+      {bannerOpen && !onPreferences ? <Banner onDone={() => setBannerOpen(false)} /> : null}
     </ConsentContext.Provider>
   );
 }

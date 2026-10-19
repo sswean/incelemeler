@@ -1833,9 +1833,9 @@
       "title": "Genel pano yalnızca gerçek sayaçlar gösterir",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Genel pano: bekleyen moderasyon, bildirimler, tazelik kuyruğu, KVKK başvuruları, aktif kampanyalar, son 7 gün; başvurular 'Veri yok' (analytics.int, analytics.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -1917,12 +1917,12 @@
       "title": "Gelir raporu (modül 22)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Gelir raporu: elle girilen sponsorluk tutarları (yalnızca yönetici), affiliate yoksa 'Veri yok', dönem filtresi, CSV (analytics.int, analytics.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "İşletme paketleri Faz 3; affiliate içe aktarma sağlayıcı doğrulanınca."
     },
     {
       "id": "REQ-ADM-011",
@@ -2853,12 +2853,12 @@
       "title": "Kabul testleri (E2E-016)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "KISMİ",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": "E2E-016 (a) temiz profil, (b) reddet + 3 sayfa, (d) geri almada silme (consent.spec).",
+      "acceptance": "E2E-016 (a) temiz profil, (b) reddet + 3 sayfa, (c) yalnızca analitik onayında birinci taraf analitik istekleri, (d) geri almada silme (consent.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "(c) yalnızca analitik kabulünde analitik isteklerinin başlaması: analitik aracı seçilince (D12, A-023)."
+      "notes": ""
     },
     {
       "id": "REQ-KVK-020",
@@ -3165,21 +3165,21 @@
       "title": "Birinci taraf olay hattı (analytics_events, aylık bölümlü) + rızaya bağlı istemci olayları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Birinci taraf analytics_events; yalnızca analitik onayıyla; üçüncü taraf araç yok (analytics.int, consent.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Aylık bölümleme veri hacmi gerektiğinde (A-026)."
     },
     {
       "id": "REQ-ANL-002",
       "title": "Olay sözlüğü (docs/analytics/olay-sozlugu.md)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "docs/analytics/olay-sozlugu.md + kodda sözlük doğrulaması (analytics.test, analytics.int).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -3189,9 +3189,9 @@
       "title": "Sponsorluk/yönlendirme sayımları (A8, A9) rızadan bağımsız, çerezsiz, toplulaştırılmış …",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Sponsorluk/yönlendirme sayımları çerezsiz, sunucu tarafı, kişisel verisiz (outbound.int, sponsorship.int).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -3201,21 +3201,21 @@
       "title": "Panolar (yönetim paneli, yalnızca gerçek veri",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Panolar yalnızca gerçek kayıtlardan, veri yoksa 'Veri yok', tazelik damgası; kuzey yıldızı ve sınır metrikleri (analytics.int, analytics.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Arama motoru araçlarından içe aktarma, Core Web Vitals ve erişilebilirlik sınır metrikleri D13; başvurular Faz 3."
     },
     {
       "id": "REQ-ANL-005",
       "title": "Bot ve personel trafiği ayıklanır",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Bot UA, otomasyon, önceden getirme, personel ve demo olayları işaretli ve raporsuz (analytics.int).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -3225,9 +3225,9 @@
       "title": "Kişisel veriler gereksiz yere toplanmaz",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Olay verisi 425 gün (≈ 14 ay) sonra günlük toplama dönüşüp silinir; kişisel veri toplanmaz (analytics.int).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""

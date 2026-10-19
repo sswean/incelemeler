@@ -17,6 +17,7 @@ export const DEFAULT_COMPLIANCE: Omit<ComplianceConfig, 'version'> = {
     searchEventsDays: 365,
     clickSessionHashDays: 90,
     consentIpHashDays: 365,
+    analyticsEventsDays: 425,
   },
 };
 

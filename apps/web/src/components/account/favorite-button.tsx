@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { tr } from '@incelemeler/i18n';
+import { sendEvent } from '../../lib/analytics-client';
+import { useConsent } from '../consent/consent';
 
 const T = tr.account;
 
@@ -9,6 +11,7 @@ const T = tr.account;
 export function FavoriteButton({ listingId, returnTo }: { listingId: string; returnTo: string }) {
   const [state, setState] = useState<{ signedIn: boolean; saved: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
+  const { consent } = useConsent();
   useEffect(() => {
     let alive = true;
     fetch(`/hesabim/kaydet?ilan=${listingId}`, { cache: 'no-store' })
@@ -31,7 +34,11 @@ export function FavoriteButton({ listingId, returnTo }: { listingId: string; ret
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ilan: listingId, kaydet: !state.saved }),
     }).catch(() => null);
-    if (r?.ok) setState((await r.json()) as { signedIn: boolean; saved: boolean });
+    if (r?.ok) {
+      const next = (await r.json()) as { signedIn: boolean; saved: boolean };
+      setState(next);
+      if (next.saved && consent?.analytics) sendEvent('favorite_added', { listingId });
+    }
     setBusy(false);
   };
 

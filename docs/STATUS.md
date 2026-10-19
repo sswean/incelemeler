@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 12 — analitik (dilim 11 ana sayfa: `docs/status-log/F1-D11.md`)
+- Aktif dilim: Faz 1 dilim 13 — sertleştirme (dilim 12 analitik: `docs/status-log/F1-D12.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -60,7 +60,10 @@
 ## Dilim 11 özeti (ana sayfa modülleri)
 - API: `/v1/home?il=` (modüller sırayla, minOge altında gizli, sponsorlu sınırları), `/v1/admin/home-modules`. Web: modül tabanlı ana sayfa + şehir bağlamı. Panel: `/ana-sayfa` düzenleyici + önizleme.
 
+## Dilim 12 özeti (analitik)
+- API: `/v1/analytics/events` (rızalı), `/v1/admin/analytics/overview`, `/v1/admin/dashboard`, `/v1/admin/reports/revenue`. Web: rızalı sayfa olayları (`/olay/analitik`). Panel: genel pano, `/analitik`, `/raporlar/gelir` (+ CSV). Sözlük: `docs/analytics/olay-sozlugu.md`.
+
 ## Sonraki 3 adım (Faz 1, §9.3 önerilen sıra)
-1. Dilim 12 — Analitik olay sözlüğü, birinci taraf olay toplama (rıza kapısı) ve panolar; genel pano gerçek sayaçlar (REQ-ADM-002).
-2. Dilim 13 — Sertleştirme (performans bütçeleri, erişilebilirlik, güvenlik taraması) + Dilim 7 kalanları.
-3. Faz 1 kapanış raporu → Faz 1→2 geçişi C sınıfı: İnsan onayı beklenir.
+1. Dilim 13 — Sertleştirme: performans bütçeleri (Lighthouse), erişilebilirlik taraması, güvenlik başlıkları/taraması, Dilim 7 kalanları (fotoğraf/EXIF, hukuki talepler, yaptırımlar).
+2. Faz 1 kapanış raporu (REQ durum özeti, açık L/X/Q kayıtları).
+3. Faz 1→2 geçişi C sınıfı: İnsan onayı beklenir.

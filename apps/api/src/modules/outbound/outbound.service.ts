@@ -204,29 +204,34 @@ export class OutboundService implements OnModuleInit {
   ): Promise<void> {
     const { bot, prefetch } = classifyClick(h);
     const sessionHash = this.sessionHash(h.ip, h.userAgent);
-    const recent =
-      bot || prefetch
-        ? null
-        : await this.prisma.outboundClick.findFirst({
-            where: {
-              linkId,
-              sessionHash,
-              counted: true,
-              createdAt: { gte: new Date(Date.now() - DEDUPE_MS) },
-            },
-            select: { id: true },
-          });
-    await this.prisma.outboundClick.create({
-      data: {
-        linkId,
-        surface: ctx?.s ?? 'unknown',
-        pageType: ctx?.p ?? 'unknown',
-        placementId: ctx?.pl ?? null,
-        sessionHash,
-        bot,
-        prefetch,
-        counted: !bot && !prefetch && !recent,
-      },
+    // Tekilleştirme denetimi ve kayıt aynı oturum + bağlantı için sıralanır (art arda iki tıklama ikisi de
+    // sayılmasın — denetle-sonra-yaz yarışı).
+    await this.prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`click:${linkId}:${sessionHash}`}, 0))`;
+      const recent =
+        bot || prefetch
+          ? null
+          : await tx.outboundClick.findFirst({
+              where: {
+                linkId,
+                sessionHash,
+                counted: true,
+                createdAt: { gte: new Date(Date.now() - DEDUPE_MS) },
+              },
+              select: { id: true },
+            });
+      await tx.outboundClick.create({
+        data: {
+          linkId,
+          surface: ctx?.s ?? 'unknown',
+          pageType: ctx?.p ?? 'unknown',
+          placementId: ctx?.pl ?? null,
+          sessionHash,
+          bot,
+          prefetch,
+          counted: !bot && !prefetch && !recent,
+        },
+      });
     });
   }
 

@@ -1845,6 +1845,74 @@ export interface paths {
         patch: operations["adminUpdateHomeModule"];
         trace?: never;
     };
+    "/v1/analytics/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rızalı birinci taraf olay (web vekili çağırır; anonim kimlik tercih çerezinden); bot/personel/demo işaretlenir */
+        post: operations["ingestAnalyticsEvent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/analytics/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Panolar: yalnızca gerçek kayıtlardan; veri yoksa null */
+        get: operations["adminAnalyticsOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Genel pano: bekleyen işler ve son 7 gün özetleri (gerçek sayaçlar) */
+        get: operations["adminDashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/reports/revenue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gelir raporu: elle girilen sponsorluk tutarları (yalnızca yönetici); affiliate verisi yoksa null */
+        get: operations["adminRevenueReport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3133,6 +3201,112 @@ export interface components {
         OutboundLinkList: {
             data: components["schemas"]["OutboundLink"][];
         };
+        AnalyticsOverview: {
+            /** Format: date-time */
+            generatedAt: string;
+            days: number;
+            activeVisitors: number | null;
+            qualifiedSessions: number | null;
+            landings: {
+                source: string;
+                count: number;
+            }[];
+            searches: {
+                total: number | null;
+                zeroResult: number | null;
+                zeroRate: number | null;
+                top: {
+                    query: string;
+                    count: number;
+                }[];
+                topZero: {
+                    query: string;
+                    count: number;
+                }[];
+            };
+            outbound: {
+                total: number | null;
+                byKind: {
+                    kind: string;
+                    count: number;
+                }[];
+            };
+            sponsored: {
+                served: number | null;
+                viewed: number | null;
+                clicks: number | null;
+            };
+            content: {
+                publishedListings: {
+                    category: string;
+                    count: number;
+                }[];
+                publishedArticles: number | null;
+                staleListings: number | null;
+            };
+            reviews: {
+                submitted: number | null;
+                published: number | null;
+                removed: number | null;
+                removalReasons: {
+                    reason: string;
+                    count: number;
+                }[];
+            };
+            moderation: {
+                pending: number;
+                medianWaitHours: number | null;
+            };
+            favoritesAdded: number | null;
+            /** @enum {string|null} */
+            applications: null;
+            guardrails: {
+                sponsoredPerSearch: number | null;
+                reviewRemovalRate: number | null;
+            };
+        };
+        AdminDashboard: {
+            /** Format: date-time */
+            generatedAt: string;
+            pendingModeration: number;
+            openReports: number;
+            staleListings: number;
+            openDataRequests: number;
+            overdueDataRequests: number;
+            activeCampaigns: number;
+            /** @enum {string|null} */
+            applications: null;
+            last7Days: {
+                searches: number;
+                outboundClicks: number;
+                reviewsSubmitted: number;
+                favoritesAdded: number;
+            };
+        };
+        RevenueReport: {
+            /** Format: date-time */
+            generatedAt: string;
+            from: string;
+            to: string;
+            sponsorship: {
+                campaignId: string;
+                campaign: string;
+                sponsor: string;
+                status: string;
+                /** Format: date-time */
+                startsAt: string;
+                /** Format: date-time */
+                endsAt: string;
+                amountKurus: number | null;
+                /** @enum {string} */
+                source: "MANUAL_CONTRACT";
+            }[];
+            sponsorshipTotalKurus: number | null;
+            /** @enum {string|null} */
+            affiliateEstimatedKurus: null;
+            /** @enum {string|null} */
+            affiliateConfirmedKurus: null;
+        };
         HomeResponse: {
             province: {
                 slug: string;
@@ -3240,6 +3414,7 @@ export interface components {
                 searchEventsDays: number;
                 clickSessionHashDays: number;
                 consentIpHashDays: number;
+                analyticsEventsDays: number;
             };
             version: number;
         };
@@ -8868,6 +9043,148 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminHomeModule"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    ingestAnalyticsEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    event: {
+                        /** @enum {string} */
+                        name: "landing" | "listing_viewed" | "content_viewed" | "category_viewed" | "engaged_30s" | "favorite_added" | "outbound_click";
+                        /** Format: uuid */
+                        sessionId: string;
+                        path: string;
+                        props: {
+                            [key: string]: unknown;
+                        };
+                        /** @default false */
+                        demo?: boolean;
+                        /** @default false */
+                        automated?: boolean;
+                    };
+                    /** Format: uuid */
+                    anonymousId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Kabul edildi */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminAnalyticsOverview: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pano */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsOverview"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminDashboard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pano */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDashboard"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminRevenueReport: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Rapor */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevenueReport"];
                 };
             };
             /** @description Hata (RFC 9457) */

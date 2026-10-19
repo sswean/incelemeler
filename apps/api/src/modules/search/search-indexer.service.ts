@@ -86,6 +86,7 @@ export class SearchIndexerService implements OnModuleInit {
         secondaryCategories: true,
         location: { include: { province: true, district: true } },
         product: true,
+        ratingStats: true,
       },
     });
     if (!l || l.deletedAt || !PUBLIC_LISTING.includes(l.status)) {
@@ -132,9 +133,13 @@ export class SearchIndexerService implements OnModuleInit {
       attributes: l.attributes as Record<string, unknown>,
       status: l.status,
       dataOrigin: l.dataOrigin,
-      ratingCount: 0,
-      ratingAvg: null,
-      ratingBayes: null,
+      // Kullanıcı puanı (REQ-VER-007); ortalama yalnızca n ≥ 3 iken (A6.2). Ticari sinyal yok.
+      ratingCount: l.ratingStats?.count ?? 0,
+      ratingAvg:
+        l.ratingStats && l.ratingStats.count >= 3 && l.ratingStats.average !== null
+          ? Number(l.ratingStats.average)
+          : null,
+      ratingBayes: l.ratingStats ? Number(l.ratingStats.bayes) : null,
       lat: loc?.latitude ? Number(loc.latitude) : null,
       lng: loc?.longitude ? Number(loc.longitude) : null,
       publishedAt: l.publishedAt,

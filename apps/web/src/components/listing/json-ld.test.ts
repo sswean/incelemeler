@@ -47,6 +47,29 @@ describe('[REQ-SEO-008] listeleme JSON-LD', () => {
     expect(JSON.stringify(ld)).not.toMatch(/aggregateRating|review/i);
   });
 
+  it('AggregateRating yalnızca n ≥ 3 gerçek değerlendirmeden', () => {
+    const summary = (count: number, display: 'none' | 'insufficient' | 'average') => ({
+      count,
+      display,
+      average: display === 'average' ? 4.3 : null,
+      distribution: null,
+      criteria: null,
+      last12: null,
+    });
+    const u = 'https://x/mekan/ornek';
+    const m = (id: string) => id;
+    expect(
+      listingJsonLd(base, u, m, true, summary(2, 'insufficient'))!.aggregateRating,
+    ).toBeUndefined();
+    expect(listingJsonLd(base, u, m, true, summary(3, 'average'))!.aggregateRating).toEqual({
+      '@type': 'AggregateRating',
+      ratingValue: 4.3,
+      reviewCount: 3,
+      bestRating: 5,
+      worstRating: 1,
+    });
+  });
+
   it('demo veride JSON-LD yok (AK-03)', () => {
     expect(listingJsonLd({ ...base, dataOrigin: 'DEMO' }, 'u', (i) => i, true)).toBeNull();
   });

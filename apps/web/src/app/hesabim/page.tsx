@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { tr } from '@incelemeler/i18n';
@@ -21,6 +22,11 @@ export default async function AccountPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <PageTitle>{tr.auth.accountTitle}</PageTitle>
+      <p>
+        <Link href="/hesabim/degerlendirmelerim" className="text-brand-default underline">
+          {tr.reviews.mine}
+        </Link>
+      </p>
       <section className="space-y-1" data-testid="account-summary">
         <p className="font-medium">{me.displayName}</p>
         <p className="text-text-secondary">{me.email}</p>

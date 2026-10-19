@@ -25,6 +25,8 @@ export const EnvSchema = z.object({
   S3_SECRET_ACCESS_KEY: z.string().optional(),
   /** Express "trust proxy" (web/admin BFF'nin istemci IP'sini iletmesi için). */
   TRUST_PROXY: z.string().default('loopback'),
+  /** Yerel/E2E kolaylığı: outbox işleyicisini API sürecinde de çalıştır (üretimde ayrı worker). */
+  RUN_WORKER_IN_PROCESS: z.enum(['true', 'false']).default('false'),
 });
 export type Env = z.infer<typeof EnvSchema>;
 

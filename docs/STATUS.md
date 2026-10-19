@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 7 — değerlendirmeler + moderasyon + bildir/itiraz (dilim 6 arama/hub tamamlandı: `docs/status-log/F1-D6.md`)
+- Aktif dilim: Faz 1 dilim 8 — dış yönlendirme + affiliate (dilim 7 değerlendirme/moderasyon: `docs/status-log/F1-D7.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -34,7 +34,11 @@
 - Web: `/ara` (otomatik tamamlama, filtre alt sayfası, çipler), `/{il}`, `/{il}/{ilce|kategori}`, `/{il}/{ilce}/{kategori}` hub'ları. Panel: `/ayarlar/esikler`.
 - Demo: `pnpm seed:demo` 64 kurgusal "(Demo)" listeleme ekler; korpus `docs/requirements/ARA-sorgu-korpusu.json`.
 
+## Dilim 7 özeti (değerlendirme + moderasyon)
+- API: `/v1/reviews` (gönder/düzenle/geri çek), `/v1/me/reviews`, `/v1/me/review-drafts/{id}`, `/v1/listings/{id}/reviews|review-form`, `/v1/reports`, `/v1/appeals`, `/v1/admin/moderation/*`; `listing_rating_stats` (Bayes) outbox ile.
+- Web: listeleme sayfasında puan özeti + değerlendirmeler + Bildir; `/degerlendir/{id}` (misafir taslağı → giriş → geri yükleme), `/degerlendirmeler/{id}`, `/hesabim/degerlendirmelerim` (itiraz). Panel: `/moderasyon`.
+
 ## Sonraki 3 adım (Faz 1, §9.3 önerilen sıra)
-1. Dilim 7 — Değerlendirmeler + moderasyon + bildir/itiraz (rating_stats, Bayes, eşik gösterimi).
-2. Dilim 8 — Dış yönlendirme/affiliate (`/git/`).
-3. Dilim 9 — Sponsorluk kampanyası + yerleşim + olay ölçümü (REQ-ARA-009 değişmezlik testi burada).
+1. Dilim 8 — Dış yönlendirme/affiliate (`/git/`), tıklama olayları.
+2. Dilim 9 — Sponsorluk kampanyası + yerleşim + olay ölçümü (REQ-ARA-009, REQ-GUN-004 ikinci onay).
+3. Dilim 7 kalanları — değerlendirme fotoğrafları/EXIF, hukuki talepler, yaptırımlar (D13 öncesi).

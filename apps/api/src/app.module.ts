@@ -22,6 +22,11 @@ import { PublicListingsController } from './modules/catalog/public-listings.cont
 import { PublicListingsService } from './modules/catalog/public-listings.service.js';
 import { AdminArticlesController } from './modules/editorial/admin-articles.controller.js';
 import { AdminArticlesService } from './modules/editorial/admin-articles.service.js';
+import { ModerationSettingsService } from './modules/reviews/moderation-settings.service.js';
+import { ModerationService } from './modules/reviews/moderation.service.js';
+import { RatingStatsService } from './modules/reviews/rating-stats.service.js';
+import { ReviewsController } from './modules/reviews/reviews.controller.js';
+import { ReviewsService } from './modules/reviews/reviews.service.js';
 import { HubsController } from './modules/hubs/hubs.controller.js';
 import { HubsService } from './modules/hubs/hubs.service.js';
 import { ThresholdsService } from './modules/hubs/thresholds.service.js';
@@ -94,6 +99,7 @@ export const CONTROLLERS = [
   AuthorProfilesController,
   SearchController,
   HubsController,
+  ReviewsController,
 ];
 
 @Module({})
@@ -136,6 +142,10 @@ export class AppModule {
         SearchIndexerService,
         ThresholdsService,
         HubsService,
+        ModerationSettingsService,
+        ReviewsService,
+        ModerationService,
+        RatingStatsService,
       ],
     };
   }

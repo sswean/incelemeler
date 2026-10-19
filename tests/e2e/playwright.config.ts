@@ -39,6 +39,8 @@ export default defineConfig({
         MAILPIT_URL,
         WEB_BASE_URL: `http://localhost:${WEB_PORT}`,
         ADMIN_BASE_URL: `http://localhost:${ADMIN_PORT}`,
+        // Değerlendirme istatistikleri, arama indeksi ve e-postalar outbox ile (ayrı worker yerine süreç içi).
+        RUN_WORKER_IN_PROCESS: 'true',
       },
     },
     {

@@ -44,6 +44,7 @@ const extraStaff = [
   ...PROJECTS.map((p) => [`e2e-yazar-${p}@example.test`, 'E2E Yazar', 'AUTHOR']),
   ...PROJECTS.map((p) => [`e2e-editor-${p}@example.test`, 'E2E Editör', 'EDITOR']),
   ...PROJECTS.map((p) => [`e2e-esik-${p}@example.test`, 'E2E Eşik']),
+  ...PROJECTS.map((p) => [`e2e-moderator-${p}@example.test`, 'E2E Moderatör', 'MODERATOR']),
 ];
 for (const [email, name, role = 'ADMIN'] of extraStaff) {
   const { rows } = await db.query(
@@ -53,6 +54,15 @@ for (const [email, name, role = 'ADMIN'] of extraStaff) {
     [email, staffEmail(PROJECTS[0]), name],
   );
   await db.query(`INSERT INTO staff_roles (user_id, role) VALUES ($1, $2)`, [rows[0].id, role]);
+}
+// Üyeler (doğrulanmış e-posta, personel rolü yok) — değerlendirme akışı.
+for (const p of PROJECTS) {
+  await db.query(
+    `INSERT INTO users (id, email, email_verified_at, password_hash, display_name, age_confirmed_at, terms_version, created_at, updated_at)
+     SELECT gen_random_uuid(), $1, now(), password_hash, $3, now(), 'test', now() - interval '400 days', now()
+     FROM users WHERE email = $2`,
+    [`e2e-uye-${p}@example.test`, staffEmail(PROJECTS[0]), `Deneyimli Gezgin ${p}`],
+  );
 }
 // REQ-KAT-004 / E2E-020: yalnızca test ortamında yüklenen hukuki kapı fikstürü (DEMO listelemeler için).
 await db.query(

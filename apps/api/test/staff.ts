@@ -48,3 +48,28 @@ export async function staffToken(
     .expect(200);
   return token;
 }
+
+/** Üye oluşturur (varsayılan: doğrulanmış e-posta, eski hesap) ve oturum token'ı döner. */
+export async function memberToken(
+  t: TestContext,
+  email: string,
+  opts: { verified?: boolean; displayName?: string; createdDaysAgo?: number } = {},
+): Promise<{ token: string; userId: string }> {
+  const user = await t.prisma.user.create({
+    data: {
+      email,
+      passwordHash: await hashPassword(STAFF_PASSWORD),
+      displayName: opts.displayName ?? email.split('@')[0]!,
+      emailVerifiedAt: opts.verified === false ? null : new Date(),
+      ageConfirmedAt: new Date(),
+      termsVersion: 'test',
+      createdAt: new Date(Date.now() - (opts.createdDaysAgo ?? 365) * 86_400_000),
+    },
+  });
+  const login = await request(t.app.getHttpServer())
+    .post('/v1/auth/login')
+    .set('X-Forwarded-For', nextIp())
+    .send({ email, password: STAFF_PASSWORD })
+    .expect(200);
+  return { token: LoginResult.parse(login.body).sessionToken, userId: user.id };
+}

@@ -11,15 +11,27 @@ function str(form: FormData, key: string): string {
   return typeof v === 'string' ? v : '';
 }
 
+/** Girişten sonra dönülecek yol: yalnızca site içi göreli yol (açık yönlendirme yok). */
+function safeNext(v: string): string | null {
+  return v.startsWith('/') && !v.startsWith('//') && !v.includes('\\') && v.length <= 300
+    ? v
+    : null;
+}
+
 export async function loginAction(form: FormData): Promise<void> {
   const { data, error } = await (
     await api()
   ).POST('/v1/auth/login', {
     body: { email: str(form, 'email'), password: str(form, 'password') },
   });
-  if (!data) redirect(`/giris?hata=${problemCode(error)}`);
+  const next = safeNext(str(form, 'sonra'));
+  if (!data) {
+    redirect(
+      `/giris?hata=${problemCode(error)}${next ? `&sonra=${encodeURIComponent(next)}` : ''}`,
+    );
+  }
   await setSessionCookie(data.sessionToken, data.expiresAt);
-  redirect('/hesabim');
+  redirect(next ?? '/hesabim');
 }
 
 export async function registerAction(form: FormData): Promise<void> {

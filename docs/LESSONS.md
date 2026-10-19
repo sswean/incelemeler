@@ -22,3 +22,6 @@ Bir ders bir madde; ilk satır tek cümlelik özet. Yanlış çıkan ders silini
 - **Next.js sunucu eylemi gövde sınırı varsayılan 1 MB'tır.** Görsel yükleyen panelde `experimental.serverActions.bodySizeLimit` ayarlanır.
 - **Zod 4'te kayıt defterinden bağımsız satır içi üretimde `.meta()` alanları kaybolur;** çok parçalı dosya alanı için `z.file()` OpenAPI'de `format: binary` üretir.
 - **Betikle yapılan metin değiştirmeleri (Python `str.replace`) Prettier biçimlendirmesinden sonra sessizce eşleşmeyebilir.** Değiştirme sonrası `assert` ya da `grep` ile doğrula; arayüz değişikliklerini E2E'de gezinmeyle (doğrudan URL değil) test et.
+- 2026-10-19 · `pgrep -f <desen>` kabuğun kendi komut satırıyla eşleşip onu sonlandırabilir (çıkış 144). Süreç bulmak için `ps -eo pid,args | grep "[d]esen"` kullan; ardından yalnızca PID ile `kill`.
+- 2026-10-19 · Prettier çok satırlı `import { … }` bloğunu tek satıra indirebilir; Python ile metin değişikliğinde her `replace` öncesi `assert s.count(old) == 1` zorunlu (sessiz kaçırma derleme hatasına dönüştü).
+- 2026-10-19 · `'use server'` dosyası yalnızca async işlev dışa aktarabilir; `'use client'` modülünden dışa aktarılan düz nesne sunucu bileşeninde istemci referansıdır — paylaşılan sabitler ayrı modüle.

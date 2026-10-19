@@ -10,14 +10,15 @@ export const metadata: Metadata = { title: tr.auth.loginTitle, robots: { index: 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ hata?: string }>;
+  searchParams: Promise<{ hata?: string; sonra?: string }>;
 }) {
-  const { hata } = await searchParams;
+  const { hata, sonra } = await searchParams;
   return (
     <div className="mx-auto max-w-md space-y-6">
       <PageTitle>{tr.auth.loginTitle}</PageTitle>
       {hata ? <Alert kind="error">{errorMessage(hata)}</Alert> : null}
       <form action={loginAction} className="space-y-4">
+        {sonra ? <input type="hidden" name="sonra" value={sonra} /> : null}
         <Field id="email" label={tr.auth.email} type="email" required autoComplete="email" />
         <Field
           id="password"

@@ -934,6 +934,212 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/listings/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Yayındaki değerlendirmeler + eşikli puan özeti (varsayılan en yeni; ticari ilişki sıralamayı etkilemez) */
+        get: operations["listListingReviews"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/listings/{id}/review-form": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Değerlendirme formu bağlamı (kriterler, türe göre zorunlu alanlar) */
+        get: operations["getReviewFormContext"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Değerlendirme gönderir (doğrulanmış e-posta; ön/son moderasyon kuralları) */
+        post: operations["createReview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reviews/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Kendi değerlendirmesini geri çeker (kullanıcı talebi) */
+        delete: operations["withdrawReview"];
+        options?: never;
+        head?: never;
+        /** Kendi değerlendirmesini düzenler ya da reddedileni yeniden gönderir (sürüm denetimli, revizyonlu) */
+        patch: operations["updateReview"];
+        trace?: never;
+    };
+    "/v1/me/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Değerlendirmelerim: durum, gerekçe, itiraz hakkı */
+        get: operations["listMyReviews"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/review-drafts/{listingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Hesaptaki değerlendirme taslağı */
+        get: operations["getReviewDraft"];
+        /** Değerlendirme taslağını hesaba kaydeder (otomatik kayıt) */
+        put: operations["saveReviewDraft"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bildir: sabit neden listesi; misafir de bildirebilir (hız sınırlı) */
+        post: operations["createReport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/appeals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** İtiraz: karardan sonra 14 gün içinde bir kez; farklı moderatör inceler */
+        post: operations["createAppeal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/moderation/queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Moderasyon kuyruğu (öncelik: risk, bildirim sayısı; SLA yaşı) */
+        get: operations["adminModerationQueue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/moderation/reviews/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Değerlendirme kararı (ret/kaldırmada gerekçe kodu zorunlu; denetim kaydı) */
+        post: operations["adminDecideReview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/moderation/reports/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bildirim kararı (yerinde değil / içeriği kaldır) */
+        post: operations["adminDecideReport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/moderation/appeals/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** İtiraz kararı (ilk kararı veren moderatör karar veremez) */
+        post: operations["adminDecideAppeal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2103,6 +2309,183 @@ export interface components {
                 /** Format: date-time */
                 lastmod: string;
             }[];
+        };
+        ReviewDraft: {
+            listingId: string;
+            data: {
+                [key: string]: unknown;
+            };
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        PublicReview: {
+            id: string;
+            rating: number;
+            title: string | null;
+            body: string;
+            criteriaRatings: {
+                name: string;
+                rating: number;
+            }[];
+            experienceMonth: string | null;
+            /** @enum {string|null} */
+            usageDuration: "LT_1M" | "M1_6" | "M6_12" | "GT_12M" | null;
+            /** @enum {string|null} */
+            visitContext: "SOLO" | "COUPLE" | "FAMILY" | "FRIENDS" | "BUSINESS" | null;
+            /** @enum {string} */
+            verification: "SELF_DECLARED" | "DOCUMENTED" | "PROVIDER_VERIFIED";
+            incentivized: boolean;
+            author: {
+                displayName: string;
+            };
+            /** Format: date-time */
+            publishedAt: string;
+            /** Format: date-time */
+            editedAt: string | null;
+        };
+        RatingSummary: {
+            count: number;
+            /** @enum {string} */
+            display: "none" | "insufficient" | "average";
+            average: number | null;
+            distribution: number[] | null;
+            criteria: {
+                name: string;
+                average: number;
+                count: number;
+            }[] | null;
+            last12: {
+                count: number;
+                average: number;
+            } | null;
+        };
+        ReviewList: {
+            summary: components["schemas"]["RatingSummary"];
+            data: components["schemas"]["PublicReview"][];
+            total: number;
+            page: number;
+            pageSize: number;
+        };
+        MyReview: {
+            id: string;
+            listing: {
+                id: string;
+                name: string;
+                path: string;
+            };
+            rating: number;
+            title: string | null;
+            body: string;
+            /** @enum {string} */
+            status: "PENDING" | "PUBLISHED" | "REJECTED" | "REMOVED" | "WITHDRAWN";
+            reported: boolean;
+            /** @enum {string|null} */
+            reasonCode: "NOT_PERSONAL_EXPERIENCE" | "HATE_OR_HARASSMENT" | "THREAT" | "PERSONAL_DATA" | "DOXXING" | "ADVERTISING_OR_SPAM" | "OFF_TOPIC" | "COPIED_CONTENT" | "UNDECLARED_INCENTIVE" | "HEALTH_CLAIM" | "CONFLICT_OF_INTEREST" | "DUPLICATE" | "LEGAL_REQUEST" | "COURT_ORDER" | "USER_REQUEST" | null;
+            reasonNote: string | null;
+            /** @enum {string} */
+            appeal: "NONE" | "AVAILABLE" | "OPEN" | "UPHELD" | "OVERTURNED";
+            /** Format: date-time */
+            appealDeadline: string | null;
+            incentivized: boolean;
+            criteriaRatings: {
+                criterionId: string;
+                rating: number;
+            }[];
+            experienceMonth: string | null;
+            /** @enum {string|null} */
+            usageDuration: "LT_1M" | "M1_6" | "M6_12" | "GT_12M" | null;
+            /** @enum {string|null} */
+            visitContext: "SOLO" | "COUPLE" | "FAMILY" | "FRIENDS" | "BUSINESS" | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            editedAt: string | null;
+            version: number;
+        };
+        MyReviewList: {
+            data: components["schemas"]["MyReview"][];
+        };
+        ReportAck: {
+            id: string;
+            /** @enum {string} */
+            status: "OPEN";
+        };
+        AppealAck: {
+            id: string;
+            /** @enum {string} */
+            status: "OPEN";
+        };
+        ModerationQueue: {
+            data: {
+                /** @enum {string} */
+                kind: "REVIEW" | "REPORT" | "APPEAL";
+                id: string;
+                review: {
+                    id: string;
+                    rating: number;
+                    title: string | null;
+                    body: string;
+                    /** @enum {string} */
+                    status: "PENDING" | "PUBLISHED" | "REJECTED" | "REMOVED" | "WITHDRAWN";
+                    riskScore: number;
+                    signals: {
+                        code: string;
+                        weight: number;
+                        detail: string | null;
+                    }[];
+                    incentivized: boolean;
+                    author: {
+                        id: string;
+                        displayName: string;
+                    };
+                    listing: {
+                        id: string;
+                        name: string;
+                    };
+                    version: number;
+                    /** Format: date-time */
+                    createdAt: string;
+                    moderatedById: string | null;
+                    /** @enum {string|null} */
+                    reasonCode: "NOT_PERSONAL_EXPERIENCE" | "HATE_OR_HARASSMENT" | "THREAT" | "PERSONAL_DATA" | "DOXXING" | "ADVERTISING_OR_SPAM" | "OFF_TOPIC" | "COPIED_CONTENT" | "UNDECLARED_INCENTIVE" | "HEALTH_CLAIM" | "CONFLICT_OF_INTEREST" | "DUPLICATE" | "LEGAL_REQUEST" | "COURT_ORDER" | "USER_REQUEST" | null;
+                };
+                report: {
+                    /** @enum {string} */
+                    reason: "FAKE_OR_NOT_EXPERIENCE" | "HATE_OR_HARASSMENT" | "PERSONAL_DATA" | "SPAM_OR_AD" | "OFF_TOPIC" | "COPYRIGHT" | "CONFLICT_OF_INTEREST" | "LEGAL" | "OTHER";
+                    description: string | null;
+                    count: number;
+                } | null;
+                appeal: {
+                    statement: string;
+                    /** @enum {string} */
+                    against: "REVIEW_DECISION" | "REPORT_DECISION";
+                } | null;
+                ageHours: number;
+                priority: number;
+            }[];
+            counts: {
+                [key: string]: number;
+            };
+        };
+        DecisionAck: {
+            /** @enum {boolean} */
+            ok: true;
+        };
+        ReviewFormContext: {
+            listing: {
+                id: string;
+                name: string;
+                kind: string;
+                path: string;
+            };
+            criteria: {
+                id: string;
+                name: string;
+                description: string | null;
+            }[];
+            usesDuration: boolean;
+            requiresVisitContext: boolean;
+            ugcEnabled: boolean;
         };
         ImportPreviewBody: {
             /** @enum {string} */
@@ -4926,6 +5309,560 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ThresholdsResponse"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    listListingReviews: {
+        parameters: {
+            query?: {
+                sort?: "newest" | "highest" | "lowest" | "documented";
+                rating?: number;
+                visitContext?: "SOLO" | "COUPLE" | "FAMILY" | "FRIENDS" | "BUSINESS";
+                documented?: "true";
+                page?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Değerlendirmeler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getReviewFormContext: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Form bağlamı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewFormContext"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    createReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    rating: number;
+                    title?: string | null;
+                    body: string;
+                    /** @default [] */
+                    criteriaRatings?: {
+                        /** Format: uuid */
+                        criterionId: string;
+                        rating: number;
+                    }[];
+                    experienceMonth?: string | null;
+                    /** @enum {string|null} */
+                    usageDuration?: "LT_1M" | "M1_6" | "M6_12" | "GT_12M" | null;
+                    /** @enum {string|null} */
+                    visitContext?: "SOLO" | "COUPLE" | "FAMILY" | "FRIENDS" | "BUSINESS" | null;
+                    declarations: {
+                        /** @enum {boolean} */
+                        ownExperience: true;
+                        /** @enum {boolean} */
+                        noConflict: true;
+                        incentivized: boolean;
+                    };
+                    /** @default tr */
+                    language?: string;
+                    /** Format: uuid */
+                    listingId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Gönderildi */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReview"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    withdrawReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Geri çekildi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReview"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    updateReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    rating: number;
+                    title?: string | null;
+                    body: string;
+                    /** @default [] */
+                    criteriaRatings?: {
+                        /** Format: uuid */
+                        criterionId: string;
+                        rating: number;
+                    }[];
+                    experienceMonth?: string | null;
+                    /** @enum {string|null} */
+                    usageDuration?: "LT_1M" | "M1_6" | "M6_12" | "GT_12M" | null;
+                    /** @enum {string|null} */
+                    visitContext?: "SOLO" | "COUPLE" | "FAMILY" | "FRIENDS" | "BUSINESS" | null;
+                    declarations: {
+                        /** @enum {boolean} */
+                        ownExperience: true;
+                        /** @enum {boolean} */
+                        noConflict: true;
+                        incentivized: boolean;
+                    };
+                    /** @default tr */
+                    language?: string;
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReview"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    listMyReviews: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Değerlendirmelerim */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyReviewList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getReviewDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Taslak */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewDraft"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    saveReviewDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    data: {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Taslak */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewDraft"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    createReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    targetType: "REVIEW";
+                    /** Format: uuid */
+                    targetId: string;
+                    /** @enum {string} */
+                    reason: "FAKE_OR_NOT_EXPERIENCE" | "HATE_OR_HARASSMENT" | "PERSONAL_DATA" | "SPAM_OR_AD" | "OFF_TOPIC" | "COPYRIGHT" | "CONFLICT_OF_INTEREST" | "LEGAL" | "OTHER";
+                    description?: string | null;
+                    /** Format: email */
+                    email?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Alındı */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportAck"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    createAppeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: uuid */
+                    reviewId?: string;
+                    /** Format: uuid */
+                    reportId?: string;
+                    statement: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Alındı */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealAck"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminModerationQueue: {
+        parameters: {
+            query?: {
+                queue?: "pending" | "post" | "reports" | "appeals";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Kuyruk */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModerationQueue"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminDecideReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    action: "APPROVE" | "REJECT" | "REMOVE";
+                    /** @enum {string} */
+                    reasonCode?: "NOT_PERSONAL_EXPERIENCE" | "HATE_OR_HARASSMENT" | "THREAT" | "PERSONAL_DATA" | "DOXXING" | "ADVERTISING_OR_SPAM" | "OFF_TOPIC" | "COPIED_CONTENT" | "UNDECLARED_INCENTIVE" | "HEALTH_CLAIM" | "CONFLICT_OF_INTEREST" | "DUPLICATE" | "LEGAL_REQUEST" | "COURT_ORDER" | "USER_REQUEST";
+                    note?: string | null;
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Karar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionAck"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminDecideReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    action: "DISMISS" | "REMOVE_TARGET";
+                    /** @enum {string} */
+                    reasonCode?: "NOT_PERSONAL_EXPERIENCE" | "HATE_OR_HARASSMENT" | "THREAT" | "PERSONAL_DATA" | "DOXXING" | "ADVERTISING_OR_SPAM" | "OFF_TOPIC" | "COPIED_CONTENT" | "UNDECLARED_INCENTIVE" | "HEALTH_CLAIM" | "CONFLICT_OF_INTEREST" | "DUPLICATE" | "LEGAL_REQUEST" | "COURT_ORDER" | "USER_REQUEST";
+                    note?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Karar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionAck"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminDecideAppeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    outcome: "UPHELD" | "OVERTURNED";
+                    /** @enum {string} */
+                    reasonCode?: "NOT_PERSONAL_EXPERIENCE" | "HATE_OR_HARASSMENT" | "THREAT" | "PERSONAL_DATA" | "DOXXING" | "ADVERTISING_OR_SPAM" | "OFF_TOPIC" | "COPIED_CONTENT" | "UNDECLARED_INCENTIVE" | "HEALTH_CLAIM" | "CONFLICT_OF_INTEREST" | "DUPLICATE" | "LEGAL_REQUEST" | "COURT_ORDER" | "USER_REQUEST";
+                    note: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Karar */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionAck"];
                 };
             };
             /** @description Hata (RFC 9457) */

@@ -285,24 +285,24 @@
       "title": "user_reviews",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "reviews tablosu (alanlar, CHECK kısıtları), kullanıcı başına listeleme başına 1 aktif kısmi benzersiz indeks, review_revisions (migration, reviews.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Fotoğraf ilişkisi sonraki dilim."
     },
     {
       "id": "REQ-VER-007",
       "title": "rating_stats türetilmiştir (n, ortalama, dağılım, kriter ortalamaları, son 12 ay, Bayes…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "listing_rating_stats türetilmiş: n, ortalama, dağılım, kriterler, son 12 ay, Bayes; outbox ile yeniden hesaplanır; arama belgesine yansır (reviews.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Gece toplu öncül yeniden hesaplama D13."
     },
     {
       "id": "REQ-VER-008",
@@ -1017,60 +1017,60 @@
       "title": "Puan ölçekleri ve eşikler A6.1–A6.2'deki gibidir",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "KISMİ",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": "n = 0, 1, 2, 3, 5, 12 için birim + görsel snapshot testleri; editör ve kullanıcı puanını birleştiren kod yok; Bayes formülü testli.",
+      "acceptance": "Puan ölçekleri ve eşikler: n = 0, 1, 2, 3, 5, 12 birim testleri (rating-stats.test); editör puanı girdisi yok; Bayes formülü testli; JSON-LD AggregateRating yalnızca n ≥ 3 (json-ld.test).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Faz 0: Eşikler ve Bayes formülü utils içinde testli; arayüz Faz 1."
+      "notes": ""
     },
     {
       "id": "REQ-DEG-002",
       "title": "Değerlendirme listesi varsayılan sıralaması \"En yeni\"",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Varsayılan en yeni; en yüksek/en düşük puan, belgeli; olumsuzlar gizlenmez (reviews.int). Sıralamada ticari tablo okunmaz.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "En faydalı (Faz 2); sponsorluk değişmezlik testi D9 (kampanya tabloları)."
     },
     {
       "id": "REQ-DEG-003",
       "title": "Filtreler",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Filtreler: puan, ziyaret türü, belgeli; \"Belgeli deneyim\" yalnızca DOCUMENTED/PROVIDER_VERIFIED, diğerleri \"Kullanıcı beyanı\".",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Dil ve fotoğraflı filtreleri fotoğraf yüklemeyle; kanıt yükleme akışı sonraki dilim."
     },
     {
       "id": "REQ-DEG-004",
       "title": "Değerlendirme durum makinesi, gerekçe kodları ve bildirimler A6.4'teki gibidir",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": "misafir yazmaya başlar → giriş yapar → taslak korunur → gönderir → \"İncelemede\" → onay → bildirim → \"Yayında\"; ret senaryosunda gerekçe gösterilir ve yeniden gönderme çalışır; EXIF silme testli.",
+      "acceptance": "Durum makinesi, gerekçe kodları ve işlemsel e-postalar; misafir taslağı → giriş → taslak geri yüklenir → gönderim → İncelemede → ret (gerekçe) → düzenle-yeniden gönder → onay → Yayında (reviews.int, E2E reviews.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Değerlendirme fotoğrafları ve EXIF testi (E2E-012 fotoğraf adımı) sonraki dilimde."
     },
     {
       "id": "REQ-DEG-005",
       "title": "Kullanıcı değerlendirmeleri sponsorlu içeriklerde, reklam kreatiflerinde ve işletme pan…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Değerlendirmeler yalnızca listeleme sayfasında; sponsorlu içerik/kreatif/dışa aktarım alıntı yüzeyi yok.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "D9 kreatif kuralları ile test."
     },
     {
       "id": "REQ-DEG-006",
@@ -1101,48 +1101,48 @@
       "title": "Moderasyon kuyruğu",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Moderasyon kuyruğu (ön/son moderasyon, bildirimler, itirazlar), öncelik (hukuki talep, bildirim sayısı, risk), SLA yaşı, karar başına zorunlu gerekçe kodu, denetim kaydı; otomatik sinyaller (review-signals.test, reviews.int, E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Makro şablonları ve toplu işlem; SLA raporu D12."
     },
     {
       "id": "REQ-GUN-002",
       "title": "Bildir (şikâyet) akışı",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Bildir: sabit neden listesi, misafir de bildirebilir (hız sınırlı), bildirim sahibine e-posta, misafir e-postası karar sonrası silinir (reviews.int, E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Fotoğraf, soru-cevap, işletme yanıtı hedefleri ilgili fazlarda."
     },
     {
       "id": "REQ-GUN-003",
       "title": "İtiraz",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "İtiraz: 14 gün içinde bir kez; ilk kararı veren moderatör karar veremez; değerlendirme sahibi ve bildirimi reddedilen taraf (reviews.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Panelde itiraz karar ekranı E2E."
     },
     {
       "id": "REQ-GUN-004",
       "title": "Sponsor/işletme talebiyle olumsuz değerlendirme silinmez",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Kaldırma yalnızca sabit gerekçe kodlarıyla (işletme beğenmedi kodu yok), denetim kaydı (reviews.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Sponsor kuruluşa bağlı değerlendirmede ikinci onay D9 (A-019)."
     },
     {
       "id": "REQ-GUN-005",
@@ -1197,12 +1197,12 @@
       "title": "Moderatör çıkar çatışması",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Moderatör kendi değerlendirmesini modere edemez; itirazı ilk karar veren inceleyemez (reviews.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yakınlık/sponsor ilişkisi beyanları sonraki dilim."
     },
     {
       "id": "REQ-GUN-010",

@@ -13,6 +13,8 @@ import { listingPath } from '@incelemeler/routes';
 import { formatDate, formatLongDate, withCase } from '@incelemeler/utils';
 import { serverApi } from '../../lib/api';
 import { canonical, jsonLdScript, robots } from '../../lib/seo';
+import { RatingSummaryView } from '../reviews/rating-summary';
+import { ReviewListView } from '../reviews/review-list';
 import { breadcrumbJsonLd, listingJsonLd } from './json-ld';
 
 const T = tr.listingPage;
@@ -137,6 +139,10 @@ export async function ListingPage(
   const path = listingPath({ kind: l.kind, slug: l.slug, carRental: l.carRental });
   if (!kinds.includes(l.kind) || l.carRental !== carRentalRoute) permanentRedirect(path);
 
+  const { data: reviews } = await serverApi().GET('/v1/listings/{id}/reviews', {
+    params: { path: { id: l.id }, query: {} },
+  });
+  const writeHref = `/degerlendir/${l.id}`;
   const closed = l.status === 'CLOSED_PERMANENTLY' || l.status === 'CLOSED_TEMPORARILY';
   const ctas = ctasFor({
     kind: l.kind,
@@ -149,7 +155,7 @@ export async function ListingPage(
   const primary = l.media.find((m) => m.role === 'PRIMARY') ?? l.media[0];
   const gallery = l.media.filter((m) => m !== primary);
   const restaurant = l.categoryPath.some((c) => c.slug === RESTAURANT_ROOT);
-  const ld = listingJsonLd(l, canonical(path), mediaUrl, restaurant);
+  const ld = listingJsonLd(l, canonical(path), mediaUrl, restaurant, reviews?.summary ?? null);
   const crumbs = [
     { name: T.home, url: canonical('/') },
     { name: l.name, url: canonical(path) },
@@ -227,7 +233,11 @@ export async function ListingPage(
           {tr.taxonomy.kindLabels[l.kind]} · {l.category.name}
           {loc ? ` · ${placeText(l)}` : ''}
         </p>
-        <p data-testid="rating-summary">{T.noReviews}</p>
+        {reviews ? (
+          <RatingSummaryView summary={reviews.summary} writeHref={writeHref} compact />
+        ) : (
+          <p data-testid="rating-summary">{T.noReviews}</p>
+        )}
         {showPrice ? (
           <p>
             {T.priceLevel}:{' '}
@@ -363,6 +373,40 @@ export async function ListingPage(
           </ul>
         </section>
       ) : null}
+
+      <section
+        aria-labelledby="degerlendirmeler"
+        className="space-y-4"
+        id="degerlendirmeler-bolumu"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="degerlendirmeler" className="text-lg font-semibold">
+            {tr.reviews.title}
+          </h2>
+          <Link
+            href={writeHref}
+            rel="nofollow"
+            className="inline-flex min-h-11 items-center rounded-md bg-brand-default px-4 font-medium text-on-brand hover:bg-brand-hover"
+          >
+            {tr.reviews.write}
+          </Link>
+        </div>
+        {reviews ? (
+          <>
+            <RatingSummaryView summary={reviews.summary} writeHref={writeHref} />
+            <ReviewListView list={reviews} signedIn={false} />
+            {reviews.total > 0 ? (
+              <p>
+                <Link href={`/degerlendirmeler/${l.id}`} className="underline" rel="nofollow">
+                  {reviews.total > reviews.pageSize
+                    ? tr.reviews.allReviews.replace('{n}', String(reviews.total))
+                    : tr.reviews.sortAndFilter}
+                </Link>
+              </p>
+            ) : null}
+          </>
+        ) : null}
+      </section>
 
       <footer className="space-y-1 border-t border-border-default pt-4 text-sm text-text-secondary">
         {verified ? (

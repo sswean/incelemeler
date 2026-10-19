@@ -1,4 +1,4 @@
-import type { PublicListing } from '@incelemeler/contracts';
+import type { PublicListing, RatingSummary } from '@incelemeler/contracts';
 
 const TYPE: Record<string, string> = {
   PLACE: 'LocalBusiness',
@@ -21,6 +21,7 @@ export function listingJsonLd(
   url: string,
   mediaUrl: (id: string) => string,
   restaurant: boolean,
+  rating: RatingSummary | null = null,
 ): Record<string, unknown> | null {
   if (l.dataOrigin === 'DEMO') return null;
   const type = l.kind === 'PLACE' && restaurant ? 'Restaurant' : TYPE[l.kind];
@@ -34,6 +35,18 @@ export function listingJsonLd(
     url,
     ...(l.shortDescription ? { description: l.shortDescription } : {}),
     ...(images.length ? { image: images } : {}),
+    // Yalnızca sayfada görünen gerçek değerlendirmelerden; n < 3 iken yok (REQ-SEO-008 a).
+    ...(rating?.display === 'average' && rating.average !== null
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: rating.average,
+            reviewCount: rating.count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
   };
   if (l.kind === 'PRODUCT') {
     const p = l.details.product;

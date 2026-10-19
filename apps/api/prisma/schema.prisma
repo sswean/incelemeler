@@ -184,6 +184,9 @@ model Listing {
   event               ListingEvent?        @relation("EventDetails")
   hostedEvents        ListingEvent[]       @relation("EventVenue")
   guide               ListingGuide?
+  reviews             Review[]
+  ratingStats         ListingRatingStats?
+  reviewDrafts        ReviewDraft[]
 
   @@index([kind, status, primaryCategoryId])
   @@index([organizationId])
@@ -243,6 +246,13 @@ model User {
   emailTokens         EmailToken[]
   mfaFactor           MfaFactor?
   recoveryCodes       RecoveryCode[]
+  reviews             Review[]              @relation("ReviewAuthor")
+  moderatedReviews    Review[]              @relation("ReviewModerator")
+  reviewDrafts        ReviewDraft[]
+  reports             ContentReport[]       @relation("ReportReporter")
+  decidedReports      ContentReport[]       @relation("ReportDecider")
+  appeals             ModerationAppeal[]    @relation("AppealAppellant")
+  decidedAppeals      ModerationAppeal[]    @relation("AppealDecider")
 
   @@index([status])
   @@map("users")
@@ -880,4 +890,189 @@ model PlatformSetting {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   @@map("platform_settings")
+}
+
+// ── Değerlendirmeler ve moderasyon (REQ-VER-006/007, REQ-DEG-*, REQ-GUN-*) ──
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+  REMOVED
+  WITHDRAWN
+}
+
+enum ReviewVerification {
+  SELF_DECLARED
+  DOCUMENTED
+  PROVIDER_VERIFIED
+}
+
+/// PRE: yayından önce insan onayı · POST: otomatik kontrollerden geçti, yayında; sonradan incelenir.
+enum ModerationMode {
+  PRE
+  POST
+}
+
+/// Kullanıcı değerlendirmesi. Üye başına listeleme başına 1 aktif kayıt (kısmi benzersiz indeks — migration).
+/// Editör puanıyla birleştirilmez; ayrı tablo/alan (REQ-VER-004).
+model Review {
+  id              String             @id @default(uuid(7)) @db.Uuid
+  listingId       String             @map("listing_id") @db.Uuid
+  listing         Listing            @relation(fields: [listingId], references: [id], onDelete: Restrict)
+  userId          String             @map("user_id") @db.Uuid
+  user            User               @relation("ReviewAuthor", fields: [userId], references: [id], onDelete: Restrict)
+  rating          Int                @db.SmallInt
+  title           String?
+  body            String
+  /// [{ criterionId, rating }]
+  criteriaRatings Json               @default("[]") @map("criteria_ratings")
+  /// YYYY-AA (ürün dışı türlerde zorunlu)
+  experienceMonth String?            @map("experience_month")
+  usageDuration   String?            @map("usage_duration")
+  visitContext    String?            @map("visit_context")
+  verification    ReviewVerification @default(SELF_DECLARED)
+  /// Teşvik beyanı: evetse etiketli yayımlanır, ortalamaya girmez.
+  incentivized    Boolean
+  /// "Deneyim bana ait" ve "çıkar ilişkim yok" beyanlarının zamanı.
+  declaredAt      DateTime           @map("declared_at") @db.Timestamptz(3)
+  status          ReviewStatus
+  moderationMode  ModerationMode     @map("moderation_mode")
+  riskScore       Int                @default(0) @map("risk_score")
+  /// Otomatik kontrol sinyalleri [{ code, weight, detail }] — tek başına ceza vermez.
+  signals         Json               @default("[]")
+  /// Son moderasyon incelemesi tamamlandı mı (POST modunda).
+  reviewedAt      DateTime?          @map("reviewed_at") @db.Timestamptz(3)
+  reasonCode      String?            @map("reason_code")
+  reasonNote      String?            @map("reason_note")
+  moderatedById   String?            @map("moderated_by") @db.Uuid
+  moderatedBy     User?              @relation("ReviewModerator", fields: [moderatedById], references: [id], onDelete: Restrict)
+  moderatedAt     DateTime?          @map("moderated_at") @db.Timestamptz(3)
+  language        String             @default("tr")
+  dataOrigin      DataOrigin         @default(USER) @map("data_origin")
+  /// İstemci IP öneki (kısaltılmış; hız/küme sinyali — Ek A17).
+  ipPrefix        String?            @map("ip_prefix")
+  createdAt       DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  submittedAt     DateTime           @default(now()) @map("submitted_at") @db.Timestamptz(3)
+  publishedAt     DateTime?          @map("published_at") @db.Timestamptz(3)
+  editedAt        DateTime?          @map("edited_at") @db.Timestamptz(3)
+  updatedAt       DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version         Int                @default(1)
+  revisions       ReviewRevision[]
+  appeals         ModerationAppeal[]
+
+  @@index([listingId, status, publishedAt(sort: Desc)])
+  @@index([userId, createdAt])
+  @@index([status, submittedAt])
+  @@map("reviews")
+}
+
+model ReviewRevision {
+  id              String   @id @default(uuid(7)) @db.Uuid
+  reviewId        String   @map("review_id") @db.Uuid
+  review          Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  rating          Int      @db.SmallInt
+  title           String?
+  body            String
+  criteriaRatings Json     @map("criteria_ratings")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([reviewId, createdAt])
+  @@map("review_revisions")
+}
+
+/// Üye taslağı (A6.4 sürtünme azaltma): hesapta otomatik kayıt.
+model ReviewDraft {
+  userId    String   @map("user_id") @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String   @map("listing_id") @db.Uuid
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  data      Json
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@id([userId, listingId])
+  @@map("review_drafts")
+}
+
+/// Türetilmiş puan istatistiği (REQ-VER-007): elle düzenlenmez; outbox ile yeniden hesaplanır.
+model ListingRatingStats {
+  listingId    String   @id @map("listing_id") @db.Uuid
+  listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  count        Int
+  sum          Int
+  average      Decimal? @db.Decimal(3, 2)
+  /// [n1, n2, n3, n4, n5]
+  distribution Json
+  /// [{ criterionId, name, average, count }]
+  criteria     Json     @default("[]")
+  last12Count  Int      @map("last12_count")
+  last12Avg    Decimal? @map("last12_avg") @db.Decimal(3, 2)
+  /// (C·m + Σ) / (C + n); m = grup ortalaması (A6.2)
+  bayes        Decimal  @db.Decimal(5, 3)
+  prior        Decimal  @db.Decimal(4, 3)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("listing_rating_stats")
+}
+
+enum ReportStatus {
+  OPEN
+  UPHELD
+  DISMISSED
+}
+
+/// Bildirimler (REQ-GUN-002): hedef türü genişletilebilir (fotoğraf, soru-cevap, işletme yanıtı — sonraki fazlar).
+model ContentReport {
+  id            String             @id @default(uuid(7)) @db.Uuid
+  targetType    String             @map("target_type")
+  targetId      String             @map("target_id") @db.Uuid
+  reason        String
+  description   String?
+  reporterId    String?            @map("reporter_id") @db.Uuid
+  reporter      User?              @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: SetNull)
+  /// Misafir bildiriminde durum bildirimi için; karar sonrası silinir (veri minimizasyonu).
+  reporterEmail String?            @map("reporter_email")
+  ipPrefix      String?            @map("ip_prefix")
+  status        ReportStatus       @default(OPEN)
+  decidedById   String?            @map("decided_by") @db.Uuid
+  decidedBy     User?              @relation("ReportDecider", fields: [decidedById], references: [id], onDelete: Restrict)
+  decidedAt     DateTime?          @map("decided_at") @db.Timestamptz(3)
+  reasonCode    String?            @map("reason_code")
+  note          String?
+  createdAt     DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  appeals       ModerationAppeal[]
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+  @@map("content_reports")
+}
+
+enum AppealStatus {
+  OPEN
+  UPHELD
+  OVERTURNED
+}
+
+/// İtiraz (REQ-GUN-003): 14 gün içinde bir kez; ilk kararı verenden farklı moderatör karar verir.
+model ModerationAppeal {
+  id                String         @id @default(uuid(7)) @db.Uuid
+  reviewId          String?        @map("review_id") @db.Uuid
+  review            Review?        @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reportId          String?        @map("report_id") @db.Uuid
+  report            ContentReport? @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  appellantId       String         @map("appellant_id") @db.Uuid
+  appellant         User           @relation("AppealAppellant", fields: [appellantId], references: [id], onDelete: Restrict)
+  statement         String
+  originalDeciderId String         @map("original_decider_id") @db.Uuid
+  status            AppealStatus   @default(OPEN)
+  decidedById       String?        @map("decided_by") @db.Uuid
+  decidedBy         User?          @relation("AppealDecider", fields: [decidedById], references: [id], onDelete: Restrict)
+  decidedAt         DateTime?      @map("decided_at") @db.Timestamptz(3)
+  note              String?
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@unique([reviewId, appellantId])
+  @@unique([reportId, appellantId])
+  @@index([status, createdAt])
+  @@map("moderation_appeals")
 }

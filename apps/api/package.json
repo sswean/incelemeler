@@ -19,7 +19,8 @@
     "openapi:generate": "node scripts/generate-openapi.mjs",
     "admin:create-super-admin": "node --env-file-if-exists=../../.env dist/cli/create-super-admin.js",
     "worker": "node --env-file-if-exists=../../.env dist/worker.js",
-    "search:reindex": "node --env-file-if-exists=../../.env dist/cli/search-reindex.js"
+    "search:reindex": "node --env-file-if-exists=../../.env dist/cli/search-reindex.js",
+    "db:roles": "node --env-file-if-exists=../../.env dist/cli/db-roles.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1152.0",

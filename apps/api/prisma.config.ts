@@ -11,5 +11,6 @@ if (existsSync(rootEnv) && !process.env.DATABASE_URL) process.loadEnvFile(rootEn
 export default defineConfig({
   schema: 'prisma/schema.prisma',
   migrations: { path: 'prisma/migrations' },
-  datasource: { url: process.env.DATABASE_URL ?? '' },
+  // Migration'lar şema sahibi rolüyle; uygulama en az yetkili rolle çalışır (REQ-GUV-011).
+  datasource: { url: process.env.MIGRATION_DATABASE_URL ?? process.env.DATABASE_URL ?? '' },
 });

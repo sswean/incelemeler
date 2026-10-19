@@ -46,6 +46,7 @@ import { HomeService } from './modules/home/home.service.js';
 import { CampaignsService } from './modules/sponsorship/campaigns.service.js';
 import { SponsoredServingService } from './modules/sponsorship/sponsored-serving.service.js';
 import { SponsorLinkLookup } from './common/sponsor-link.js';
+import { RouteRateLimitGuard } from './modules/platform/route-rate-limit.js';
 import { SponsorshipController } from './modules/sponsorship/sponsorship.controller.js';
 import { HubsController } from './modules/hubs/hubs.controller.js';
 import { HubsService } from './modules/hubs/hubs.service.js';
@@ -148,6 +149,8 @@ export class AppModule {
         },
         { provide: APP_FILTER, useClass: ProblemFilter },
         { provide: APP_GUARD, useClass: AuthGuard },
+        // Kimlikten sonra: panel sınırı kullanıcı başına (REQ-GUV-009).
+        { provide: APP_GUARD, useClass: RouteRateLimitGuard },
         PrismaService,
         AuditService,
         RateLimitService,

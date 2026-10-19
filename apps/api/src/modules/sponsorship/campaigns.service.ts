@@ -21,6 +21,7 @@ import type { RequestMeta } from '../../common/request-meta.js';
 import type { Prisma, PlacementSlot } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { can } from '../access/permissions.js';
+import { assertFreshStepUp } from '../identity/auth.guard.js';
 import type { AuthContext } from '../identity/auth.context.js';
 import { AuditService } from '../platform/audit.service.js';
 import { SponsoredServingService } from './sponsored-serving.service.js';
@@ -592,10 +593,11 @@ export class CampaignsService {
       : [];
   }
 
+  /** Tutar alanı: ayrı izin + son 10 dakikada ikinci faktör (REQ-HSP-007, REQ-GUV-017). */
   private assertAmount(ctx: AuthContext, amount: number | null | undefined) {
-    if (amount !== undefined && !can(ctx.roles, 'campaigns.amount')) {
-      throw forbidden('Tutar alanı için yetkin yok');
-    }
+    if (amount === undefined) return;
+    if (!can(ctx.roles, 'campaigns.amount')) throw forbidden('Tutar alanı için yetkin yok');
+    assertFreshStepUp(ctx);
   }
 
   private async assertPlacementsAllowed(c: CampaignRow) {

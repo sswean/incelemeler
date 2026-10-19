@@ -31,6 +31,8 @@ export async function startTestApp(
     DATA_ENCRYPTION_KEY: 'b'.repeat(64),
     EMAIL_ADAPTER: 'memory',
     STORAGE_ADAPTER: 'memory',
+    // Senaryolar tek IP'den yoğun istek yapar; rota sınıfı sınırları security.int'te çarpan 1 ile sınanır.
+    RATE_LIMIT_MULTIPLIER: '100',
     ...extra,
   });
   const mail = new MemoryEmailAdapter();

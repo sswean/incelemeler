@@ -3,7 +3,13 @@ import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
 import { ProblemException } from '../../common/problem.js';
 import { can } from '../access/permissions.js';
-import { AUTH_KEY, type AuthRequirement, PUBLIC_KEY, setAuth } from './auth.context.js';
+import {
+  AUTH_KEY,
+  type AuthContext,
+  type AuthRequirement,
+  PUBLIC_KEY,
+  setAuth,
+} from './auth.context.js';
 import { AuthService, STEP_UP_WINDOW_MS } from './auth.service.js';
 
 /**
@@ -57,16 +63,22 @@ export class AuthGuard implements CanActivate {
     if (required.length && !required.some((p) => can(ctx.roles, p))) {
       throw new ProblemException(HttpStatus.FORBIDDEN, 'FORBIDDEN', 'Bu işlem için yetkin yok');
     }
-    if (requirement.stepUp) {
-      const fresh = ctx.stepUpAt && Date.now() - ctx.stepUpAt.getTime() <= STEP_UP_WINDOW_MS;
-      if (!fresh) {
-        throw new ProblemException(
-          HttpStatus.FORBIDDEN,
-          'STEP_UP_REQUIRED',
-          'Bu işlem için ikinci faktörü yeniden doğrula',
-        );
-      }
-    }
+    if (requirement.stepUp) assertFreshStepUp(ctx);
     return true;
+  }
+}
+
+/**
+ * Kritik işlem (REQ-HSP-007, REQ-GUV-017): ikinci faktör son 10 dakikada doğrulanmış olmalı. Yalnızca bazı
+ * alanlar kritikse (ör. kampanya tutarı) servis bu yardımcıyı doğrudan çağırır.
+ */
+export function assertFreshStepUp(ctx: Pick<AuthContext, 'stepUpAt'>): void {
+  const fresh = ctx.stepUpAt && Date.now() - ctx.stepUpAt.getTime() <= STEP_UP_WINDOW_MS;
+  if (!fresh) {
+    throw new ProblemException(
+      HttpStatus.FORBIDDEN,
+      'STEP_UP_REQUIRED',
+      'Bu işlem için ikinci faktörü yeniden doğrula',
+    );
   }
 }

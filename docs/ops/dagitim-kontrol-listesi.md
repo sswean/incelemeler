@@ -10,3 +10,5 @@
 | 4 | MOCK adaptör üretimde kapalı (AK-06) | ortam doğrulaması açılışta reddeder | — |
 | 5 | `SITE_INDEXING` yalnızca canlıya geçiş onayıyla açık | ortam değişkeni | — |
 | 6 | Saklama/imha süreleri hukuken doğrulandı (REQ-KVK-023) | `docs/legal/saklama-imha-politikasi.md` TASLAK değil | 🔴 KIRMIZI |
+| 7 | API en az yetkili rolle bağlanır (REQ-GUV-011) | `db:roles` çalıştırıldı; `DATABASE_URL` kullanıcısı `incelemeler_app`, migration'lar `MIGRATION_DATABASE_URL` ile; `SELECT rolsuper FROM pg_roles WHERE rolname = current_user` → false | — |
+| 8 | Hız sınırı çarpanı 1 (REQ-GUV-009) | `RATE_LIMIT_MULTIPLIER` tanımsız ya da 1 (üretimde başka değer açılışı reddeder) | — |

@@ -158,4 +158,16 @@ execFileSync('node', ['dist/cli/search-reindex.js'], {
   },
   stdio: 'inherit',
 });
+// En az yetkili roller (REQ-GUV-011): API uygulama rolüyle bağlanır (playwright.config.ts).
+execFileSync('node', ['dist/cli/db-roles.js'], {
+  cwd: apiDir,
+  env: {
+    ...env,
+    MIGRATION_DATABASE_URL: databaseUrl,
+    // Yalnızca E2E: env.ts'deki sabit, gerçek olmayan test parolaları.
+    APP_DB_PASSWORD: 'e2e-app-role-local-only',
+    READONLY_DB_PASSWORD: 'e2e-readonly-role-local-only',
+  },
+  stdio: 'inherit',
+});
 console.log('E2E veritabanı hazır: incelemeler_e2e');

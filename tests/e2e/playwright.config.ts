@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { ADMIN_PORT, API_PORT, E2E_DATABASE_URL, MAILPIT_URL, WEB_PORT } from './env.js';
+import { ADMIN_PORT, API_PORT, E2E_APP_DATABASE_URL, MAILPIT_URL, WEB_PORT } from './env.js';
 
 const apiUrl = `http://localhost:${API_PORT}`;
 
@@ -28,7 +28,8 @@ export default defineConfig({
       reuseExistingServer: false,
       env: {
         APP_ENV: 'test',
-        DATABASE_URL: E2E_DATABASE_URL,
+        // En az yetkili uygulama rolüyle (REQ-GUV-011); migration ve tohum prepare-db'de sahip rolüyle.
+        DATABASE_URL: E2E_APP_DATABASE_URL,
         API_PORT: String(API_PORT),
         CURSOR_SECRET: 'e2e-cursor-secret-not-a-real-secret-0000',
         // Yalnızca E2E: sabit, gerçek olmayan test anahtarı (her koşuda sıfırlanan veritabanı).

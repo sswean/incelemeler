@@ -8,6 +8,8 @@ export function proxy(request: NextRequest) {
   const headers = new Headers(request.headers);
   headers.set('x-nonce', nonce);
   headers.set('Content-Security-Policy', csp);
+  // Step-up sonrası dönülecek sayfa (sunucu bileşenleri yolu başka türlü bilemez); istemci değeri ezilir.
+  headers.set('x-url', request.nextUrl.pathname + request.nextUrl.search);
   const res = NextResponse.next({ request: { headers } });
   res.headers.set('Content-Security-Policy', csp);
   if (request.headers.get('x-forwarded-proto') === 'https') {

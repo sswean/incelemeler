@@ -38,9 +38,10 @@ export class ImportsController {
     return this.imports.commit(ctx, parseId(id), requestMeta(req));
   }
 
+  /** Toplu geri alma (toplu silme) kritik işlemdir: step-up (REQ-HSP-007, REQ-GUV-017). */
   @Post(':id/rollback')
   @HttpCode(200)
-  @RequireAuth({ level: 'staff-mfa', permission: 'listings.write' })
+  @RequireAuth({ level: 'staff-mfa', permission: 'listings.write', stepUp: true })
   rollback(@Auth() ctx: AuthContext, @Param('id') id: string, @Req() req: Request) {
     return this.imports.rollback(ctx, parseId(id), requestMeta(req));
   }

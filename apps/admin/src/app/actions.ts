@@ -62,3 +62,22 @@ export async function mfaVerifyAction(form: FormData): Promise<void> {
   if (!data) redirect(`/iki-adim?hata=${problemCode(error)}`);
   redirect('/');
 }
+
+/** Panel içi yerel yol mu (açık yönlendirme yok). */
+function localPath(v: string): string {
+  return /^\/(?![/\\])[^\s]*$/.test(v) && !v.startsWith('/iki-adim') ? v : '/';
+}
+
+/** Kritik işlem öncesi yeniden doğrulama (REQ-HSP-007, REQ-GUV-017): başarıda geldiği sayfaya döner. */
+export async function stepUpAction(form: FormData): Promise<void> {
+  const token = await getSessionToken();
+  if (!token) redirect('/giris');
+  const back = localPath(str(form, 'sonra'));
+  const { data, error } = await (
+    await api(token)
+  ).POST('/v1/auth/mfa/verify', { body: { code: str(form, 'code').toLowerCase() } });
+  if (!data) {
+    redirect(`/iki-adim/yeniden?sonra=${encodeURIComponent(back)}&hata=${problemCode(error)}`);
+  }
+  redirect(back);
+}

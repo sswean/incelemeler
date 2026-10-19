@@ -5,7 +5,7 @@ import { totp } from './totp.js';
 export const admin = `http://localhost:${ADMIN_PORT}`;
 
 /** İlk kez giriş yapan personel: giriş + zorunlu 2FA kurulumu; panel ana sayfasında biter. */
-export async function loginWithMfaSetup(page: Page, email: string): Promise<void> {
+export async function loginWithMfaSetup(page: Page, email: string): Promise<string> {
   await page.goto(`${admin}/giris`);
   await page.getByLabel('E-posta').fill(email);
   await page.getByLabel('Parola').fill(E2E_STAFF_PASSWORD);
@@ -17,4 +17,5 @@ export async function loginWithMfaSetup(page: Page, email: string): Promise<void
   await expect(page.getByTestId('recovery-codes').getByRole('listitem')).toHaveCount(10);
   await page.getByRole('link', { name: 'Panele devam et' }).click();
   await expect(page.getByTestId('system-status')).toBeVisible();
+  return secret;
 }

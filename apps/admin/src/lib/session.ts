@@ -33,7 +33,23 @@ export async function api(token?: string | null) {
   const extra: Record<string, string> = {};
   if (token) extra['Authorization'] = `Bearer ${token}`;
   if (forwarded) extra['X-Forwarded-For'] = forwarded;
-  return createApiClient(base, { headers: extra });
+  const client = createApiClient(base, { headers: extra });
+  // Kritik işlem 403 STEP_UP_REQUIRED dönerse yeniden doğrulama sayfasına (REQ-GUV-017).
+  const here = h.get('x-url') ?? '/';
+  client.use({
+    async onResponse({ response }) {
+      if (response.status !== 403) return undefined;
+      const body = (await response
+        .clone()
+        .json()
+        .catch(() => null)) as { code?: string } | null;
+      if (body?.code === 'STEP_UP_REQUIRED') {
+        redirect(`/iki-adim/yeniden?sonra=${encodeURIComponent(here)}`);
+      }
+      return undefined;
+    },
+  });
+  return client;
 }
 
 /** MFA durumuna göre panelde gidilecek yer. */

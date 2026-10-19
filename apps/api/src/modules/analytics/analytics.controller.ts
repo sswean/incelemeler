@@ -53,8 +53,9 @@ export class AnalyticsController {
     return this.analytics.dashboard();
   }
 
+  /** Gelir raporu (ekran ve CSV dışa aktarma) finansal veridir: step-up (REQ-HSP-007, REQ-GUV-017). */
   @Get('admin/reports/revenue')
-  @RequireAuth({ level: 'staff-mfa', permission: 'campaigns.amount' })
+  @RequireAuth({ level: 'staff-mfa', permission: 'campaigns.amount', stepUp: true })
   revenue(@Query() raw: unknown) {
     const q = parseQuery(RevenueQuery, raw);
     return this.analytics.revenue(q.from, q.to);

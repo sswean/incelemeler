@@ -605,7 +605,7 @@
       "acceptance": "2FA kurulmadan panel uç noktaları 403 MFA_REQUIRED; TOTP yeniden oynatma koruması; 10 hash'li kurtarma kodu tek kullanımlık; rol değişikliğinde 10 dk step-up (STEP_UP_REQUIRED); panel arayüzü E2E.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Diğer kritik işlemler (kampanya tutarı, toplu silme, dışa aktarma, hukuki kapı) eklendikçe aynı `stepUp: true` mekanizmasını kullanır."
+      "notes": "Step-up kapsamı (F1-D16a): rol değişikliği, kampanya tutarı, toplu geri alma, gelir raporu dışa aktarma; panelde yeniden doğrulama sayfası. Hukuki kapı API'de değiştirilemez."
     },
     {
       "id": "REQ-HSP-008",
@@ -1853,7 +1853,7 @@
       "acceptance": null,
       "tests": ["apps/api/test/listings.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": "Listeleme tablosunda arama, filtre, cursor sayfalama; CSV raporlar. Eksik: sıralama, toplu işlem, CSV'de step-up."
+      "notes": "Listeleme tablosunda arama, filtre, cursor sayfalama; CSV raporlar. Gelir raporu CSV'si step-up ister. Eksik: sıralama, toplu işlem."
     },
     {
       "id": "REQ-ADM-004",
@@ -2656,12 +2656,17 @@
       "title": "Hız sınırları rota sınıfına göre (kimlik, yazma, arama, yönlendirme, panel) ve kötüye k…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "KISMİ",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": ["apps/api/test/auth.int.test.ts"],
+      "tests": [
+        "apps/api/src/config/env.test.ts",
+        "apps/api/src/modules/platform/route-rate-limit.test.ts",
+        "apps/api/test/auth.int.test.ts",
+        "apps/api/test/security.int.test.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": "Kimlik ve yazma uçlarında hız sınırı + 429 Retry-After. Eksik: arama, yönlendirme ve panel sınıfları."
+      "notes": "Merkezi RouteRateLimitGuard (A-029): kimlik 30/dk, yazma 60/dk, arama 120/dk, yönlendirme 60/dk (IP öneki başına), panel 600/dk (kullanıcı başına); uç noktaya özgü sıkı sınırlar servislerde; 429 + Retry-After; aşımlar security.rate_limited olayı (kötüye kullanım izleme). E2E gerçek sınırlarla (çarpan 1)."
     },
     {
       "id": "REQ-GUV-010",
@@ -2680,12 +2685,12 @@
       "title": "Veritabanı rolleri",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "KISMİ",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": ["apps/api/test/api.int.test.ts"],
+      "tests": ["apps/api/test/api.int.test.ts", "apps/api/test/db-roles.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": "audit_log UPDATE/DELETE/TRUNCATE tetikleyiciyle engelli. Eksik: ayrı uygulama/migration/salt okunur rolleri."
+      "notes": "incelemeler_app (DML; DDL yok; audit_log yalnız SELECT+INSERT; migration tablosu salt okunur), incelemeler_readonly (raporlama/replika), migration = şema sahibi (MIGRATION_DATABASE_URL); `db:roles` idempotent, parolalar ortamdan. E2E API uygulama rolüyle çalışır. Üretimde kurulum dağıtım kontrol listesinde (A-029)."
     },
     {
       "id": "REQ-GUV-012",
@@ -2755,12 +2760,16 @@
       "title": "Panel ve API için yönetici işlemlerinde step-up (REQ-HSP-007) ve kritik işlemlerin dene…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "KISMİ",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": ["apps/api/test/auth.int.test.ts"],
+      "tests": [
+        "apps/api/test/auth.int.test.ts",
+        "apps/api/test/step-up.int.test.ts",
+        "tests/e2e/specs/analytics.spec.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": "Step-up altyapısı ve rol atamada zorunlu; kritik işlemler denetim kaydında. Eksik: kampanya tutarı, toplu silme, dışa aktarma, uyum ayarlarında step-up."
+      "notes": "Step-up: rol atama, kampanya tutarı (oluşturma/güncelleme), toplu geri alma (içe aktarma), gelir raporu (ekran + CSV); panel STEP_UP_REQUIRED yanıtında /iki-adim/yeniden sayfasına yönlendirip geri döner. Kritik işlemler denetim kaydında. Hukuki kapı API ile değiştirilemez (İnsan, C sınıfı)."
     },
     {
       "id": "REQ-KVK-001",

@@ -582,7 +582,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** İşlemle oluşturulan listelemeleri geri alır (hiçbiri değiştirilmemişse) */
+        /** İşlemle oluşturulan listelemeleri geri alır (hiçbiri değiştirilmemişse) (step-up: son 10 dk ikinci faktör) */
         post: operations["adminRollbackImport"];
         delete?: never;
         options?: never;
@@ -1412,7 +1412,7 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Kampanyayı günceller (sürüm denetimli; denetim kaydı) */
+        /** Kampanyayı günceller (sürüm denetimli; denetim kaydı; tutar değişikliği step-up gerektirir) */
         patch: operations["adminUpdateCampaign"];
         trace?: never;
     };
@@ -1971,7 +1971,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Gelir raporu: elle girilen sponsorluk tutarları (yalnızca yönetici); affiliate verisi yoksa null */
+        /** Gelir raporu: elle girilen sponsorluk tutarları (yalnızca yönetici); affiliate verisi yoksa null (step-up: son 10 dk ikinci faktör) */
         get: operations["adminRevenueReport"];
         put?: never;
         post?: never;

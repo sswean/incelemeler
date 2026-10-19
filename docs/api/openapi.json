@@ -3325,7 +3325,7 @@
     "/v1/admin/imports/{id}/rollback": {
       "post": {
         "operationId": "adminRollbackImport",
-        "summary": "İşlemle oluşturulan listelemeleri geri alır (hiçbiri değiştirilmemişse)",
+        "summary": "İşlemle oluşturulan listelemeleri geri alır (hiçbiri değiştirilmemişse) (step-up: son 10 dk ikinci faktör)",
         "tags": [
           "admin",
           "imports"
@@ -7831,7 +7831,7 @@
       },
       "patch": {
         "operationId": "adminUpdateCampaign",
-        "summary": "Kampanyayı günceller (sürüm denetimli; denetim kaydı)",
+        "summary": "Kampanyayı günceller (sürüm denetimli; denetim kaydı; tutar değişikliği step-up gerektirir)",
         "tags": [
           "admin",
           "sponsorship"
@@ -10299,7 +10299,7 @@
     "/v1/admin/reports/revenue": {
       "get": {
         "operationId": "adminRevenueReport",
-        "summary": "Gelir raporu: elle girilen sponsorluk tutarları (yalnızca yönetici); affiliate verisi yoksa null",
+        "summary": "Gelir raporu: elle girilen sponsorluk tutarları (yalnızca yönetici); affiliate verisi yoksa null (step-up: son 10 dk ikinci faktör)",
         "tags": [
           "admin",
           "analytics"

@@ -605,7 +605,8 @@ export const endpoints: EndpointDef[] = [
     operationId: 'adminRollbackImport',
     tags: ['admin', 'imports'],
     auth: 'staff-mfa',
-    summary: 'İşlemle oluşturulan listelemeleri geri alır (hiçbiri değiştirilmemişse)',
+    summary:
+      'İşlemle oluşturulan listelemeleri geri alır (hiçbiri değiştirilmemişse) (step-up: son 10 dk ikinci faktör)',
     responses: { 200: ok('Geri alındı', ImportBatch) },
   },
   {
@@ -1150,7 +1151,8 @@ export const endpoints: EndpointDef[] = [
     operationId: 'adminUpdateCampaign',
     tags: ['admin', 'sponsorship'],
     auth: 'staff-mfa',
-    summary: 'Kampanyayı günceller (sürüm denetimli; denetim kaydı)',
+    summary:
+      'Kampanyayı günceller (sürüm denetimli; denetim kaydı; tutar değişikliği step-up gerektirir)',
     body: CampaignUpdateBody,
     responses: { 200: ok('Güncellendi', Campaign) },
   },
@@ -1508,7 +1510,7 @@ export const endpoints: EndpointDef[] = [
     tags: ['admin', 'analytics'],
     auth: 'staff-mfa',
     summary:
-      'Gelir raporu: elle girilen sponsorluk tutarları (yalnızca yönetici); affiliate verisi yoksa null',
+      'Gelir raporu: elle girilen sponsorluk tutarları (yalnızca yönetici); affiliate verisi yoksa null (step-up: son 10 dk ikinci faktör)',
     query: RevenueQuery,
     responses: { 200: ok('Rapor', RevenueReport) },
   },

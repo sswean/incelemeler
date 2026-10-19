@@ -25,6 +25,8 @@ export const EnvSchema = z.object({
   S3_SECRET_ACCESS_KEY: z.string().optional(),
   /** Express "trust proxy" (web/admin BFF'nin istemci IP'sini iletmesi için). */
   TRUST_PROXY: z.string().default('loopback'),
+  /** Rota sınıfı hız sınırlarının çarpanı (A-029); üretimde 1. Testler yüksek hacimli senaryolar için artırabilir. */
+  RATE_LIMIT_MULTIPLIER: z.coerce.number().int().min(1).max(1000).default(1),
   /** Yerel/E2E kolaylığı: outbox işleyicisini API sürecinde de çalıştır (üretimde ayrı worker). */
   RUN_WORKER_IN_PROCESS: z.enum(['true', 'false']).default('false'),
 });
@@ -44,6 +46,9 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     throw new EnvValidationError(
       'EMAIL_ADAPTER üretimde yalnızca gerçek sağlayıcı ya da disabled olabilir',
     );
+  }
+  if (parsed.data.APP_ENV === 'production' && parsed.data.RATE_LIMIT_MULTIPLIER !== 1) {
+    throw new EnvValidationError('RATE_LIMIT_MULTIPLIER üretimde 1 olmalıdır');
   }
   if (parsed.data.APP_ENV === 'production' && parsed.data.STORAGE_ADAPTER === 'memory') {
     throw new EnvValidationError('STORAGE_ADAPTER=memory üretimde kullanılamaz');

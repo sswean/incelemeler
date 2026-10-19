@@ -84,6 +84,54 @@ describe('API sertleştirme (REQ-GUV-002/003/005/015)', () => {
       .expect(422);
   });
 
+  it('[REQ-GUV-009] rota sınıfı sınırları: arama ve yönlendirme IP öneki başına, panel kullanıcı başına; 429 + Retry-After', async () => {
+    const strict = await startTestApp({ RATE_LIMIT_MULTIPLIER: '1' });
+    try {
+      const h = () => request(strict.app.getHttpServer());
+      const statuses: number[] = [];
+      for (let i = 0; i < 121; i++) {
+        statuses.push(
+          (
+            await h()
+              .get('/v1/search/suggest')
+              .query({ q: 'ka' })
+              .set('X-Forwarded-For', '10.90.1.5')
+          ).status,
+        );
+      }
+      expect(statuses.slice(0, 120).every((s) => s === 200)).toBe(true);
+      const blocked = await h()
+        .get('/v1/search')
+        .query({ q: 'simit' })
+        .set('X-Forwarded-For', '10.90.1.77');
+      expect(blocked.status).toBe(429);
+      expect(Number(blocked.headers['retry-after'])).toBeGreaterThan(0);
+      expect(Problem.parse(blocked.body).code).toBe('RATE_LIMITED');
+      // Başka ağ etkilenmez; önbellekli okumalar sınıfsız.
+      await h()
+        .get('/v1/search')
+        .query({ q: 'simit' })
+        .set('X-Forwarded-For', '10.90.2.5')
+        .expect(200);
+      await h().get('/v1/health').set('X-Forwarded-For', '10.90.1.5').expect(200);
+      // Yönlendirme sınıfı: 60/dk.
+      const redirects: number[] = [];
+      for (let i = 0; i < 61; i++) {
+        redirects.push(
+          (
+            await h()
+              .get('/v1/outbound/0192f0a0-0000-7000-8000-000000000001/resolve')
+              .set('X-Forwarded-For', '10.90.3.5')
+          ).status,
+        );
+      }
+      expect(redirects.slice(0, 60).every((s) => s !== 429)).toBe(true);
+      expect(redirects[60]).toBe(429);
+    } finally {
+      await strict.close();
+    }
+  }, 120_000);
+
   it('[REQ-GUV-015] hata gövdesi yalnızca problem alanlarını taşır', async () => {
     const res = await http()
       .get('/v1/categories')

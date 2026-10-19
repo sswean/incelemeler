@@ -119,6 +119,9 @@ export const admin = {
   mfaVerifyTitle: 'İki adımlı doğrulama',
   mfaVerifyIntro: 'Kimlik doğrulayıcı uygulamandaki kodu ya da bir kurtarma kodunu gir.',
   mfaVerify: 'Doğrula',
+  stepUpTitle: 'Kimliğini yeniden doğrula',
+  stepUpIntro:
+    'Bu işlem kritik olduğu için son 10 dakika içinde iki adımlı doğrulama gerekiyor. Kodu girdikten sonra işlemi yeniden yapabilirsin.',
   recoveryTitle: 'Kurtarma kodların',
   recoveryIntro:
     'Bu kodları güvenli bir yerde sakla. Her biri bir kez kullanılabilir ve yalnızca şimdi gösterilir.',

@@ -35,4 +35,14 @@ describe('[REQ-MIM-018] üretim koruması', () => {
       EnvValidationError,
     );
   });
+  it('[REQ-GUV-009] üretimde hız sınırı çarpanı 1 dışında olamaz', () => {
+    expect(() =>
+      loadEnv({
+        ...valid,
+        APP_ENV: 'production',
+        STORAGE_ADAPTER: 's3',
+        RATE_LIMIT_MULTIPLIER: '10',
+      }),
+    ).toThrow(EnvValidationError);
+  });
 });

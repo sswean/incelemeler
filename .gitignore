@@ -17,3 +17,4 @@ blob-report/
 *.log
 apps/api/src/generated/
 .ci-local/
+next-env.d.ts

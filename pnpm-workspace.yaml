@@ -1,0 +1,17 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tests/*"
+
+# pnpm 10 yükleme betiklerini varsayılan olarak engeller; yalnızca gerekli olanlara izin verilir.
+onlyBuiltDependencies:
+  - '@prisma/engines'
+  - '@swc/core'
+  - prisma
+  - esbuild
+  - sharp
+  - unrs-resolver
+ignoredBuiltDependencies:
+  - cpu-features
+  - protobufjs
+  - ssh2

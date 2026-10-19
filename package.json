@@ -1,0 +1,44 @@
+{
+  "name": "incelemeler",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22.12 <23"
+  },
+  "scripts": {
+    "setup": "bash scripts/init.sh",
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:unit": "turbo run test",
+    "test:integration": "turbo run test:integration --concurrency=1",
+    "test:e2e": "pnpm --filter @incelemeler/e2e test",
+    "test:smoke": "pnpm --filter @incelemeler/e2e test:smoke",
+    "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm test:integration && pnpm build && pnpm openapi:check && pnpm req:check",
+    "ci:local": "bash scripts/ci-local.sh",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:migrate": "pnpm --filter @incelemeler/api db:migrate",
+    "db:reset:local": "pnpm --filter @incelemeler/api db:reset:local",
+    "seed:demo": "pnpm --filter @incelemeler/api seed:demo",
+    "openapi:generate": "pnpm --filter @incelemeler/api openapi:generate && pnpm --filter @incelemeler/api-client generate",
+    "openapi:check": "node scripts/openapi-check.mjs",
+    "req:check": "node scripts/req-check.mjs",
+    "tokens:build": "pnpm --filter @incelemeler/tokens build"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "^22.20.5",
+    "@vitest/eslint-plugin": "^1.6.27",
+    "eslint": "10.13.0",
+    "eslint-plugin-playwright": "^2.12.1",
+    "globals": "^17.13.0",
+    "prettier": "3.9.10",
+    "turbo": "2.11.9",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.2",
+    "vitest": "5.0.5"
+  }
+}

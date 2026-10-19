@@ -1,0 +1,12 @@
+node_modules
+dist
+.next
+coverage
+pnpm-lock.yaml
+docs/prompt/
+prompts/
+apps/api/src/generated/
+packages/api-client/src/schema.d.ts
+packages/tokens/dist/
+docs/api/openapi.json
+*.md

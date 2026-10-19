@@ -1,0 +1,88 @@
+// İncelemeler veri modeli — Faz 0 yürüyen iskelet çekirdeği.
+// Tam model Faz 1 dilimlerinde ADR-0004'e göre genişletilir (Ek A2).
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat         = "esm"
+  importFileExtension  = "js"
+  runtime              = "nodejs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Listeleme türleri — kodla tanımlı, sabit (Ç-11, Ek A2.2).
+enum ListingKind {
+  PLACE
+  LODGING
+  PRODUCT
+  SERVICE_PROVIDER
+  GUIDE_PERSON
+  EXPERIENCE
+  POI
+  DESTINATION
+  EVENT
+  WORK
+}
+
+enum CategoryStatus {
+  DRAFT
+  HIDDEN
+  PUBLISHED
+}
+
+/// Verinin kökeni (§12.4). DEMO kayıtlar üretim yüzeylerine giremez.
+enum DataOrigin {
+  DEMO
+  EDITORIAL
+  USER
+  OWNER
+  PROVIDER
+  IMPORT
+}
+
+/// Kategori = veri (REQ-VER-002). Ağaç: parentId (Faz 1'de closure/ltree değerlendirilir).
+model Category {
+  id                   String         @id @default(uuid(7)) @db.Uuid
+  slug                 String         @unique
+  name                 String
+  parentId             String?        @map("parent_id") @db.Uuid
+  parent               Category?      @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children             Category[]     @relation("CategoryTree")
+  allowedKinds         ListingKind[]  @map("allowed_kinds")
+  status               CategoryStatus @default(DRAFT)
+  sortOrder            Int            @default(0) @map("sort_order")
+  ymyl                 Boolean        @default(false)
+  requiresExpertReview Boolean        @default(false) @map("requires_expert_review")
+  ugcEnabled           Boolean        @default(true) @map("ugc_enabled")
+  sponsorshipAllowed   Boolean        @default(true) @map("sponsorship_allowed")
+  requiresLicense      Boolean        @default(false) @map("requires_license")
+  dataOrigin           DataOrigin     @default(EDITORIAL) @map("data_origin")
+  createdAt            DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version              Int            @default(1)
+
+  @@index([status, sortOrder, id])
+  @@index([parentId])
+  @@map("categories")
+}
+
+/// Değiştirilemez denetim kaydı (REQ-VER-017). Uygulama rolü yalnızca INSERT yapabilir (migration'da tetikleyici).
+model AuditLog {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  actorId    String?  @map("actor_id") @db.Uuid
+  actorRole  String?  @map("actor_role")
+  action     String
+  targetType String   @map("target_type")
+  targetId   String?  @map("target_id")
+  summary    Json?
+  ipPrefix   String?  @map("ip_prefix")
+  traceId    String?  @map("trace_id")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([targetType, targetId])
+  @@index([createdAt])
+  @@map("audit_log")
+}

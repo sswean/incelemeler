@@ -1,0 +1,38 @@
+# Yerel geliştirme servisleri (§8.1/6). Üretimde kullanılmaz.
+name: incelemeler
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: incelemeler
+      POSTGRES_PASSWORD: incelemeler_local_only
+      POSTGRES_DB: incelemeler
+    ports:
+      - '54320:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U incelemeler -d incelemeler']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # S3 uyumlu yerel depolama (ADR-0007). MinIO imajı bu ortamda çekilemediği için SeaweedFS.
+  s3:
+    image: chrislusf/seaweedfs:latest
+    command: 'server -s3 -dir=/data -s3.port=8333 -master.volumeSizeLimitMB=256'
+    ports:
+      - '8333:8333'
+    volumes:
+      - s3data:/data
+
+  # Yerel e-posta yakalayıcı: hiçbir e-posta gerçek alıcıya gitmez (§11 C sınıfı).
+  mail:
+    image: axllent/mailpit:latest
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+
+volumes:
+  pgdata:
+  s3data:

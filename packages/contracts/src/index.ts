@@ -21,3 +21,4 @@ export * from './sponsorship.js';
 export * from './account.js';
 export * from './consent.js';
 export * from './privacy.js';
+export * from './home.js';

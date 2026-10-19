@@ -1794,6 +1794,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ana sayfa modülleri (sıra panelden; minOge altındaki modül gizlenir; sponsorlu sınırları kodda) */
+        get: operations["home"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/home-modules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ana sayfa modül kaydı */
+        get: operations["adminListHomeModules"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/home-modules/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Modülü günceller (sıra, görünürlük, kaynak ayarı); sponsorlu sınırları aşan yapılandırma reddedilir */
+        patch: operations["adminUpdateHomeModule"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3081,6 +3132,69 @@ export interface components {
         };
         OutboundLinkList: {
             data: components["schemas"]["OutboundLink"][];
+        };
+        HomeResponse: {
+            province: {
+                slug: string;
+                name: string;
+            } | null;
+            modules: {
+                key: string;
+                /** @enum {string} */
+                type: "CATEGORY_SHORTCUTS" | "CITY_PICKER" | "EDITORS_PICKS" | "CATEGORY_POPULAR" | "SEASONAL" | "NEW_ARTICLES" | "COMPARISONS" | "SPONSORED" | "TRUST_LINKS";
+                title: string;
+                cards: {
+                    /** @enum {string} */
+                    kind: "LISTING" | "ARTICLE" | "CATEGORY" | "PLACE" | "LINK";
+                    id: string;
+                    title: string;
+                    subtitle: string | null;
+                    path: string;
+                    commercial: {
+                        /** @enum {string} */
+                        type: "NONE";
+                    } | {
+                        /** @enum {string} */
+                        type: "SPONSORED";
+                        sponsor: string;
+                        label: string;
+                        why: string;
+                    };
+                    sponsored: {
+                        placementId: string;
+                        clickHref: string;
+                        impressionToken: string;
+                    } | null;
+                }[];
+            }[];
+        };
+        AdminHomeModule: {
+            id: string;
+            key: string;
+            /** @enum {string} */
+            type: "CATEGORY_SHORTCUTS" | "CITY_PICKER" | "EDITORS_PICKS" | "CATEGORY_POPULAR" | "SEASONAL" | "NEW_ARTICLES" | "COMPARISONS" | "SPONSORED" | "TRUST_LINKS";
+            title: string;
+            /** @enum {string} */
+            source: "EDITORIAL" | "RULE" | "SPONSORED";
+            position: number;
+            enabled: boolean;
+            minItems: number;
+            maxItems: number;
+            config: {
+                categorySlug?: string;
+                provinceSlug?: string;
+                listingSlugs?: string[];
+                articleSlugs?: string[];
+            };
+            /** Format: date-time */
+            visibleFrom: string | null;
+            /** Format: date-time */
+            visibleUntil: string | null;
+            provinceSlug: string | null;
+            version: number;
+        };
+        AdminHomeModuleList: {
+            data: components["schemas"]["AdminHomeModule"][];
         };
         DataRequestAck: {
             /** @enum {boolean} */
@@ -8641,6 +8755,119 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BreachIncident"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    home: {
+        parameters: {
+            query?: {
+                il?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ana sayfa */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HomeResponse"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListHomeModules: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Modüller */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminHomeModuleList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateHomeModule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    title?: string;
+                    enabled?: boolean;
+                    position?: number;
+                    minItems?: number;
+                    maxItems?: number;
+                    config?: {
+                        categorySlug?: string;
+                        provinceSlug?: string;
+                        listingSlugs?: string[];
+                        articleSlugs?: string[];
+                    };
+                    /** Format: date-time */
+                    visibleFrom?: string | null;
+                    /** Format: date-time */
+                    visibleUntil?: string | null;
+                    provinceSlug?: string | null;
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminHomeModule"];
                 };
             };
             /** @description Hata (RFC 9457) */

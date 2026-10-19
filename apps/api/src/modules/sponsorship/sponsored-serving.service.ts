@@ -76,6 +76,25 @@ export class SponsoredServingService {
     return this.serve(ctx, seed);
   }
 
+  /**
+   * Ana sayfa sponsorlu modülü (A8.3): bağlam yalnızca seçilen il (varsa); kart sayısı çağıran tarafından
+   * sınırlanır (≤ 2 ve tüm kartların ≤ %20'si).
+   */
+  async forHome(provinceId: string | null, maxItems: number, seed: string = randomUUID()) {
+    if (maxItems <= 0) return [];
+    const items = await this.serve(
+      {
+        surface: 'HOME',
+        criteria: this.criteria({ categoryId: null, provinceId }),
+        organicCount: 100,
+        categoryId: null,
+        provinceId,
+      },
+      seed,
+    );
+    return items.slice(0, maxItems);
+  }
+
   /** Listeleme detayındaki rakip kutu: aynı birincil kategori + il, kendisi ve aynı kuruluş hariç. */
   async forListing(id: string, seed: string = randomUUID()): Promise<{ data: SponsoredItem[] }> {
     const l = await this.prisma.listing.findFirst({

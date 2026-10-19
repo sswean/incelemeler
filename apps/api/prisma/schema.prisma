@@ -1487,3 +1487,41 @@ model BreachIncident {
 
   @@map("breach_incidents")
 }
+
+enum HomeModuleType {
+  CATEGORY_SHORTCUTS
+  CITY_PICKER
+  EDITORS_PICKS
+  CATEGORY_POPULAR
+  SEASONAL
+  NEW_ARTICLES
+  COMPARISONS
+  SPONSORED
+  TRUST_LINKS
+}
+
+/// Ana sayfa modül kaydı (Ek A15.4, REQ-ADM-006): sıra/görünürlük panelden; sponsorlu sınırları kodda.
+model HomeModule {
+  id           String         @id @default(uuid(7)) @db.Uuid
+  key          String         @unique
+  type         HomeModuleType
+  title        String
+  /// EDITORIAL | RULE | SPONSORED
+  source       String
+  position     Int
+  enabled      Boolean        @default(true)
+  minItems     Int            @default(4) @map("min_items")
+  maxItems     Int            @default(8) @map("max_items")
+  /// Türe özgü ayar: { categorySlug?, provinceSlug?, listingSlugs?, articleSlugs? }
+  config       Json           @default("{}")
+  visibleFrom  DateTime?      @map("visible_from") @db.Timestamptz(3)
+  visibleUntil DateTime?      @map("visible_until") @db.Timestamptz(3)
+  /// Yalnızca bu il bağlamında göster (boş = her yerde).
+  provinceSlug String?        @map("province_slug")
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version      Int            @default(1)
+
+  @@index([enabled, position])
+  @@map("home_modules")
+}

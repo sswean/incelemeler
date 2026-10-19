@@ -44,6 +44,13 @@ import {
 } from './outbound.js';
 import { ConsentBody } from './consent.js';
 import {
+  AdminHomeModule,
+  AdminHomeModuleList,
+  HomeModuleUpdateBody,
+  HomeQuery,
+  HomeResponse,
+} from './home.js';
+import {
   AdminDataRequest,
   AdminDataRequestCreateBody,
   AdminDataRequestList,
@@ -1377,5 +1384,35 @@ export const endpoints: EndpointDef[] = [
     summary: 'İhlal kaydı açar (bildirim kararı İnsan onayıyla)',
     body: BreachCreateBody,
     responses: { 201: ok('Oluşturuldu', BreachIncident) },
+  },
+  {
+    method: 'get',
+    path: '/v1/home',
+    operationId: 'home',
+    tags: ['home'],
+    summary:
+      'Ana sayfa modülleri (sıra panelden; minOge altındaki modül gizlenir; sponsorlu sınırları kodda)',
+    query: HomeQuery,
+    responses: { 200: ok('Ana sayfa', HomeResponse) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/home-modules',
+    operationId: 'adminListHomeModules',
+    tags: ['admin', 'home'],
+    auth: 'staff-mfa',
+    summary: 'Ana sayfa modül kaydı',
+    responses: { 200: ok('Modüller', AdminHomeModuleList) },
+  },
+  {
+    method: 'patch',
+    path: '/v1/admin/home-modules/{id}',
+    operationId: 'adminUpdateHomeModule',
+    tags: ['admin', 'home'],
+    auth: 'staff-mfa',
+    summary:
+      'Modülü günceller (sıra, görünürlük, kaynak ayarı); sponsorlu sınırları aşan yapılandırma reddedilir',
+    body: HomeModuleUpdateBody,
+    responses: { 200: ok('Güncellendi', AdminHomeModule) },
   },
 ];

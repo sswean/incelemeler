@@ -1881,12 +1881,12 @@
       "title": "Ana sayfa düzenleyici",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Modül kaydı (sıra, gizle, kaynak, min/maks öğe, tarih/il görünürlüğü), minOge altında otomatik gizleme, sponsorlu sınırı aşan yapılandırma reddedilir, yayındaki durum önizlemesi (home.test, home.int, home.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Kaydedilmemiş taslak önizlemesi, platform görünürlük kuralı ve rızalı kişiselleştirme sonraya (A-025)."
     },
     {
       "id": "REQ-ADM-007",

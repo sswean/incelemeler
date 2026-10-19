@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 11 — ana sayfa modülleri (dilim 10 hesap/KVKK/CMP: `docs/status-log/F1-D10.md`)
+- Aktif dilim: Faz 1 dilim 12 — analitik (dilim 11 ana sayfa: `docs/status-log/F1-D11.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -57,7 +57,10 @@
 - API: `/v1/data-requests` (+ `/verify`), `/v1/me/legal-acceptances` (+ `/pending`), `/v1/admin/data-requests`, `/v1/admin/settings/compliance`, `/v1/admin/breaches`; günlük imha işi (`destruction_logs`).
 - Web: `/kvkk-basvuru` (+ `/dogrula`), `/kosullar/kabul`; footer bağlantısı. Panel: `/kvkk-basvurulari`. Belgeler: `docs/legal/` (TASLAK), `docs/ops/dagitim-kontrol-listesi.md`.
 
+## Dilim 11 özeti (ana sayfa modülleri)
+- API: `/v1/home?il=` (modüller sırayla, minOge altında gizli, sponsorlu sınırları), `/v1/admin/home-modules`. Web: modül tabanlı ana sayfa + şehir bağlamı. Panel: `/ana-sayfa` düzenleyici + önizleme.
+
 ## Sonraki 3 adım (Faz 1, §9.3 önerilen sıra)
-1. Dilim 11 — Ana sayfa modülleri (sponsorlu ana sayfa yuvası dahil).
-2. Dilim 12 — Analitik olay sözlüğü ve panolar (rıza kapısı arkasında).
-3. Dilim 13 — Sertleştirme (performans bütçeleri, erişilebilirlik, güvenlik taraması) + Dilim 7 kalanları.
+1. Dilim 12 — Analitik olay sözlüğü, birinci taraf olay toplama (rıza kapısı) ve panolar; genel pano gerçek sayaçlar (REQ-ADM-002).
+2. Dilim 13 — Sertleştirme (performans bütçeleri, erişilebilirlik, güvenlik taraması) + Dilim 7 kalanları.
+3. Faz 1 kapanış raporu → Faz 1→2 geçişi C sınıfı: İnsan onayı beklenir.

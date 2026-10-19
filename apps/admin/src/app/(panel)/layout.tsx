@@ -74,6 +74,14 @@ export default async function PanelLayout({ children }: { children: ReactNode })
               {tr.admin.nav.campaigns}
             </Link>
           ) : null}
+          {user.permissions.includes('content.publish') ? (
+            <Link
+              href="/ana-sayfa"
+              className="min-h-11 content-center text-brand-default underline"
+            >
+              {tr.admin.nav.homeEditor}
+            </Link>
+          ) : null}
           {user.permissions.includes('audit.read') ? (
             <Link
               href="/kvkk-basvurulari"

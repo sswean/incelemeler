@@ -31,6 +31,13 @@ import {
 import { MediaAsset, MediaUpdateBody, MediaUploadForm } from './media.js';
 import { ImportBatch, ImportBatchList, ImportPreviewBody } from './imports.js';
 import {
+  PublicListing,
+  SitemapPage,
+  SitemapQuery,
+  SlugResolution,
+  SlugResolveQuery,
+} from './public-listing.js';
+import {
   Accepted,
   CurrentUser,
   LoginBody,
@@ -473,5 +480,40 @@ export const endpoints: EndpointDef[] = [
     auth: 'staff-mfa',
     summary: 'İşlemle oluşturulan listelemeleri geri alır (hiçbiri değiştirilmemişse)',
     responses: { 200: ok('Geri alındı', ImportBatch) },
+  },
+  {
+    method: 'get',
+    path: '/v1/listings/resolve',
+    operationId: 'resolveListingSlug',
+    tags: ['listings'],
+    summary: 'Slug çözümü: güncel, taşınmış (301), kaldırılmış (410) ya da yok (404)',
+    query: SlugResolveQuery,
+    responses: { 200: ok('Çözüm', SlugResolution) },
+  },
+  {
+    method: 'get',
+    path: '/v1/listings/{slug}',
+    operationId: 'getPublicListing',
+    tags: ['listings'],
+    summary: 'Herkese açık listeleme (yayında ya da kapalı)',
+    responses: { 200: ok('Listeleme', PublicListing) },
+  },
+  {
+    method: 'get',
+    path: '/v1/media/{id}',
+    operationId: 'getPublicMedia',
+    tags: ['media'],
+    summary: 'Herkese açık görsel (lisansı tam, herkese açık listelemeye bağlı)',
+    binaryResponse: 'image/*',
+    responses: { 200: ok('Görsel') },
+  },
+  {
+    method: 'get',
+    path: '/v1/sitemap/listings',
+    operationId: 'sitemapListings',
+    tags: ['seo'],
+    summary: 'Site haritası için yayındaki listelemeler (demo, kapalı, taslak hariç)',
+    query: SitemapQuery,
+    responses: { 200: ok('Sayfa', SitemapPage) },
   },
 ];

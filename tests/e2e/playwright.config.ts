@@ -46,7 +46,12 @@ export default defineConfig({
       cwd: '../../apps/web',
       url: `http://localhost:${WEB_PORT}`,
       reuseExistingServer: false,
-      env: { API_INTERNAL_URL: apiUrl },
+      // E2E: indeksleme kurallarını test etmek için açık (yerel, atılan sunucu).
+      env: {
+        API_INTERNAL_URL: apiUrl,
+        SITE_URL: `http://localhost:${WEB_PORT}`,
+        SITE_INDEXING: 'on',
+      },
     },
     {
       command: `pnpm exec next start --port ${ADMIN_PORT}`,

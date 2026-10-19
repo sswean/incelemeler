@@ -18,6 +18,8 @@ import { AdminListingsController } from './modules/catalog/admin-listings.contro
 import { AdminListingsService } from './modules/catalog/admin-listings.service.js';
 import { ImportsController } from './modules/catalog/imports.controller.js';
 import { ImportsService } from './modules/catalog/imports.service.js';
+import { PublicListingsController } from './modules/catalog/public-listings.controller.js';
+import { PublicListingsService } from './modules/catalog/public-listings.service.js';
 import { AdminAreasController } from './modules/geo/admin-areas.controller.js';
 import { MediaController } from './modules/media/media.controller.js';
 import { MediaService } from './modules/media/media.service.js';
@@ -71,6 +73,7 @@ export const CONTROLLERS = [
   AdminListingsController,
   MediaController,
   ImportsController,
+  PublicListingsController,
 ];
 
 @Module({})
@@ -102,6 +105,7 @@ export class AppModule {
         AdminListingsService,
         MediaService,
         ImportsService,
+        PublicListingsService,
         OutboxService,
       ],
     };

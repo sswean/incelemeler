@@ -12,3 +12,9 @@
 | Panel | Dinamik, `no-store` | — | `noindex` |
 | API genel GET | `Cache-Control: public, max-age=60` + ETag (Faz 1) | — | — |
 | API sağlık | `no-store` | — | — |
+
+## Uygulama notları (Faz 1 dilim 4)
+- Listeleme detay: `revalidate = 60` (ISR); etiket tabanlı geçersiz kılma outbox tüketicisiyle (D13) eklenecek.
+- `src/proxy.ts` (Next 16): yol normalleştirme (büyük harf, sondaki eğik çizgi → 301), listeleme slug çözümü (taşınmış/yanlış önek → 301, zincirsiz; kaldırılmış → 410). Next'in 308 yönlendirmesi `skipTrailingSlashRedirect` ile kapatıldı.
+- Site haritası ve robots.txt çalışma zamanında (`force-dynamic`) üretilir; `Cache-Control: public, max-age=3600`.
+- İndeksleme yalnızca `SITE_INDEXING=on` iken açılır (A-008); kapalıyken robots.txt tamamen `Disallow` ve sayfalar `noindex, follow`.

@@ -187,6 +187,9 @@ importers:
       '@incelemeler/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@incelemeler/routes':
+        specifier: workspace:*
+        version: link:../../packages/routes
       '@incelemeler/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -236,6 +239,8 @@ importers:
         version: 4.6.7
 
   packages/i18n: {}
+
+  packages/routes: {}
 
   packages/tokens: {}
 

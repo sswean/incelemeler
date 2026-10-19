@@ -590,6 +590,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/listings/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Slug çözümü: güncel, taşınmış (301), kaldırılmış (410) ya da yok (404) */
+        get: operations["resolveListingSlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/listings/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Herkese açık listeleme (yayında ya da kapalı) */
+        get: operations["getPublicListing"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/media/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Herkese açık görsel (lisansı tam, herkese açık listelemeye bağlı) */
+        get: operations["getPublicMedia"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sitemap/listings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Site haritası için yayındaki listelemeler (demo, kapalı, taslak hariç) */
+        get: operations["sitemapListings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1159,6 +1227,97 @@ export interface components {
                 /** Format: date-time */
                 rolledBackAt: string | null;
             }[];
+        };
+        PublicListing: {
+            id: string;
+            /** @enum {string} */
+            kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+            slug: string;
+            name: string;
+            /** @enum {string} */
+            status: "DRAFT" | "IN_REVIEW" | "PUBLISHED" | "CLOSED_TEMPORARILY" | "CLOSED_PERMANENTLY" | "ARCHIVED";
+            shortDescription: string | null;
+            description: {
+                /** @enum {string} */
+                type: "paragraph";
+                text: string;
+            }[] | null;
+            category: {
+                id: string;
+                name: string;
+                slug: string;
+            };
+            categoryPath: {
+                name: string;
+                slug: string;
+            }[];
+            carRental: boolean;
+            priceLevel: number | null;
+            contacts: components["schemas"]["ListingContacts"];
+            location: {
+                province: {
+                    name: string;
+                    slug: string;
+                };
+                district: {
+                    name: string;
+                    slug: string;
+                } | null;
+                neighborhood: string | null;
+                addressLine: string | null;
+                postalCode: string | null;
+                latitude: number | null;
+                longitude: number | null;
+            } | null;
+            attributes: {
+                key: string;
+                label: string;
+                type: string;
+                unit: string | null;
+                showOnCard: boolean;
+                value: unknown;
+                display: string;
+            }[];
+            details: components["schemas"]["ListingDetailsInput"];
+            media: {
+                id: string;
+                /** @enum {string} */
+                role: "PRIMARY" | "GALLERY";
+                width: number;
+                height: number;
+                altText: string;
+                blurhash: string | null;
+                focalX: number;
+                focalY: number;
+                credit: string;
+            }[];
+            reviewCount: number;
+            dataOrigin: string;
+            /** Format: date-time */
+            sourceVerifiedAt: string | null;
+            /** Format: date-time */
+            publishedAt: string | null;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        SlugResolution: {
+            /** @enum {string} */
+            status: "ok" | "moved" | "gone" | "missing";
+            /** @enum {string|null} */
+            kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK" | null;
+            slug: string | null;
+            carRental: boolean;
+        };
+        SitemapPage: {
+            data: {
+                /** @enum {string} */
+                kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+                slug: string;
+                carRental: boolean;
+                /** Format: date-time */
+                lastmod: string;
+            }[];
+            nextCursor: string | null;
         };
         RegisterBody: {
             email: unknown;
@@ -2887,6 +3046,131 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ImportBatch"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    resolveListingSlug: {
+        parameters: {
+            query: {
+                slug: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Çözüm */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlugResolution"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getPublicListing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Listeleme */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicListing"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getPublicMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Görsel */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/*": string;
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    sitemapListings: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sayfa */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SitemapPage"];
                 };
             };
             /** @description Hata (RFC 9457) */

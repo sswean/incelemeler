@@ -15,6 +15,7 @@
     "@incelemeler/api-client": "workspace:*",
     "@incelemeler/contracts": "workspace:*",
     "@incelemeler/i18n": "workspace:*",
+    "@incelemeler/routes": "workspace:*",
     "@incelemeler/tokens": "workspace:*",
     "@incelemeler/utils": "workspace:*",
     "next": "16.4.2",

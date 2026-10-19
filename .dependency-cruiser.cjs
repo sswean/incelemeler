@@ -20,7 +20,7 @@ module.exports = {
       comment:
         "REQ-MIM-002: contracts tarayıcı ve React Native'de çalışmalı (Node yerleşik modülü yok).",
       severity: 'error',
-      from: { path: '^packages/(contracts|i18n|tokens|utils)/src' },
+      from: { path: '^packages/(contracts|i18n|routes|tokens|utils)/src' },
       to: { dependencyTypes: ['core'] },
     },
     {

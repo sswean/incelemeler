@@ -777,9 +777,9 @@
       "title": "Bilinmeyen opsiyonel alan \"Bilinmiyor\" olarak gösterilir ya da hiç gösterilmez",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Herkese açık listelemede değeri olmayan özellik dönmez; fiyat seviyesi yoksa \"Bilinmiyor\" (public-listings.int, E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -789,48 +789,48 @@
       "title": "390×844 mobil görünümde ilk ekranda",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "İlk ekranda ad, tür/kategori, konum, puan özeti metni (A6.2), fiyat seviyesi ve birincil CTA (E2E 390 genişlik).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Açık/kapalı durumu çalışma saatleri modeliyle (REQ-VER-010)."
     },
     {
       "id": "REQ-LST-004",
       "title": "Her listeleme sayfasının altında",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Altbilgide \"Bilgiler son doğrulama: {tarih}\".",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "\"Düzeltme öner\" (D7), geçtiği rehberler (D5), benzer seçenekler (D6)."
     },
     {
       "id": "REQ-LST-005",
       "title": "Tazelik",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Tür bazında tazelik eşiği aşılınca belirgin \"{tarih} tarihinde doğrulandı\" uyarısı (E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Editör tazelik kuyruğu panelde (D12/D13)."
     },
     {
       "id": "REQ-LST-006",
       "title": "\"Kalıcı olarak kapandı\" / \"Geçici olarak kapalı\" / \"Satıştan kalktı\" durumları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Kapalı listeleme sayfası korunur (200), durum bandı, CTA yok, site haritasında yok (E2E, cta.test).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Arama sıralamasında aşağı inme D6; benzerler D6."
     },
     {
       "id": "REQ-LST-007",
@@ -2291,94 +2291,94 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Ana sayfa ve listeleme detay sayfaları sunucuda render (E2E: JS olmadan HTML'de ad ve puan özeti).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Faz 0: Ana sayfa SSR — JS olmadan içerik testi."
+      "notes": "İçerik ve hub sayfaları ilgili dilimlerde."
     },
     {
       "id": "REQ-SEO-002",
       "title": "Her sayfa için benzersiz <title> (≤ 60 karakter hedef) ve meta açıklama (≤ 155 karakter…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Detay şablonunda benzersiz başlık (≤ 60) ve açıklama (≤ 155), bulunma eki yardımcısıyla (E2E seo.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yinelenen başlık/açıklama CI raporu D13."
     },
     {
       "id": "REQ-SEO-003",
       "title": "URL şeması A15.1'deki tablodur",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "packages/routes (A15.1 önekleri, normalleştirme) + proxy 301 (büyük harf, sondaki eğik çizgi, eski slug, yanlış önek).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Hub ve içerik yolları ilgili dilimlerde."
     },
     {
       "id": "REQ-SEO-004",
       "title": "Canonical",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Detay sayfalarında kendine referans canonical.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Filtre/sıralama varyantları D6."
     },
     {
       "id": "REQ-SEO-005",
       "title": "Tarama kontrolü",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Hesap sayfaları noindex; robots.txt yalnızca /git/ Disallow (açıkken).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "/ara, /git/ ve önizleme yolları ilgili dilimlerde."
     },
     {
       "id": "REQ-SEO-006",
       "title": "XML site haritaları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Site haritası dizini + listeleme bölümü (≤ 50.000/dosya); demo, kapalı, taslak, silinmiş yok (public-listings.int, E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "İçerik, hub, destinasyon ve görsel site haritaları ilgili dilimlerde."
     },
     {
       "id": "REQ-SEO-007",
       "title": "robots.txt ortama göre (staging/preview tamamen Disallow + HTTP temel kimlik doğrulama",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "robots.txt ortama göre: indeksleme kapalıyken tamamen Disallow; açıkken site haritası bildirimi.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Staging HTTP temel kimlik doğrulaması dağıtımla (X-002)."
     },
     {
       "id": "REQ-SEO-008",
       "title": "Yapılandırılmış veri (JSON-LD)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Listeleme JSON-LD (Restaurant/LodgingBusiness/Product/…), BreadcrumbList; değerlendirme yokken puan işaretlemesi yok; demo'da JSON-LD yok (json-ld.test, E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Article/ItemList/Person/Organization/WebSite ilgili dilimlerde; çevrimdışı şema doğrulayıcı D13."
     },
     {
       "id": "REQ-SEO-009",
@@ -2397,12 +2397,12 @@
       "title": "Breadcrumb (görünür + JSON-LD)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Görünür kırıntı yolu (Ana sayfa › kategori zinciri › listeleme) + BreadcrumbList.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "İl ve kategori hub bağlantıları D6."
     },
     {
       "id": "REQ-SEO-011",
@@ -2421,12 +2421,12 @@
       "title": "Durum kodları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Bulunamayan 404, kaldırılan 410, taşınan 301 (zincirsiz), kapalı işletme 200 + durum bandı (E2E).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Bitmiş etkinlik ve süresi dolmuş fırsat kuralları ilgili dilimlerde."
     },
     {
       "id": "REQ-SEO-013",
@@ -2493,9 +2493,9 @@
       "title": "Ek uyumu yardımcıları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "withCase: bulunma/yönelme/ilgi ekleri, ünlü uyumu, ünsüz benzeşmesi, kesme işareti; sayı ve kısaltma test seti; çözülemeyende null → eksiz kalıp (suffix.test).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""

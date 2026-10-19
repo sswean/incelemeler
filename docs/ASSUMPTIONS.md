@@ -49,3 +49,7 @@ Biçim: Ek C-4. "Yüksek" geri alma maliyetli varsayımlar OPEN-QUESTIONS'ta da 
 ## A-012: Görsel lisans tamlığı kuralı
 - Tarih: 2026-10-19 · Faz 1 · Gerekçe: Ek A14.6 alanları; kaynak türü, hak sahibi ve lisans türü her görselde; işletme ve stok görsellerinde yazılı izin belgesi; süresi dolan lisans geçersiz. Model/mülk izni "gerekiyorsa" — otomatik çıkarılamadığından yalnızca kaydedilir. Yayımlanmış listelemeye sonradan eklenen lisanssız görsel herkese açık sayfada gösterilmez (D4 filtresi).
 - Etkilediği REQ'ler: REQ-VER-014 · Geri alma maliyeti: Düşük · Durum: AÇIK
+
+## A-013: Destinasyon listelemeleri `/destinasyon/{slug}`; harita yerine "Yol tarifi al" dış bağlantısı
+- Tarih: 2026-10-19 · Faz 1 · Gerekçe: A15.1'de il/ilçe destinasyon yolları (`/{il}`, `/{il}/{ilce}`) hub dilimine (D6) aittir; il olmayan destinasyon listelemeleri (ör. tatil bölgesi) için ayrı önek. Harita sağlayıcısı (X-005) seçilmediğinden yol tarifi koordinatla dış harita bağlantısıdır (X-005 "erişim yokken davranış").
+- Etkilediği REQ'ler: REQ-SEO-003, REQ-LST-003 · Geri alma maliyeti: Düşük · Durum: AÇIK

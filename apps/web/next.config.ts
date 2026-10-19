@@ -9,7 +9,14 @@ const securityHeaders = [
 
 const config: NextConfig = {
   poweredByHeader: false,
+  // Sondaki eğik çizgi 308 yerine proxy'de 301 ile normalleştirilir (REQ-SEO-003).
+  skipTrailingSlashRedirect: true,
   reactStrictMode: true,
+  // Görsel varyantları (AVIF/WebP, srcset) teslimde üretilir (ADR-0007); kaynak yalnızca /medya vekili.
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    localPatterns: [{ pathname: '/medya/**' }],
+  },
   // Monorepo paketleri derlenmiş dist çıktısı olarak tüketilir.
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];

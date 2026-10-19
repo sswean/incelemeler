@@ -2,14 +2,15 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { tr } from '@incelemeler/i18n';
+import { robots } from '../lib/seo';
 import { getSessionToken } from '../lib/session';
 import './globals.css';
 
 export const metadata: Metadata = {
   title: { default: `${tr.brand.name} — ${tr.brand.slogan}`, template: `%s · ${tr.brand.name}` },
   description: tr.brand.slogan,
-  // Faz 0/1 geliştirme sürümü: arama motorlarına kapalı (canlıya geçiş C sınıfıdır).
-  robots: { index: false, follow: false },
+  // Arama motorlarına yalnızca SITE_INDEXING=on iken açık (A-008; canlıya geçiş C sınıfıdır).
+  robots: robots(true),
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {

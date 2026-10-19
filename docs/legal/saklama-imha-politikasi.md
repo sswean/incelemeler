@@ -17,6 +17,8 @@ Platformun işlediği kişisel veri kategorileri, saklama süreleri ve imha yön
 | Hız sınırı sayaçları | 1 gün | Silme | |
 | Değerlendirme taslakları | son güncellemeden 180 gün | Silme | |
 | Arama olayları (kişisel veri içermez) | 365 gün | Silme | |
+| Doğrulanmamış hesapsız başvurular (işletme, reklam) | oluşturmadan 7 gün | Silme | A-028 |
+| Reddedilen hesapsız başvurular | karardan 365 gün | Silme | Onaylananlar iş ilişkisi süresince — **doğrulanacak** |
 | Tıklama/sponsorlu olay oturum karması | 90 gün | Anonimleştirme (karma silinir) | Toplam sayılar kalır |
 | Rıza kayıtlarındaki IP karması | 365 gün | Anonimleştirme | Rızanın kendisi ispat için kalır |
 | Hesap silme talebi | geri alma penceresi 30 gün | Silme + hesap kaydının anonimleştirilmesi | A-022 |

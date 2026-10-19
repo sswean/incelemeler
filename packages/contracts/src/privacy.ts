@@ -91,6 +91,9 @@ export const ComplianceConfig = z
       clickSessionHashDays: z.number().int().min(1),
       consentIpHashDays: z.number().int().min(1),
       analyticsEventsDays: z.number().int().min(1),
+      /** Hesapsız başvurular (A-028): doğrulanmayan ve reddedilen başvurular. */
+      unverifiedApplicationsDays: z.number().int().min(1).default(7),
+      rejectedApplicationsDays: z.number().int().min(1).default(365),
     }),
     version: z.number().int(),
   })

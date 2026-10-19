@@ -192,6 +192,8 @@ model Listing {
   campaignPlacements  CampaignPlacement[]
   favorites           Favorite[]
 
+  applications Application[]
+
   @@index([kind, status, primaryCategoryId])
   @@index([organizationId])
   @@index([importBatchId])
@@ -1553,4 +1555,48 @@ model AnalyticsDaily {
 
   @@id([day, name])
   @@map("analytics_daily")
+}
+
+// ── Hesapsız başvurular (REQ-ISL-001/002, A-028) ──
+
+enum ApplicationType {
+  BUSINESS
+  ADVERTISING
+}
+
+enum ApplicationStatus {
+  UNVERIFIED
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Application {
+  id                   String            @id @default(uuid(7)) @db.Uuid
+  type                 ApplicationType
+  status               ApplicationStatus @default(UNVERIFIED)
+  /// İşletme adı ya da reklamveren kuruluş adı.
+  name                 String
+  contactName          String            @map("contact_name")
+  contactRole          String?           @map("contact_role")
+  email                String
+  phone                String?
+  /// Türe özgü alanlar (sözleşmedeki BusinessApplicationBody / AdvertisingApplicationBody).
+  payload              Json
+  privacyNoticeVersion String            @map("privacy_notice_version")
+  /// Ticari ileti izni (yalnızca reklam başvurusu; isteğe bağlı) ve izin metni sürümü.
+  marketingConsentAt   DateTime?         @map("marketing_consent_at") @db.Timestamptz(3)
+  emailVerifiedAt      DateTime?         @map("email_verified_at") @db.Timestamptz(3)
+  decidedAt            DateTime?         @map("decided_at") @db.Timestamptz(3)
+  decidedById          String?           @map("decided_by") @db.Uuid
+  rejectionReason      String?           @map("rejection_reason")
+  decisionNote         String?           @map("decision_note")
+  listingId            String?           @map("listing_id") @db.Uuid
+  listing              Listing?          @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  createdAt            DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version              Int               @default(1)
+
+  @@index([type, status, createdAt])
+  @@map("applications")
 }

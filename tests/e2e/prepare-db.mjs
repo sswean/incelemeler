@@ -50,6 +50,8 @@ const extraStaff = [
   ...PROJECTS.map((p) => [`e2e-kvkk-${p}@example.test`, 'E2E KVKK Sorumlusu']),
   ...PROJECTS.map((p) => [`e2e-anasayfa-${p}@example.test`, 'E2E Ana Sayfa Editörü', 'EDITOR']),
   ...PROJECTS.map((p) => [`e2e-analitik-${p}@example.test`, 'E2E Analitik']),
+  ...PROJECTS.map((p) => [`e2e-basvuru-${p}@example.test`, 'E2E Başvuru Editörü', 'EDITOR']),
+  ...PROJECTS.map((p) => [`e2e-basvuru-satis-${p}@example.test`, 'E2E Başvuru Satış', 'SALES']),
   ...PROJECTS.map((p) => [`e2e-spn-editor-${p}@example.test`, 'E2E Sponsorluk Editörü', 'EDITOR']),
 ];
 for (const [email, name, role = 'ADMIN'] of extraStaff) {

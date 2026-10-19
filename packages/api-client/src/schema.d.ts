@@ -1690,6 +1690,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Hesapsız başvuru: işletme ekleme (/isletmeni-ekle) ya da reklam/sponsorluk (/reklam-ve-sponsorluk); e-posta doğrulaması gönderilir */
+        post: operations["createApplication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/applications/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Başvurunun e-posta bağlantısıyla doğrulanması (yönetici kuyruğuna düşer) */
+        post: operations["verifyApplication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Başvuru kuyruğu: işletme başvuruları listeleme yazma, reklam başvuruları kampanya yetkisiyle görünür */
+        get: operations["adminListApplications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/applications/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Onay (işletme başvurusunda listeleme taslağı oluşturur) ya da gerekçeli ret; başvurana e-posta, denetim kaydı */
+        post: operations["adminDecideApplication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/me/legal-acceptances/pending": {
         parameters: {
             query?: never;
@@ -3201,6 +3269,128 @@ export interface components {
         OutboundLinkList: {
             data: components["schemas"]["OutboundLink"][];
         };
+        BusinessApplicationBody: {
+            /** @enum {string} */
+            type: "BUSINESS";
+            businessName: string;
+            /** @enum {string} */
+            kind: "PLACE" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE";
+            /** Format: uuid */
+            categoryId: string;
+            /** Format: uuid */
+            provinceId: string;
+            /** Format: uuid */
+            districtId?: string;
+            address?: string;
+            serviceArea?: string;
+            phone?: string;
+            /** Format: uri */
+            website?: string;
+            contactName: string;
+            contactRole: string;
+            email: unknown;
+            /** @enum {boolean} */
+            privacyNoticeAck: true;
+            /** @enum {boolean} */
+            authorityAck: true;
+        };
+        AdvertisingApplicationBody: {
+            /** @enum {string} */
+            type: "ADVERTISING";
+            organizationName: string;
+            contactName: string;
+            contactRole?: string;
+            email: unknown;
+            phone?: string;
+            products: ("SPONSORED_CONTENT" | "SPONSORED_FEATURE" | "SPONSORED_PLACEMENT" | "SPONSORED_BRAND_PAGE" | "SEASONAL_DEAL" | "AFFILIATE")[];
+            /** @default [] */
+            provinceIds: string[];
+            /** @default [] */
+            categoryIds: string[];
+            /** @enum {string} */
+            budgetRange?: "UNDER_10K" | "FROM_10K_TO_50K" | "FROM_50K_TO_250K" | "OVER_250K";
+            message: string;
+            /** @enum {boolean} */
+            privacyNoticeAck: true;
+            /** @default false */
+            marketingConsent: boolean;
+        };
+        ApplicationCreateBody: components["schemas"]["BusinessApplicationBody"] | components["schemas"]["AdvertisingApplicationBody"];
+        ApplicationAck: {
+            /** @enum {boolean} */
+            accepted: true;
+            /** @enum {boolean} */
+            verificationRequired: true;
+        };
+        AdminApplication: {
+            id: string;
+            /** @enum {string} */
+            type: "BUSINESS" | "ADVERTISING";
+            /** @enum {string} */
+            status: "UNVERIFIED" | "PENDING" | "APPROVED" | "REJECTED";
+            name: string;
+            contactName: string;
+            contactRole: string | null;
+            email: string;
+            freeEmailDomain: boolean;
+            phone: string | null;
+            business: {
+                /** @enum {string} */
+                kind: "PLACE" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE";
+                category: {
+                    id: string;
+                    name: string;
+                } | null;
+                province: {
+                    id: string;
+                    name: string;
+                } | null;
+                district: {
+                    id: string;
+                    name: string;
+                } | null;
+                address: string | null;
+                serviceArea: string | null;
+                website: string | null;
+            } | null;
+            advertising: {
+                products: ("SPONSORED_CONTENT" | "SPONSORED_FEATURE" | "SPONSORED_PLACEMENT" | "SPONSORED_BRAND_PAGE" | "SEASONAL_DEAL" | "AFFILIATE")[];
+                provinces: {
+                    id: string;
+                    name: string;
+                }[];
+                categories: {
+                    id: string;
+                    name: string;
+                }[];
+                /** @enum {string|null} */
+                budgetRange: "UNDER_10K" | "FROM_10K_TO_50K" | "FROM_50K_TO_250K" | "OVER_250K" | null;
+                message: string;
+                marketingConsent: boolean;
+            } | null;
+            /** Format: date-time */
+            emailVerifiedAt: string | null;
+            /** Format: date-time */
+            decidedAt: string | null;
+            /** @enum {string|null} */
+            rejectionReason: "INCOMPLETE" | "DUPLICATE" | "NOT_ELIGIBLE" | "UNVERIFIABLE" | "OUT_OF_SCOPE" | null;
+            decisionNote: string | null;
+            listingId: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            version: number;
+        };
+        AdminApplicationList: {
+            data: components["schemas"]["AdminApplication"][];
+        };
+        ApplicationDecisionBody: {
+            version: number;
+            /** @enum {string} */
+            decision: "APPROVE" | "REJECT";
+            /** @enum {string} */
+            reason?: "INCOMPLETE" | "DUPLICATE" | "NOT_ELIGIBLE" | "UNVERIFIABLE" | "OUT_OF_SCOPE";
+            note?: string;
+        };
         AnalyticsOverview: {
             /** Format: date-time */
             generatedAt: string;
@@ -3415,6 +3605,10 @@ export interface components {
                 clickSessionHashDays: number;
                 consentIpHashDays: number;
                 analyticsEventsDays: number;
+                /** @default 7 */
+                unverifiedApplicationsDays: number;
+                /** @default 365 */
+                rejectedApplicationsDays: number;
             };
             version: number;
         };
@@ -8655,6 +8849,194 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    createApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    type: "BUSINESS";
+                    businessName: string;
+                    /** @enum {string} */
+                    kind: "PLACE" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE";
+                    /** Format: uuid */
+                    categoryId: string;
+                    /** Format: uuid */
+                    provinceId: string;
+                    /** Format: uuid */
+                    districtId?: string;
+                    address?: string;
+                    serviceArea?: string;
+                    phone?: string;
+                    /** Format: uri */
+                    website?: string;
+                    contactName: string;
+                    contactRole: string;
+                    /** Format: email */
+                    email: string;
+                    /** @enum {boolean} */
+                    privacyNoticeAck: true;
+                    /** @enum {boolean} */
+                    authorityAck: true;
+                } | {
+                    /** @enum {string} */
+                    type: "ADVERTISING";
+                    organizationName: string;
+                    contactName: string;
+                    contactRole?: string;
+                    /** Format: email */
+                    email: string;
+                    phone?: string;
+                    products: ("SPONSORED_CONTENT" | "SPONSORED_FEATURE" | "SPONSORED_PLACEMENT" | "SPONSORED_BRAND_PAGE" | "SEASONAL_DEAL" | "AFFILIATE")[];
+                    /** @default [] */
+                    provinceIds?: string[];
+                    /** @default [] */
+                    categoryIds?: string[];
+                    /** @enum {string} */
+                    budgetRange?: "UNDER_10K" | "FROM_10K_TO_50K" | "FROM_50K_TO_250K" | "OVER_250K";
+                    message: string;
+                    /** @enum {boolean} */
+                    privacyNoticeAck: true;
+                    /** @default false */
+                    marketingConsent?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Kabul edildi */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationAck"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    verifyApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    token: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Kabul edildi */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListApplications: {
+        parameters: {
+            query?: {
+                type?: "BUSINESS" | "ADVERTISING";
+                status?: "UNVERIFIED" | "PENDING" | "APPROVED" | "REJECTED";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Başvurular */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplicationList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminDecideApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    /** @enum {string} */
+                    decision: "APPROVE" | "REJECT";
+                    /** @enum {string} */
+                    reason?: "INCOMPLETE" | "DUPLICATE" | "NOT_ELIGIBLE" | "UNVERIFIABLE" | "OUT_OF_SCOPE";
+                    note?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Karar verildi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminApplication"];
                 };
             };
             /** @description Hata (RFC 9457) */

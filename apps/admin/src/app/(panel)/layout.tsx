@@ -95,6 +95,14 @@ export default async function PanelLayout({ children }: { children: ReactNode })
               {tr.admin.nav.revenue}
             </Link>
           ) : null}
+          {user.permissions.some((x) => x === 'listings.write' || x === 'campaigns.manage') ? (
+            <Link
+              href="/basvurular"
+              className="min-h-11 content-center text-brand-default underline"
+            >
+              {tr.admin.nav.applications}
+            </Link>
+          ) : null}
           {user.permissions.includes('audit.read') ? (
             <Link
               href="/kvkk-basvurulari"

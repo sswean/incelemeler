@@ -139,6 +139,7 @@ export const admin = {
     campaigns: 'Kampanyalar',
     slots: 'Sponsorlu yuvalar',
     dataRequests: 'KVKK başvuruları',
+    applications: 'Başvurular',
     homeEditor: 'Ana sayfa',
     analytics: 'Analitik',
     revenue: 'Gelir raporu',
@@ -1482,6 +1483,114 @@ export const author = {
   noArticles: 'Henüz yayımlanmış içerik yok.',
 } as const;
 
+/** Hesapsız başvurular (REQ-ISL-001/002). Hukuki metinler TASLAK (AK-12). */
+export const applications = {
+  kinds: { BUSINESS: 'İşletme', ADVERTISING: 'Reklam ve sponsorluk' },
+  businessTitle: 'İşletmeni ekle',
+  businessIntro:
+    "İşletmeni İncelemeler'e eklemek ücretsizdir. Başvurun e-posta doğrulamasından sonra ekibimizce incelenir; bilgiler doğrulanmadan yayımlanmaz. Ücret ödemek puanları, değerlendirmeleri ya da organik sıralamayı etkilemez.",
+  businessKinds: {
+    PLACE: 'Mekan (restoran, kafe, bar…)',
+    SERVICE_PROVIDER: 'Hizmet sağlayıcı',
+    GUIDE_PERSON: 'Turist rehberi',
+    EXPERIENCE: 'Tur ve aktivite',
+  },
+  businessSection: 'İşletme bilgileri',
+  contactSection: 'İletişim bilgilerin',
+  businessName: 'İşletme adı',
+  kind: 'İşletme türü',
+  category: 'Kategori',
+  province: 'İl',
+  address: 'Adres',
+  addressHint: 'Mahalle, cadde/sokak ve kapı numarası. Sabit adresin yoksa hizmet bölgesini yaz.',
+  serviceArea: 'Hizmet bölgesi',
+  phone: 'Telefon (isteğe bağlı)',
+  website: 'Web sitesi (isteğe bağlı)',
+  contactName: 'Adın soyadın',
+  contactRole: 'Görevin',
+  contactRoleOptional: 'Görevin (isteğe bağlı)',
+  email: 'Kurumsal e-posta adresin',
+  emailHint: 'Doğrulama bağlantısını bu adrese göndereceğiz.',
+  documentsNote:
+    'Belge yükleme şimdilik kapalı; doğrulama için belge gerekirse ekibimiz senden e-postayla isteyecek.',
+  privacyNoticeLink: 'KVKK aydınlatma metni',
+  privacyNoticeAck: 'Aydınlatma metnini okudum.',
+  authorityAck:
+    'Bilgilerin doğru olduğunu ve bu işletme adına başvurmaya yetkili olduğumu beyan ederim.',
+  submit: 'Başvuruyu gönder',
+  sent: 'Başvurunu aldık. E-posta adresine gönderdiğimiz bağlantıyla başvurunu doğrula; doğrulanmayan başvurular incelenmez.',
+  verifyTitle: 'Başvurunu doğrula',
+  verifyButton: 'Başvurumu doğrula',
+  verified:
+    'E-posta adresin doğrulandı; başvurun inceleme kuyruğunda. Sonucu e-postayla bildireceğiz.',
+  adTitle: 'Reklam ve sponsorluk',
+  adIntro:
+    'Sponsorlu içerik ve yerleşimler her yerde "Sponsorlu" olarak etiketlenir; sponsorluk puanları, değerlendirmeleri ve organik sıralamayı etkilemez. Formu doldur, ekibimiz seninle iletişime geçsin.',
+  organizationName: 'Kuruluş adı',
+  products: 'İlgilendiğin ürünler',
+  productLabels: {
+    SPONSORED_CONTENT: 'Sponsorlu içerik',
+    SPONSORED_FEATURE: 'Sponsorlu tanıtım',
+    SPONSORED_PLACEMENT: 'Sponsorlu yerleşim',
+    SPONSORED_BRAND_PAGE: 'Sponsorlu marka sayfası',
+    SEASONAL_DEAL: 'Sezonluk kampanya ve fırsat',
+    AFFILIATE: 'Ortaklık bağlantısı',
+  },
+  targetProvinces: 'Hedef iller (isteğe bağlı, en fazla 10)',
+  targetCategories: 'Hedef kategoriler (isteğe bağlı, en fazla 10)',
+  multiHint: "Birden çok seçim için Ctrl (Mac'te Cmd) tuşunu basılı tut.",
+  budget: 'Bütçe aralığı (isteğe bağlı)',
+  budgetNone: 'Belirtmek istemiyorum',
+  budgetLabels: {
+    UNDER_10K: "10.000 TL'nin altında",
+    FROM_10K_TO_50K: '10.000–50.000 TL',
+    FROM_50K_TO_250K: '50.000–250.000 TL',
+    OVER_250K: "250.000 TL'nin üzerinde",
+  },
+  message: 'Mesajın',
+  marketingConsent:
+    'Ürünler ve kampanyalar hakkında ticari elektronik ileti almak istiyorum (isteğe bağlı; istediğin zaman geri alabilirsin).',
+  rejections: {
+    INCOMPLETE: 'Başvuru bilgileri eksik',
+    DUPLICATE: 'Bu işletme için kayıt ya da başvuru zaten var',
+    NOT_ELIGIBLE: 'Platformun kapsamına girmiyor',
+    UNVERIFIABLE: 'Bilgiler doğrulanamadı',
+    OUT_OF_SCOPE: 'Talep sunduğumuz ürünlerin dışında',
+  },
+  fieldErrors: {
+    required: 'Bu alanı doldur.',
+    invalid: 'Bu alanın biçimini kontrol et.',
+    category_not_allowed: 'Seçtiğin kategori bu işletme türü için uygun değil.',
+    unknown_province: 'Listeden bir il seç.',
+    unknown_category: 'Listeden bir kategori seç.',
+  },
+  // Panel
+  adminTitle: 'Başvurular',
+  adminIntro:
+    'Doğrulanmış hesapsız başvurular. İşletme başvurusu onayı doğrulanmamış bilgiyle listeleme taslağı oluşturur; yayından önce editoryal doğrulama gerekir.',
+  statusLabels: {
+    UNVERIFIED: 'E-posta doğrulanmadı',
+    PENDING: 'İncelemede',
+    APPROVED: 'Onaylandı',
+    REJECTED: 'Reddedildi',
+  },
+  filterType: 'Başvuru türü',
+  filterStatus: 'Durum',
+  allTypes: 'Tümü',
+  filter: 'Süz',
+  empty: 'Bu ölçütlerde başvuru yok.',
+  freeEmail: 'Kurumsal olmayan e-posta',
+  received: 'Alındı',
+  approve: 'Onayla',
+  reject: 'Reddet',
+  rejectionReason: 'Ret gerekçesi',
+  decisionNote: 'Not (başvurana gönderilir, isteğe bağlı)',
+  openDraft: 'Listeleme taslağını aç',
+  marketingYes: 'Ticari ileti izni verdi',
+  marketingNo: 'Ticari ileti izni yok',
+  decided: 'Karar kaydedildi.',
+} as const;
+
 export const footer = {
   label: 'Alt bilgi',
   methodology: 'Nasıl değerlendiriyoruz',
@@ -1493,6 +1602,8 @@ export const footer = {
   cookies: 'Çerez tercihleri',
   dataRequest: 'KVKK başvurusu',
   disclosure: 'Güvenlik açığı bildirimi',
+  addBusiness: 'İşletmeni ekle',
+  advertise: 'Reklam ve sponsorluk',
 } as const;
 
 /** Editoryal metodoloji sayfaları (REQ-ICR-012) — TASLAK; kurallar Ek A6/A8'den. */
@@ -1622,6 +1733,7 @@ export const tr = {
   hub,
   reviews,
   author,
+  applications,
   footer,
   methodology,
   legal,

@@ -18,6 +18,8 @@ export const DEFAULT_COMPLIANCE: Omit<ComplianceConfig, 'version'> = {
     clickSessionHashDays: 90,
     consentIpHashDays: 365,
     analyticsEventsDays: 425,
+    unverifiedApplicationsDays: 7,
+    rejectedApplicationsDays: 365,
   },
 };
 

@@ -26,6 +26,8 @@ const FOOTER_LINKS: Array<[string, string]> = [
   [STATIC_PATHS.privacy, tr.footer.privacy],
   ['/cerez-tercihleri', tr.footer.cookies],
   ['/kvkk-basvuru', tr.footer.dataRequest],
+  [STATIC_PATHS.addBusiness, tr.footer.addBusiness],
+  [STATIC_PATHS.advertise, tr.footer.advertise],
   [STATIC_PATHS.disclosure, tr.footer.disclosure],
 ];
 

@@ -44,6 +44,14 @@ import {
 } from './outbound.js';
 import { ConsentBody } from './consent.js';
 import {
+  AdminApplication,
+  AdminApplicationList,
+  AdminApplicationQuery,
+  ApplicationAck,
+  ApplicationCreateBody,
+  ApplicationDecisionBody,
+} from './applications.js';
+import {
   AdminDashboard,
   AnalyticsIngestBody,
   AnalyticsOverview,
@@ -1316,6 +1324,47 @@ export const endpoints: EndpointDef[] = [
     summary: 'Girişsiz başvurunun e-posta bağlantısıyla doğrulanması',
     body: TokenBody,
     responses: { 202: ok('Kabul edildi', Accepted) },
+  },
+  {
+    method: 'post',
+    path: '/v1/applications',
+    operationId: 'createApplication',
+    tags: ['applications'],
+    summary:
+      'Hesapsız başvuru: işletme ekleme (/isletmeni-ekle) ya da reklam/sponsorluk (/reklam-ve-sponsorluk); e-posta doğrulaması gönderilir',
+    body: ApplicationCreateBody,
+    responses: { 202: ok('Kabul edildi', ApplicationAck) },
+  },
+  {
+    method: 'post',
+    path: '/v1/applications/verify',
+    operationId: 'verifyApplication',
+    tags: ['applications'],
+    summary: 'Başvurunun e-posta bağlantısıyla doğrulanması (yönetici kuyruğuna düşer)',
+    body: TokenBody,
+    responses: { 202: ok('Kabul edildi', Accepted) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/applications',
+    operationId: 'adminListApplications',
+    tags: ['admin', 'applications'],
+    auth: 'staff-mfa',
+    summary:
+      'Başvuru kuyruğu: işletme başvuruları listeleme yazma, reklam başvuruları kampanya yetkisiyle görünür',
+    query: AdminApplicationQuery,
+    responses: { 200: ok('Başvurular', AdminApplicationList) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/applications/{id}/decision',
+    operationId: 'adminDecideApplication',
+    tags: ['admin', 'applications'],
+    auth: 'staff-mfa',
+    summary:
+      'Onay (işletme başvurusunda listeleme taslağı oluşturur) ya da gerekçeli ret; başvurana e-posta, denetim kaydı',
+    body: ApplicationDecisionBody,
+    responses: { 200: ok('Karar verildi', AdminApplication) },
   },
   {
     method: 'get',

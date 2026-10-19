@@ -8968,6 +8968,462 @@
         }
       }
     },
+    "/v1/applications": {
+      "post": {
+        "operationId": "createApplication",
+        "summary": "Hesapsız başvuru: işletme ekleme (/isletmeni-ekle) ya da reklam/sponsorluk (/reklam-ve-sponsorluk); e-posta doğrulaması gönderilir",
+        "tags": [
+          "applications"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "BUSINESS"
+                        ]
+                      },
+                      "businessName": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 120
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "PLACE",
+                          "SERVICE_PROVIDER",
+                          "GUIDE_PERSON",
+                          "EXPERIENCE"
+                        ]
+                      },
+                      "categoryId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "provinceId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "districtId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "address": {
+                        "type": "string",
+                        "minLength": 5,
+                        "maxLength": 300
+                      },
+                      "serviceArea": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 300
+                      },
+                      "phone": {
+                        "type": "string",
+                        "pattern": "^\\+?[0-9 ()-]{7,20}$"
+                      },
+                      "website": {
+                        "type": "string",
+                        "maxLength": 300,
+                        "format": "uri"
+                      },
+                      "contactName": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 100
+                      },
+                      "contactRole": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 100
+                      },
+                      "email": {
+                        "type": "string",
+                        "maxLength": 254,
+                        "format": "email",
+                        "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                      },
+                      "privacyNoticeAck": {
+                        "type": "boolean",
+                        "enum": [
+                          true
+                        ]
+                      },
+                      "authorityAck": {
+                        "type": "boolean",
+                        "enum": [
+                          true
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "businessName",
+                      "kind",
+                      "categoryId",
+                      "provinceId",
+                      "contactName",
+                      "contactRole",
+                      "email",
+                      "privacyNoticeAck",
+                      "authorityAck"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "ADVERTISING"
+                        ]
+                      },
+                      "organizationName": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 120
+                      },
+                      "contactName": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 100
+                      },
+                      "contactRole": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 100
+                      },
+                      "email": {
+                        "type": "string",
+                        "maxLength": 254,
+                        "format": "email",
+                        "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                      },
+                      "phone": {
+                        "type": "string",
+                        "pattern": "^\\+?[0-9 ()-]{7,20}$"
+                      },
+                      "products": {
+                        "minItems": 1,
+                        "maxItems": 6,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "SPONSORED_CONTENT",
+                            "SPONSORED_FEATURE",
+                            "SPONSORED_PLACEMENT",
+                            "SPONSORED_BRAND_PAGE",
+                            "SEASONAL_DEAL",
+                            "AFFILIATE"
+                          ]
+                        }
+                      },
+                      "provinceIds": {
+                        "default": [],
+                        "maxItems": 10,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        }
+                      },
+                      "categoryIds": {
+                        "default": [],
+                        "maxItems": 10,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        }
+                      },
+                      "budgetRange": {
+                        "type": "string",
+                        "enum": [
+                          "UNDER_10K",
+                          "FROM_10K_TO_50K",
+                          "FROM_50K_TO_250K",
+                          "OVER_250K"
+                        ]
+                      },
+                      "message": {
+                        "type": "string",
+                        "minLength": 10,
+                        "maxLength": 2000
+                      },
+                      "privacyNoticeAck": {
+                        "type": "boolean",
+                        "enum": [
+                          true
+                        ]
+                      },
+                      "marketingConsent": {
+                        "default": false,
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "organizationName",
+                      "contactName",
+                      "email",
+                      "products",
+                      "message",
+                      "privacyNoticeAck"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Kabul edildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationAck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/applications/verify": {
+      "post": {
+        "operationId": "verifyApplication",
+        "summary": "Başvurunun e-posta bağlantısıyla doğrulanması (yönetici kuyruğuna düşer)",
+        "tags": [
+          "applications"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 200
+                  }
+                },
+                "required": [
+                  "token"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Kabul edildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/applications": {
+      "get": {
+        "operationId": "adminListApplications",
+        "summary": "Başvuru kuyruğu: işletme başvuruları listeleme yazma, reklam başvuruları kampanya yetkisiyle görünür",
+        "tags": [
+          "admin",
+          "applications"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "BUSINESS",
+                "ADVERTISING"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": "PENDING",
+              "type": "string",
+              "enum": [
+                "UNVERIFIED",
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+              ]
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Başvurular",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminApplicationList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/applications/{id}/decision": {
+      "post": {
+        "operationId": "adminDecideApplication",
+        "summary": "Onay (işletme başvurusunda listeleme taslağı oluşturur) ya da gerekçeli ret; başvurana e-posta, denetim kaydı",
+        "tags": [
+          "admin",
+          "applications"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "APPROVE",
+                      "REJECT"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "INCOMPLETE",
+                      "DUPLICATE",
+                      "NOT_ELIGIBLE",
+                      "UNVERIFIABLE",
+                      "OUT_OF_SCOPE"
+                    ]
+                  },
+                  "note": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "version",
+                  "decision"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Karar verildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminApplication"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/me/legal-acceptances/pending": {
       "get": {
         "operationId": "pendingLegalAcceptances",
@@ -16074,6 +16530,566 @@
         ],
         "additionalProperties": false
       },
+      "BusinessApplicationBody": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "BUSINESS"
+            ]
+          },
+          "businessName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "PLACE",
+              "SERVICE_PROVIDER",
+              "GUIDE_PERSON",
+              "EXPERIENCE"
+            ]
+          },
+          "categoryId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "provinceId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "districtId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "address": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 300
+          },
+          "serviceArea": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9 ()-]{7,20}$"
+          },
+          "website": {
+            "type": "string",
+            "maxLength": 300,
+            "format": "uri"
+          },
+          "contactName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "contactRole": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "email": {},
+          "privacyNoticeAck": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "authorityAck": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "businessName",
+          "kind",
+          "categoryId",
+          "provinceId",
+          "contactName",
+          "contactRole",
+          "email",
+          "privacyNoticeAck",
+          "authorityAck"
+        ],
+        "additionalProperties": false
+      },
+      "AdvertisingApplicationBody": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "ADVERTISING"
+            ]
+          },
+          "organizationName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "contactName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "contactRole": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "email": {},
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9 ()-]{7,20}$"
+          },
+          "products": {
+            "minItems": 1,
+            "maxItems": 6,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "SPONSORED_CONTENT",
+                "SPONSORED_FEATURE",
+                "SPONSORED_PLACEMENT",
+                "SPONSORED_BRAND_PAGE",
+                "SEASONAL_DEAL",
+                "AFFILIATE"
+              ]
+            }
+          },
+          "provinceIds": {
+            "default": [],
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          },
+          "categoryIds": {
+            "default": [],
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          },
+          "budgetRange": {
+            "type": "string",
+            "enum": [
+              "UNDER_10K",
+              "FROM_10K_TO_50K",
+              "FROM_50K_TO_250K",
+              "OVER_250K"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 2000
+          },
+          "privacyNoticeAck": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "marketingConsent": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "organizationName",
+          "contactName",
+          "email",
+          "products",
+          "provinceIds",
+          "categoryIds",
+          "message",
+          "privacyNoticeAck",
+          "marketingConsent"
+        ],
+        "additionalProperties": false
+      },
+      "ApplicationCreateBody": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/BusinessApplicationBody"
+          },
+          {
+            "$ref": "#/components/schemas/AdvertisingApplicationBody"
+          }
+        ]
+      },
+      "ApplicationAck": {
+        "type": "object",
+        "properties": {
+          "accepted": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "verificationRequired": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        },
+        "required": [
+          "accepted",
+          "verificationRequired"
+        ],
+        "additionalProperties": false
+      },
+      "AdminApplication": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "BUSINESS",
+              "ADVERTISING"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "UNVERIFIED",
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "contactName": {
+            "type": "string"
+          },
+          "contactRole": {
+            "nullable": true,
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "freeEmailDomain": {
+            "type": "boolean"
+          },
+          "phone": {
+            "nullable": true,
+            "type": "string"
+          },
+          "business": {
+            "nullable": true,
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "PLACE",
+                  "SERVICE_PROVIDER",
+                  "GUIDE_PERSON",
+                  "EXPERIENCE"
+                ]
+              },
+              "category": {
+                "nullable": true,
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              "province": {
+                "nullable": true,
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              "district": {
+                "nullable": true,
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              "address": {
+                "nullable": true,
+                "type": "string"
+              },
+              "serviceArea": {
+                "nullable": true,
+                "type": "string"
+              },
+              "website": {
+                "nullable": true,
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "category",
+              "province",
+              "district",
+              "address",
+              "serviceArea",
+              "website"
+            ],
+            "additionalProperties": false
+          },
+          "advertising": {
+            "nullable": true,
+            "type": "object",
+            "properties": {
+              "products": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "SPONSORED_CONTENT",
+                    "SPONSORED_FEATURE",
+                    "SPONSORED_PLACEMENT",
+                    "SPONSORED_BRAND_PAGE",
+                    "SEASONAL_DEAL",
+                    "AFFILIATE"
+                  ]
+                }
+              },
+              "provinces": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "categories": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "budgetRange": {
+                "nullable": true,
+                "type": "string",
+                "enum": [
+                  "UNDER_10K",
+                  "FROM_10K_TO_50K",
+                  "FROM_50K_TO_250K",
+                  "OVER_250K"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "marketingConsent": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "products",
+              "provinces",
+              "categories",
+              "budgetRange",
+              "message",
+              "marketingConsent"
+            ],
+            "additionalProperties": false
+          },
+          "emailVerifiedAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "decidedAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "rejectionReason": {
+            "nullable": true,
+            "type": "string",
+            "enum": [
+              "INCOMPLETE",
+              "DUPLICATE",
+              "NOT_ELIGIBLE",
+              "UNVERIFIABLE",
+              "OUT_OF_SCOPE"
+            ]
+          },
+          "decisionNote": {
+            "nullable": true,
+            "type": "string"
+          },
+          "listingId": {
+            "nullable": true,
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "status",
+          "name",
+          "contactName",
+          "contactRole",
+          "email",
+          "freeEmailDomain",
+          "phone",
+          "business",
+          "advertising",
+          "emailVerifiedAt",
+          "decidedAt",
+          "rejectionReason",
+          "decisionNote",
+          "listingId",
+          "createdAt",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "AdminApplicationList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminApplication"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
+      "ApplicationDecisionBody": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "APPROVE",
+              "REJECT"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "INCOMPLETE",
+              "DUPLICATE",
+              "NOT_ELIGIBLE",
+              "UNVERIFIABLE",
+              "OUT_OF_SCOPE"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "version",
+          "decision"
+        ],
+        "additionalProperties": false
+      },
       "AnalyticsOverview": {
         "type": "object",
         "properties": {
@@ -17128,6 +18144,18 @@
                 "type": "integer",
                 "minimum": 1,
                 "maximum": 9007199254740991
+              },
+              "unverifiedApplicationsDays": {
+                "default": 7,
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "rejectedApplicationsDays": {
+                "default": 365,
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
               }
             },
             "required": [
@@ -17137,7 +18165,9 @@
               "searchEventsDays",
               "clickSessionHashDays",
               "consentIpHashDays",
-              "analyticsEventsDays"
+              "analyticsEventsDays",
+              "unverifiedApplicationsDays",
+              "rejectedApplicationsDays"
             ],
             "additionalProperties": false
           },

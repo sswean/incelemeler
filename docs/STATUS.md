@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 15 — hesapsız başvurular (dilim 14 denetim: `docs/status-log/F1-D14.md`)
+- Aktif dilim: Faz 1 dilim 16 — güven ve güvenlik operasyonları (dilim 15: `docs/status-log/F1-D15.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -69,7 +69,10 @@
 ## Dilim 14 özeti (gereksinim denetimi)
 - 80 BAŞLANMADI ZORUNLU REQ bağımsız denetlendi; AK-04 bağımlılık kuralı onarıldı (sponsorlu/affiliate birleştirme yalnız denetleyicilerde). Kalan iş dilim planı: `docs/status-log/F1-D14.md`.
 
+## Dilim 15 özeti (hesapsız başvurular)
+- Web `/isletmeni-ekle`, `/reklam-ve-sponsorluk` (+ `/dogrula`); API `/v1/applications` (+ `/verify`), `/v1/admin/applications`; panel `/basvurular` (onay → listeleme taslağı, gerekçeli ret).
+
 ## Sonraki 3 adım
-1. Dilim 15 — `/isletmeni-ekle` ve `/reklam-ve-sponsorluk` hesapsız başvuru formları + panel kuyruğu (REQ-ISL-001/002, E2E-007).
-2. Dilim 16 — Hukuki talepler, yaptırım basamakları, hız sınırı sınıfları, step-up kapsamı, veritabanı rolleri.
-3. D17–D22 (planı F1-D14'te); Faz 1→2 geçişi yalnızca çıkış ölçütleri sağlanınca ve İnsan onayıyla (C).
+1. Dilim 16 — Hukuki talepler (GUN-005), yaptırım basamakları (GUN-007), hız sınırı sınıfları (GUV-009), step-up kapsamı (GUV-017), veritabanı rolleri (GUV-011).
+2. Dilim 17 — Operasyon: runbook'lar, yedek/geri yükleme tatbikatı, bakım ve özellik anahtarları, kapsam eşikleri.
+3. D18–D22 (plan `docs/status-log/F1-D14.md`); Faz 1→2 geçişi yalnızca çıkış ölçütleri sağlanınca ve İnsan onayıyla (C).

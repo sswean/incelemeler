@@ -54,6 +54,24 @@ export class RetentionService {
         run: (c) => this.prisma.reviewDraft.deleteMany({ where: { updatedAt: { lt: c } } }),
       },
       {
+        category: 'applications.unverified',
+        method: 'DELETE',
+        cutoff: before(r.unverifiedApplicationsDays),
+        run: (c) =>
+          this.prisma.application.deleteMany({
+            where: { status: 'UNVERIFIED', createdAt: { lt: c } },
+          }),
+      },
+      {
+        category: 'applications.rejected',
+        method: 'DELETE',
+        cutoff: before(r.rejectedApplicationsDays),
+        run: (c) =>
+          this.prisma.application.deleteMany({
+            where: { status: 'REJECTED', decidedAt: { lt: c } },
+          }),
+      },
+      {
         category: 'search_events',
         method: 'DELETE',
         cutoff: before(r.searchEventsDays),

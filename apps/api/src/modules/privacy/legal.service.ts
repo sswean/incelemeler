@@ -26,6 +26,11 @@ type DocType = keyof typeof CURRENT;
 export class LegalService implements OnModuleInit {
   constructor(private readonly prisma: PrismaService) {}
 
+  /** Yürürlükteki metin sürümü (başvuru ve onay kayıtlarında saklanır). */
+  currentVersion(docType: DocType): string {
+    return CURRENT[docType].version;
+  }
+
   async onModuleInit(): Promise<void> {
     for (const [docType, d] of Object.entries(CURRENT)) {
       const contentHash = createHash('sha256').update(d.text.join('\n')).digest('hex');

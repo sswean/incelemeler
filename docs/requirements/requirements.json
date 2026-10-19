@@ -1191,9 +1191,9 @@
       "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": ["apps/api/test/auth.int.test.ts"],
+      "tests": ["apps/api/test/applications.int.test.ts", "apps/api/test/auth.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": "Hız sınırları (giriş, kayıt, değerlendirme, bildirim). Eksik: tek kullanımlık e-posta alan adı listesi; CAPTCHA (sağlayıcı X kaydı)."
+      "notes": "Hız sınırları (giriş, kayıt, değerlendirme, bildirim, hesapsız başvuru). Eksik: tek kullanımlık e-posta alan adı listesi; CAPTCHA (sağlayıcı X kaydı)."
     },
     {
       "id": "REQ-GUN-009",
@@ -1956,24 +1956,24 @@
       "title": "Hesapsız işletme başvuru formu (/isletmeni-ekle)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/applications.int.test.ts", "tests/e2e/specs/applications.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": "/isletmeni-ekle formu yok (slug ayrılmış)."
+      "notes": "/isletmeni-ekle formu (zorunlu alanlar, aydınlatma bağlantısı ve beyanlar), e-posta doğrulaması, panel kuyruğu (/basvurular), onay → listeleme taslağı, gerekçeli ret e-postası, denetim kaydı (E2E-007). Eksik: isteğe bağlı belge yükleme — anonim yükleme X-010 taraması olmadan kapalı (A-028)."
     },
     {
       "id": "REQ-ISL-002",
       "title": "Hesapsız reklam/sponsorluk başvuru formu (/reklam-ve-sponsorluk)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/applications.int.test.ts", "tests/e2e/specs/applications.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": "/reklam-ve-sponsorluk formu yok (slug ayrılmış)."
+      "notes": "/reklam-ve-sponsorluk formu (kuruluş, iletişim, A8.1 ürünleri, hedef il/kategori, bütçe aralığı, mesaj), ayrı ve işaretsiz ticari ileti izni, satış kuyruğu, gerekçeli ret (A-028)."
     },
     {
       "id": "REQ-ISL-003",

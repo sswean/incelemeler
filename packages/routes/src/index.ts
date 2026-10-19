@@ -105,6 +105,8 @@ export const STATIC_PATHS = {
   sponsoredPolicy: '/sponsorlu-icerik-politikasi',
   corrections: '/duzeltme-politikasi',
   disclosure: '/sorumlu-aciklama',
+  addBusiness: '/isletmeni-ekle',
+  advertise: '/reklam-ve-sponsorluk',
 } as const;
 
 /** Mutlak URL (canonical, site haritası, JSON-LD). */
@@ -146,10 +148,8 @@ export const RESERVED_SEGMENTS: ReadonlySet<string> = new Set([
   'kaydedilenler',
   'bildirimler',
   'gecmis',
-  'isletmeni-ekle',
   'isletmeni-sahiplen',
   'isletme-paneli',
-  'reklam-ve-sponsorluk',
   'hakkimizda',
   'iletisim',
   'sss',

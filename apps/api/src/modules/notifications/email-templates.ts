@@ -1,3 +1,5 @@
+import { lowerTr } from '@incelemeler/utils';
+
 /** İşlemsel e-posta metinleri (TASLAK; marka sesi "sen"). Ticari içerik eklenmez (A17.5). */
 export const emailTemplates = {
   verifyEmail: (name: string, link: string) => ({
@@ -79,5 +81,25 @@ export const reviewEmails = {
     text: `Merhaba,\n\nİtirazın ilk kararı vermeyen bir moderatör tarafından incelendi. Sonuç: ${
       overturned ? 'itirazın kabul edildi, karar değiştirildi' : 'ilk karar korundu'
     }.\nAçıklama: ${note}`,
+  }),
+};
+
+/** Hesapsız başvuru bildirimleri (REQ-ISL-001/002; TASLAK metinler). */
+export const applicationEmails = {
+  verify: (kind: string, link: string) => ({
+    subject: `${kind} başvurunu doğrula`,
+    text: `Merhaba,\n\n${kind} başvurunu aldık. İncelemeye alabilmemiz için e-posta adresini bu bağlantıyla 72 saat içinde doğrula:\n${link}\n\nBu başvuruyu sen yapmadıysan bu e-postayı yok sayabilirsin; doğrulanmayan başvurular silinir.`,
+  }),
+  received: (kind: string) => ({
+    subject: `${kind} başvurun incelemede`,
+    text: `Merhaba,\n\nE-posta adresin doğrulandı; ${lowerTr(kind)} başvurun ekibimizin inceleme kuyruğunda. Sonucu bu adrese bildireceğiz.`,
+  }),
+  approved: (kind: string, name: string) => ({
+    subject: `${kind} başvurun onaylandı`,
+    text: `Merhaba,\n\n"${name}" için yaptığın başvuru onaylandı. Ekibimiz bilgileri doğruladıktan sonra seninle iletişime geçecek; yayına alma editoryal doğrulamadan sonra olur ve ücretli değildir.`,
+  }),
+  rejected: (kind: string, name: string, reason: string, note: string | null) => ({
+    subject: `${kind} başvurun hakkında`,
+    text: `Merhaba,\n\n"${name}" için yaptığın başvuruyu şu gerekçeyle kabul edemedik: ${reason}${note ? `\nAçıklama: ${note}` : ''}\n\nEksikleri tamamlayıp yeniden başvurabilirsin.`,
   }),
 };

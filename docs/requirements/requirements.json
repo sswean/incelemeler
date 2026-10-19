@@ -45,24 +45,27 @@
       "title": "NestJS modülleri ve tablo sahipliği aşağıdaki gibidir",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": [".dependency-cruiser.cjs#no-circular"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "forwardRef yok, döngüsel bağımlılık kuralı var. Eksik: tablo sahipliği listesi ve denetimi; hesap silme/imha işleri başka modüllerin tablolarına doğrudan yazıyor (F1-D14 denetimi)."
     },
     {
       "id": "REQ-MIM-005",
       "title": "search, catalog, reviews modülleri ads ve commerce modüllerini import etmez",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": [
+        ".dependency-cruiser.cjs#organic-ranking-independent",
+        "apps/api/test/sponsorship.int.test.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Kural gerçek modüllere yöneltildi (sponsorship|outbound); search/catalog/reviews iş mantığı bunları içe aktarmaz, birleştirme denetleyicilerde; moderasyon dar SponsorLinkLookup arayüzüyle (F1-D14). Eski kod 3 ihlal veriyordu."
     },
     {
       "id": "REQ-MIM-006",
@@ -153,24 +156,24 @@
       "title": "Render stratejisi ADR-0009'da sayfa türü başına tanımlanır (ör",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/search.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "ADR-0009 tablosu; detay/içerik ISR 60 sn, arama dinamik+noindex, hesap force-dynamic. Eksik: ana sayfa ADR'deki ISR yerine dinamik; revalidateTag yok."
     },
     {
       "id": "REQ-MIM-014",
       "title": "Önbellek geçersiz kılma",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/sponsorship.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Sponsorlu pencere sunucuda; arama/hub önbelleği ≤ 60 sn. Eksik: olay tabanlı geçersiz kılma (revalidateTag/outbox→web)."
     },
     {
       "id": "REQ-MIM-015",
@@ -206,7 +209,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Merkezi tipli özellik bayrağı kaydı yok (F1-D14 denetimi)."
     },
     {
       "id": "REQ-MIM-018",
@@ -261,12 +264,12 @@
       "title": "Editör puanı ve kullanıcı puanı ayrı tablolarda ve ayrı API alanlarındadır (editorialVe…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/src/modules/reviews/rating-stats.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "İstatistik yalnız kullanıcı puanıyla; editör verdict tablosu henüz yok (VER-005)."
     },
     {
       "id": "REQ-VER-005",
@@ -278,7 +281,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yalnız puan doğrulayıcı var; editorial_verdicts tablosu/API yok."
     },
     {
       "id": "REQ-VER-006",
@@ -309,12 +312,12 @@
       "title": "organizations (type",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/sponsorship.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Organization modeli ve beş tür var; org_memberships ve kuruluş kapsamlı yetki yok (Faz 3 sahiplenmeyle)."
     },
     {
       "id": "REQ-VER-009",
@@ -338,7 +341,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Çalışma saatleri modeli ve \"şimdi açık\" yok."
     },
     {
       "id": "REQ-VER-011",
@@ -362,7 +365,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "offers/price_snapshots yok (fiyat gösterimi de yok)."
     },
     {
       "id": "REQ-VER-013",
@@ -405,12 +408,12 @@
       "title": "Yumuşak silme (deletedAt) kullanıcı içeriği ve listelemelerde",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/account.int.test.ts", "apps/api/test/privacy.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Listing/Article deletedAt; hesap silmede anonimleştirme; saklama ayarları. Eksik: Review yumuşak silme (hesap silmede değerlendirmeler kalıcı siliniyor)."
     },
     {
       "id": "REQ-VER-017",
@@ -429,12 +432,12 @@
       "title": "dataOrigin alanı listeleme, içerik, değerlendirme, kampanya, yerleşim ve olay tabloları…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Listing/Article/Review/Campaign zorunlu dataOrigin. Eksik: yerleşim/kreatif ve olay tablolarında (demo boolean)."
     },
     {
       "id": "REQ-VER-019",
@@ -446,55 +449,55 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "locale sütunu/çeviri tablosu ve ADR yok."
     },
     {
       "id": "REQ-VER-020",
       "title": "Uyum varlıkları birinci sınıftır",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/privacy.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "consent_records, data_subject_requests, legal_document_versions, legal_acceptances, breach_incidents, legal_approvals var. Eksik: takedown_requests, license_verifications, processor_inventory."
     },
     {
       "id": "REQ-VER-021",
       "title": "İndeks planı ADR'de belgelenir",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/search.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Gerekli indekslerin çoğu migration'larda (GiST, GIN, kısmi benzersiz). Eksik: indeks planı ADR'si, yerleşim indeksi, olay tablosu bölümleme, EXPLAIN belgesi."
     },
     {
       "id": "REQ-VER-022",
       "title": "Migration stratejisi",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/postgres.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Migration'lar boş veritabanına her entegrasyon testinde uygulanır. Eksik: strateji belgesi, önceki sürümden yükseltme testi, yıkıcı DDL denetimi."
     },
     {
       "id": "REQ-VER-023",
       "title": "Kimlikler",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/seo.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Tüm modeller uuid(7); içerik URL'leri slug. İstisnalar: /git/{id}, /medya/{id}, /degerlendirmeler/{id} (noindex)."
     },
     {
       "id": "REQ-VER-024",
@@ -506,7 +509,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "user_preferences yok."
     },
     {
       "id": "REQ-VER-025",
@@ -525,12 +528,12 @@
       "title": "Misafir gezinme",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/guest.spec.ts", "tests/e2e/specs/reviews.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Misafir listeleme, içerik, arama ve hub sayfalarını giriş duvarı olmadan gezer; Kaydet/Değerlendir eylemde girişe yönlendirir. Harita yüzeyi yok (X-005)."
     },
     {
       "id": "REQ-HSP-002",
@@ -746,7 +749,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Kategori menüsü/mega menü ve menü yönetimi yok."
     },
     {
       "id": "REQ-LST-001",
@@ -765,12 +768,12 @@
       "title": "Her listeleme şablonunda kısa tanıtımın yanında \"Hakkında\" (detaylı açıklama) bloğu bul…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/guest.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Hakkında bloğu her şablonda (E2E). Eksik: \"İşletme tarafından sağlandı\" etiketi — işletme içeriği Faz 3 sahiplenmeyle."
     },
     {
       "id": "REQ-LST-002",
@@ -849,12 +852,12 @@
       "title": "Zincir işletmelerde her şube ayrı listeleme",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/src/modules/reviews/rating-stats.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Puan istatistiği listeleme başına; kuruluş düzeyi birleşik puan yok. Eksik: herkese açık marka sayfası (şubeler)."
     },
     {
       "id": "REQ-LST-009",
@@ -1154,7 +1157,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "takedown_requests akışı yok (F1-D7'den ertelenmişti)."
     },
     {
       "id": "REQ-GUN-006",
@@ -1166,7 +1169,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Fotoğraf moderasyonu yok; kullanıcı fotoğrafı yüklemesi yok."
     },
     {
       "id": "REQ-GUN-007",
@@ -1178,19 +1181,19 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yaptırım basamakları yok; yalnız SUSPENDED girişi engeller."
     },
     {
       "id": "REQ-GUN-008",
       "title": "Bot/spam koruması",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/auth.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Hız sınırları (giriş, kayıt, değerlendirme, bildirim). Eksik: tek kullanımlık e-posta alan adı listesi; CAPTCHA (sağlayıcı X kaydı)."
     },
     {
       "id": "REQ-GUN-009",
@@ -1233,12 +1236,12 @@
       "title": "Editoryal bağımsızlık güvenlik duvarı",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "SALES rolünün içerik izni yok (birim testi). Eksik: HTTP 403 testi, sponsorun yayın öncesi gördüğü bilgisinin açıklaması."
     },
     {
       "id": "REQ-ARA-001",
@@ -1418,7 +1421,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "50k/5k tohum ve p95 ölçüm düzeneği yok."
     },
     {
       "id": "REQ-ARA-016",
@@ -1706,7 +1709,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Dış sağlayıcı portu/MOCK adaptörü yok; iç portlarda üretim yasağı testli."
     },
     {
       "id": "REQ-ENT-002",
@@ -1718,7 +1721,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Adaptör sarmalayıcı (zaman aşımı/yeniden deneme/devre kesici) yok."
     },
     {
       "id": "REQ-ENT-003",
@@ -1737,12 +1740,12 @@
       "title": "Listelemede sabit \"fiyat\" alanı yoktur",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/api.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Listelemede sabit fiyat alanı yok, yalnız 1–4 fiyat seviyesi. Eksik: isteğe bağlı editoryal fiyat aralığı (observedAt, kaynak)."
     },
     {
       "id": "REQ-ENT-011",
@@ -1845,36 +1848,36 @@
       "title": "Tablolarda arama, filtre, sıralama, sayfalama, toplu işlem (onaylı + denetim kaydı), CS…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/listings.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Listeleme tablosunda arama, filtre, cursor sayfalama; CSV raporlar. Eksik: sıralama, toplu işlem, CSV'de step-up."
     },
     {
       "id": "REQ-ADM-004",
       "title": "Formlar şemadan (zod) doğrulanır",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/listings.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "zod doğrulama, kategori şemasından özellik alanları, 412 çakışması. Eksik: kaydedilmemiş değişiklik uyarısı, 412 fark görünümü."
     },
     {
       "id": "REQ-ADM-005",
       "title": "Medya kütüphanesi",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/media.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yükleme, odak noktası, alt metin ve lisans alanları, kullanım kaydı. Eksik: kütüphane listesi/yeniden kullanım, lisans süresi uyarısı."
     },
     {
       "id": "REQ-ADM-006",
@@ -1898,19 +1901,19 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "SEO alanları ve yönlendirme yönetimi yok (otomatik slug 301/410 var)."
     },
     {
       "id": "REQ-ADM-008",
       "title": "Panel arayüzü Türkçe",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/admin-auth.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Panel Türkçe (lang=tr, i18n), axe denetimleri. Eksik: panelde İçeriğe atla, klavye gezinme testi."
     },
     {
       "id": "REQ-ADM-010",
@@ -1958,7 +1961,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "/isletmeni-ekle formu yok (slug ayrılmış)."
     },
     {
       "id": "REQ-ISL-002",
@@ -1970,7 +1973,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "/reklam-ve-sponsorluk formu yok (slug ayrılmış)."
     },
     {
       "id": "REQ-ISL-003",
@@ -2390,7 +2393,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Detay/içerik sayfalarında OG başlık/açıklama/görsel var; dinamik 1200×630 görsel ve test yok."
     },
     {
       "id": "REQ-SEO-010",
@@ -2433,12 +2436,12 @@
       "title": "Çok dile hazır mimari",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/guest.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "lang=tr; tek dilde hreflang üretilmez (E2E). Eksik: hreflang altyapısı, yerelleştirilebilir slug."
     },
     {
       "id": "REQ-SEO-014",
@@ -2450,7 +2453,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Alt metin, boyut, AVIF/WebP var; görsel site haritası ve açıklayıcı dosya adı yok."
     },
     {
       "id": "REQ-SEO-015",
@@ -2462,19 +2465,19 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Doğrulama meta etiketleri ve IndexNow yok (X-012)."
     },
     {
       "id": "REQ-SEO-016",
       "title": "SEO test paketi (CI)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/seo.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Listeleme detayı, yönlendirme, site haritası ve robots E2E'de. Eksik: tüm sayfa türleri için tablo güdümlü test, JSON-LD şema doğrulaması."
     },
     {
       "id": "REQ-YRL-001",
@@ -2522,31 +2525,35 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Posta kodu 5 hane doğrulaması ve <address> var; sokak/no ayrı alan ve test yok."
     },
     {
       "id": "REQ-YRL-005",
       "title": "Mikro metin rehberi (docs/ux/metin-rehberi.md)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["packages/i18n/src/tr.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "docs/ux/metin-rehberi.md; katalogda \"siz\" çekimi yok (test); \"Bunu mu demek istedin\" düzeltildi."
     },
     {
       "id": "REQ-YRL-006",
       "title": "Yasak karanlık örüntüler (AK-15)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": [
+        "packages/i18n/src/tr.test.ts",
+        "tests/e2e/specs/consent.spec.ts",
+        "tests/e2e/specs/guest.spec.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Sahte aciliyet/utandırıcı ret metni yok (katalog testi); çerez seçenekleri eşit, işaretsiz (E2E); giriş duvarı yok (E2E). Abonelik özelliği yok."
     },
     {
       "id": "REQ-GUV-001",
@@ -2649,36 +2656,36 @@
       "title": "Hız sınırları rota sınıfına göre (kimlik, yazma, arama, yönlendirme, panel) ve kötüye k…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/auth.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Kimlik ve yazma uçlarında hız sınırı + 429 Retry-After. Eksik: arama, yönlendirme ve panel sınıfları."
     },
     {
       "id": "REQ-GUV-010",
       "title": "Şifreleme",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "AES-256-GCM uygulama düzeyi şifreleme (MFA sırları). Eksik: anahtar kimliği/rotasyon prosedürü."
     },
     {
       "id": "REQ-GUV-011",
       "title": "Veritabanı rolleri",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/api.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "audit_log UPDATE/DELETE/TRUNCATE tetikleyiciyle engelli. Eksik: ayrı uygulama/migration/salt okunur rolleri."
     },
     {
       "id": "REQ-GUV-012",
@@ -2748,12 +2755,12 @@
       "title": "Panel ve API için yönetici işlemlerinde step-up (REQ-HSP-007) ve kritik işlemlerin dene…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/auth.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Step-up altyapısı ve rol atamada zorunlu; kritik işlemler denetim kaydında. Eksik: kampanya tutarı, toplu silme, dışa aktarma, uyum ayarlarında step-up."
     },
     {
       "id": "REQ-KVK-001",
@@ -2940,24 +2947,24 @@
       "title": "Yaş",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Kayıtta 18+ beyanı zorunlu (sözleşme + DB + test); L-019 hukuki kaydı."
     },
     {
       "id": "REQ-ERS-001",
       "title": "Hedef",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/walking-skeleton.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "axe ciddi/kritik denetimleri ve token kontrastı; ekran okuyucu MQA-004. Eksik: wcag22aa etiketleriyle tam tarama, erişilebilirlik beyanı."
     },
     {
       "id": "REQ-ERS-002",
@@ -2976,12 +2983,12 @@
       "title": "Klavye ile tam kullanım",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/hardening.spec.ts", "tests/e2e/specs/search.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Odak halkası token'dan, İçeriğe atla, ARIA combobox, filtre panelinde Esc. Eksik: gerçek odak tuzağı ve testi."
     },
     {
       "id": "REQ-ERS-004",
@@ -3012,24 +3019,27 @@
       "title": "Puan bileşenleri",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": [
+        "apps/web/src/components/reviews/rating-summary.test.tsx",
+        "tests/e2e/specs/reviews.spec.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yıldızlar aria-hidden; özet ve kart metni sr-only; puan girişi yerel radyo grubu, yıldız simgeleri okunmaz (F1-D14)."
     },
     {
       "id": "REQ-ERS-007",
       "title": "Harita",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/guest.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Harita ve karusel yok; otomatik oynatma olmadığı E2E'de korunur. Harita eklenince liste eşdeğeri gerekir."
     },
     {
       "id": "REQ-ERS-008",
@@ -3048,24 +3058,24 @@
       "title": "Görsellerde anlamlı Türkçe alt metin (yönetim panelinde ZORUNLU alan)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Alt metin olmadan yayın engelli; herkese açık çıktı alt metinsiz görseli göstermez. Eksik: panel yükleme formunda zorunlu alan, dekoratif görsel yolu."
     },
     {
       "id": "REQ-ERS-010",
       "title": "Ekran okuyucuyla (VoiceOver, TalkBack, NVDA) kritik akışların uçtan uca kontrolü M yönt…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "MQA-004 (VoiceOver/TalkBack/NVDA) — İnsan sonucu bekleniyor."
     },
     {
       "id": "REQ-PRF-001",
@@ -3077,7 +3087,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Saha CWV yalnız üretimde (M/A); RUM toplama yok."
     },
     {
       "id": "REQ-PRF-002",
@@ -3101,7 +3111,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "next/image (AVIF/WebP, boyut, lazy) ve /medya max-age var; test ve CDN yok."
     },
     {
       "id": "REQ-PRF-004",
@@ -3125,7 +3135,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yük testi aracı/ADR, büyük tohum ve N+1 denetimi yok."
     },
     {
       "id": "REQ-PRF-006",
@@ -3137,31 +3147,31 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "ADR-0009 ve uç nokta Cache-Control başlıkları var; ETag, etiketli geçersiz kılma ve test yok."
     },
     {
       "id": "REQ-PRF-007",
       "title": "Uzun listelerde cursor sayfalama ve \"Daha fazla yükle\" (SEO için bağlantılı sayfalar da…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/src/common/cursor.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "API cursor sayfalama (HMAC); panelde \"Daha fazla göster\". Eksik: herkese açık arama/hub'da \"Daha fazla yükle\" (şu an ?sayfa= bağlantıları)."
     },
     {
       "id": "REQ-PRF-008",
       "title": "Gereksiz animasyon, pahalı görsel efekt ve onlarca bağımsız kütüphane YASAK (§13.2)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/hardening.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Web çalışma zamanı bağımlılıkları yalnız next/react; azaltılmış hareket. Eksik: bağımlılık izin listesi denetimi."
     },
     {
       "id": "REQ-ANL-001",
@@ -3269,7 +3279,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Barındırma ADR'si yok; Q-005 (C) bekliyor."
     },
     {
       "id": "REQ-OPS-004",
@@ -3281,7 +3291,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Geri alma ve migration güvenliği belgesi/denetimi yok."
     },
     {
       "id": "REQ-OPS-005",
@@ -3293,19 +3303,19 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yedek/geri yükleme tatbikatı betiği yok."
     },
     {
       "id": "REQ-OPS-006",
       "title": "Gözlemlenebilirlik",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/src/common/json-logger.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Maskeli JSON log, traceId, sağlık uç noktası. Eksik: OTel, hata izleme, metrikler, uyarı eşikleri."
     },
     {
       "id": "REQ-OPS-007",
@@ -3329,19 +3339,19 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Runbook'lar yok (yalnız dağıtım kontrol listesi)."
     },
     {
       "id": "REQ-OPS-009",
       "title": "Bakım ve özellik anahtarları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/sponsorship.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yuva başına sponsorlu kapatma (denetim kayıtlı), entegrasyon DISABLED. Eksik: bakım modu, değerlendirme/kayıt anahtarları, genel sponsorlu anahtarı."
     },
     {
       "id": "REQ-OPS-010",
@@ -3353,7 +3363,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "docs/ops/canliya-gecis.md yok."
     },
     {
       "id": "REQ-TST-001",
@@ -3377,7 +3387,7 @@
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Kapsam sağlayıcısı ve eşikler yok."
     },
     {
       "id": "REQ-TST-003",
@@ -3396,36 +3406,36 @@
       "title": "Deterministik test verisi",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["packages/utils/src/format.test.ts", "tests/e2e/prepare-db.mjs"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "İzole E2E veritabanı, Testcontainers, deterministik IP, TZ biçim testi. Eksik: fabrikalar, sahte saat, gece yarısı/bayram testleri."
     },
     {
       "id": "REQ-TST-005",
       "title": "Ek B'deki E2E senaryoları REQ kimlikleriyle eşlenir ve CI'da çalışır",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["scripts/ci-local.sh"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "E2E CI'da/ci:local'da; .ci-local/history.jsonl ile ardışık koşu geçmişi (F1-D14). Eksik: [E2E-0NN] etiketleri; E2E-007/008/010/013/014 kapsanmıyor, 12 senaryo kısmi."
     },
     {
       "id": "REQ-TST-006",
       "title": "Test ortamında kullanılan örnek veriler demo olarak işaretlidir (§12.4)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/src/seed/guard.test.ts", "scripts/ci-local.sh"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Seed üretimde reddeder; demo verisi işaretli; ci:local sonucu artık req:check dahil yazılır (F1-D14). Eksik: lastVerifiedCommit bağlantısı."
     }
   ]
 }

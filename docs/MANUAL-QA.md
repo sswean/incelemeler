@@ -19,3 +19,16 @@ Biçim: Ek C-9. Ortamda doğrulanamayan kontroller; durum İnsan sonucu girdiği
 - Adımlar: `GET /v1/admin-areas?level=PROVINCE` (81 il, plaka kodları) ve lansman illerinin ilçelerini (`?parentId=`) İçişleri Bakanlığı/TÜİK güncel idari bölünme listesiyle karşılaştırın.
 - Beklenen sonuç: Ad, yazım (ör. Hakkâri, Eyüpsultan) ve sayılar (İstanbul 39, İzmir 30, Antalya 19, Muğla 13, Nevşehir 8) birebir aynı.
 - Sonuç: __ · Tarih: __ · Test eden: __
+
+## MQA-004: Ekran okuyucuyla kritik akışlar (REQ-ERS-010, REQ-ERS-001)
+- Ön koşullar: `pnpm run setup` + `pnpm seed:demo`; web 3000, panel 3001. Araçlar: macOS/iOS VoiceOver (Safari), Android TalkBack (Chrome), Windows NVDA (Firefox ya da Chrome).
+- Adımlar (her ekran okuyucuda ayrı ayrı):
+  1. Ana sayfa: "İçeriğe atla" bağlantısı ilk odakta okunur; başlık hiyerarşisi (tek h1) gezilebilir.
+  2. Çerez bandı: üç düğme eşit ve anlaşılır okunur; "Tercihleri yönet" ile tercih merkezine gidilir.
+  3. Arama: "Ne arıyorsun?" birleşik kutusunda öneriler ok tuşlarıyla duyurulur; sonuç sayısı ve filtre çipleri okunur.
+  4. Listeleme detayı: puan özeti "5 üzerinden …, … değerlendirme" biçiminde okunur, yıldız simgeleri okunmaz; "Sponsorlu"/"Ortaklık bağlantısı" etiketleri bağlantı adıyla birlikte okunur.
+  5. Kayıt: alan etiketleri, 18+ beyanı ve hata iletileri alanla ilişkili okunur.
+  6. Değerlendirme yaz: puan radyo grubu ok tuşlarıyla seçilir, seçili değer duyurulur; gönderim sonucu canlı bölgeden okunur.
+  7. Panel girişi + 2FA: alanlar ve hata iletileri okunur; kurtarma kodları listesi okunabilir.
+- Beklenen sonuç: Her adım yalnızca klavye/ekran okuyucu hareketleriyle tamamlanır; içerik ve durum değişiklikleri duyurulur; anlamsız okuma (ör. "yıldız yıldız yıldız") yok.
+- Sonuç: __ · Tarih: __ · Test eden: __ · Ekran okuyucu/sürüm: __

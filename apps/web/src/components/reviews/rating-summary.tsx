@@ -62,9 +62,13 @@ export function RatingSummaryView({
         <span className="mr-2 rounded-md border border-border-strong px-2 py-0.5 text-sm font-medium">
           {R.userLabel}
         </span>
-        <span aria-label={fill(R.average, { avg, n: summary.count })}>
-          <Stars value={summary.average} /> <strong aria-hidden="true">{avg}</strong>{' '}
-          <span aria-hidden="true">({fill(R.count, { n: summary.count })})</span>
+        {/* Ekran okuyucu metni ayrı (aria-label düz span'de güvenilir okunmaz — REQ-ERS-006). */}
+        <span className="sr-only" data-testid="rating-text">
+          {fill(R.average, { avg, n: summary.count })}
+        </span>
+        <span aria-hidden="true">
+          <Stars value={summary.average} /> <strong>{avg}</strong>{' '}
+          <span>({fill(R.count, { n: summary.count })})</span>
         </span>{' '}
         <Link href={STATIC_PATHS.methodology} className="text-sm underline">
           {R.howCalculated}

@@ -82,7 +82,7 @@ describe('[REQ-LST-001] yayın için zorunlu alanlar (Ek A4.4)', () => {
     ).toEqual(['category_not_published', 'demo_in_production', 'attribute_required']);
   });
 
-  it('[REQ-VER-014] lisansı eksik ya da alt metni olmayan görsel yayını engeller', () => {
+  it('[REQ-VER-014] [REQ-ERS-009] lisansı eksik ya da alt metni olmayan görsel yayını engeller', () => {
     expect(
       codes({
         media: [

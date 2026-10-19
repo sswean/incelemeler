@@ -4,13 +4,17 @@ import { SitemapQuery, SlugResolveQuery } from '@incelemeler/contracts';
 import { parseId } from '../../common/ids.js';
 import { parseQuery } from '../../common/zod-query.js';
 import { Public } from '../identity/auth.context.js';
+import { OutboundService } from '../outbound/outbound.service.js';
 import { PublicListingsService } from './public-listings.service.js';
 
 const CACHE = 'public, max-age=60';
 
 @Controller('v1')
 export class PublicListingsController {
-  constructor(private readonly listings: PublicListingsService) {}
+  constructor(
+    private readonly listings: PublicListingsService,
+    private readonly outbound: OutboundService,
+  ) {}
 
   // `resolve`, `:slug`'dan önce tanımlanır (rota sırası).
   @Get('listings/resolve')
@@ -24,7 +28,8 @@ export class PublicListingsController {
   @Public()
   async get(@Param('slug') slug: string, @Res({ passthrough: true }) res: Response) {
     res.setHeader('Cache-Control', CACHE);
-    return this.listings.get(slug);
+    const listing = await this.listings.get(slug);
+    return { ...listing, outbound: await this.outbound.publicForListing(listing.id, listing.slug) };
   }
 
   @Get('media/:id')

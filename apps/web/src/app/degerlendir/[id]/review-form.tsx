@@ -181,7 +181,7 @@ export function ReviewForm({
                 required
               />
               <span>
-                {'★'.repeat(n)} {R.ratingLabels[n]}
+                <span aria-hidden="true">{'★'.repeat(n)}</span> {R.ratingLabels[n]}
               </span>
             </label>
           ))}

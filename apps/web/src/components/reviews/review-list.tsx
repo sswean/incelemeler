@@ -20,12 +20,13 @@ function ReviewCard({ r, signedIn }: { r: PublicReview; signedIn: boolean }) {
   const documented = r.verification !== 'SELF_DECLARED';
   return (
     <li className="space-y-2 rounded-lg border border-border-default p-4" data-testid="review">
-      <p
-        aria-label={fill(R.reviewRatingAria, {
-          n: r.rating,
-          label: R.ratingLabels[r.rating as 1 | 2 | 3 | 4 | 5],
-        })}
-      >
+      <p>
+        <span className="sr-only">
+          {fill(R.reviewRatingAria, {
+            n: r.rating,
+            label: R.ratingLabels[r.rating as 1 | 2 | 3 | 4 | 5],
+          })}
+        </span>
         <Stars value={r.rating} />{' '}
         <span aria-hidden="true">{R.ratingLabels[r.rating as 1 | 2 | 3 | 4 | 5]}</span>
       </p>

@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 kapanışı (dilim 13 sertleştirme: `docs/status-log/F1-D13.md`)
+- Aktif dilim: Faz 1 dilim 15 — hesapsız başvurular (dilim 14 denetim: `docs/status-log/F1-D14.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -66,7 +66,10 @@
 ## Dilim 13 özeti (sertleştirme)
 - Web/panel: istek başına nonce CSP (`proxy.ts`), güvenlik başlıkları, `/.well-known/security.txt` + `/sorumlu-aciklama` (TASLAK), azaltılmış hareket. API: güvenlik başlıkları, katı gövde doğrulaması, 413/400 problem eşlemesi, `JsonLogger` (maskeleme + `security.*` olayları). ESLint: ham SQL ve `dangerouslySetInnerHTML` kısıtları. E2E `hardening.spec` (başlıklar, tek h1, 320 px, JS bütçesi ≤ 170 KB).
 
+## Dilim 14 özeti (gereksinim denetimi)
+- 80 BAŞLANMADI ZORUNLU REQ bağımsız denetlendi; AK-04 bağımlılık kuralı onarıldı (sponsorlu/affiliate birleştirme yalnız denetleyicilerde). Kalan iş dilim planı: `docs/status-log/F1-D14.md`.
+
 ## Sonraki 3 adım
-1. Faz 1 kapanış raporu (`docs/status-log/FAZ-1-raporu.md`): REQ durum özeti, açık L/X/Q kayıtları.
-2. Faz 1→2 geçişi C sınıfı: İnsan onayı beklenir (Q-001, Q-003, Q-005, Q-007 dahil).
-3. Onay gelirse: Faz 1 KISMİ/BAŞLANMADI ZORUNLU REQ'lerin kapatılması ya da gerekçeli ertelenmesi (kapı `req:check --gate`).
+1. Dilim 15 — `/isletmeni-ekle` ve `/reklam-ve-sponsorluk` hesapsız başvuru formları + panel kuyruğu (REQ-ISL-001/002, E2E-007).
+2. Dilim 16 — Hukuki talepler, yaptırım basamakları, hız sınırı sınıfları, step-up kapsamı, veritabanı rolleri.
+3. D17–D22 (planı F1-D14'te); Faz 1→2 geçişi yalnızca çıkış ölçütleri sağlanınca ve İnsan onayıyla (C).

@@ -14,7 +14,6 @@ import type { Prisma } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { toMediaDto } from '../media/media.service.js';
 import { STORAGE_PORT, type StoragePort } from '../media/storage.port.js';
-import { OutboundService } from '../outbound/outbound.service.js';
 import { CategorySchemaService } from '../taxonomy/category-schema.service.js';
 
 /** Herkese açık durumlar: yayında ve kapalı (sayfa korunur — REQ-LST-006). */
@@ -43,7 +42,6 @@ export class PublicListingsService {
     private readonly schemas: CategorySchemaService,
     @Inject(ENV) private readonly env: EnvToken,
     @Inject(STORAGE_PORT) private readonly storage: StoragePort,
-    private readonly outbound: OutboundService,
   ) {}
 
   private visible(): Prisma.ListingWhereInput {
@@ -96,7 +94,8 @@ export class PublicListingsService {
     return { status: 'missing', kind: null, slug: null, carRental: false };
   }
 
-  async get(slug: string): Promise<PublicListing> {
+  /** Organik listeleme ayrıntısı; dış bağlantılar (affiliate) sunum katmanında eklenir (REQ-MIM-005). */
+  async get(slug: string): Promise<Omit<PublicListing, 'outbound'>> {
     const l = await this.prisma.listing.findFirst({
       where: { slug, ...this.visible() },
       include: INCLUDE,
@@ -202,7 +201,6 @@ export class PublicListingsService {
       },
       media,
       reviewCount: l.ratingStats?.count ?? 0,
-      outbound: await this.outbound.publicForListing(l.id, l.slug),
       dataOrigin: l.dataOrigin,
       sourceVerifiedAt: l.sourceVerifiedAt?.toISOString() ?? null,
       publishedAt: l.publishedAt?.toISOString() ?? null,

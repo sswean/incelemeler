@@ -26,10 +26,13 @@ module.exports = {
     {
       name: 'organic-ranking-independent',
       comment:
-        'REQ-MIM-005 / AK-04: search, catalog, reviews modülleri ads ve commerce modüllerini import etmez.',
+        'REQ-MIM-005 / AK-04: search, catalog, reviews iş mantığı reklam (sponsorship) ve ticaret (outbound) modüllerini import etmez; birleştirme yalnızca sunum katmanında (denetleyiciler).',
       severity: 'error',
-      from: { path: '^apps/api/src/modules/(search|catalog|reviews)/' },
-      to: { path: '^apps/api/src/modules/(ads|commerce)/' },
+      from: {
+        path: '^apps/api/src/modules/(search|catalog|reviews)/',
+        pathNot: '\\.controller\\.ts$',
+      },
+      to: { path: '^apps/api/src/modules/(sponsorship|outbound)/' },
     },
     {
       name: 'not-to-unresolvable',

@@ -43,6 +43,7 @@ import { AnalyticsService } from './modules/analytics/analytics.service.js';
 import { HomeService } from './modules/home/home.service.js';
 import { CampaignsService } from './modules/sponsorship/campaigns.service.js';
 import { SponsoredServingService } from './modules/sponsorship/sponsored-serving.service.js';
+import { SponsorLinkLookup } from './common/sponsor-link.js';
 import { SponsorshipController } from './modules/sponsorship/sponsorship.controller.js';
 import { HubsController } from './modules/hubs/hubs.controller.js';
 import { HubsService } from './modules/hubs/hubs.service.js';
@@ -171,6 +172,7 @@ export class AppModule {
         RatingStatsService,
         OutboundService,
         SponsoredServingService,
+        { provide: SponsorLinkLookup, useExisting: SponsoredServingService },
         CampaignsService,
         AccountService,
         ConsentService,

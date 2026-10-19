@@ -1254,7 +1254,7 @@ export const search = {
   noQuery: 'Bir yer, kategori ya da işletme adı yaz; filtrelerle daralt.',
   interpreted: 'Aramanı şöyle yorumladık:',
   removeChip: '{label} filtresini kaldır',
-  didYouMean: 'Bunu mu demek istediniz:',
+  didYouMean: 'Bunu mu demek istedin:',
   fuzzyNote: 'Tam eşleşme bulunamadı; benzer yazılışlar gösteriliyor.',
   zeroTitle: 'Bu aramayla eşleşen sonuç yok',
   zeroHint: 'Şu filtrelerden birini kaldırırsan sonuç var:',

@@ -28,10 +28,18 @@ run "audit" pnpm audit --audit-level=high --prod
 run "secrets" docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest detect --source /repo --no-banner --redact
 run "e2e" pnpm test:e2e
 
-passed=$([ "$failed" -eq 0 ] && echo true || echo false)
-cat > .ci-local/last-run.json <<JSON
-{ "startedAt": "$started", "finishedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)", "commit": "$commit", "uncommittedFiles": $dirty, "passed": $passed }
-JSON
+write_result() {
+  local passed
+  passed=$([ "$failed" -eq 0 ] && echo true || echo false)
+  printf '{ "startedAt": "%s", "finishedAt": "%s", "commit": "%s", "uncommittedFiles": %s, "passed": %s }\n' \
+    "$started" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$commit" "$dirty" "$passed" >.ci-local/last-run.json
+}
+
+# req:check (b) önceki adımların sonucunu okur; ardından sonuç req:check dahil yeniden yazılır (REQ-TST-006).
+write_result
 run "req-check" pnpm req:check
+write_result
+# Faz kapısı "art arda 3 yeşil koşu" ölçütü için geçmiş (REQ-TST-005).
+cat .ci-local/last-run.json >>.ci-local/history.jsonl
 cat .ci-local/last-run.json
 exit "$failed"

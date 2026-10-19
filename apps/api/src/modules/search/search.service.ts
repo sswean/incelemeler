@@ -9,7 +9,6 @@ import type {
 import { normalizeTr } from '@incelemeler/utils';
 import { ProblemException } from '../../common/problem.js';
 import { ENV, type EnvToken } from '../../config/env.provider.js';
-import { SponsoredServingService } from '../sponsorship/sponsored-serving.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { mergeIntentFilters, parseQuery } from './query-parser.js';
 import { SearchLexiconService } from './search-lexicon.service.js';
@@ -33,6 +32,19 @@ type Relaxable = { drop: string; label: string; apply: (c: SearchCriteria) => Se
  * Arama (REQ-ARA-001…014): sorgu ayrıştırma → yapılandırılmış ölçüt → SearchPort. Organik sıralama
  * kampanyalardan bağımsızdır; bu servis hiçbir ticari tabloyu okumaz (AK-04, REQ-ARA-009).
  */
+/** Sponsorlu yerleşimin organik sonuçla eşleşmesi için gereken bağlam (yalnızca ölçütler, sıralama değil). */
+export interface SearchPlacementContext {
+  criteria: SearchCriteria;
+  organicCount: number;
+  categoryId: string | null;
+  provinceId: string | null;
+}
+
+export interface OrganicSearch {
+  result: Omit<SearchResponse, 'sponsored'>;
+  placement: SearchPlacementContext | null;
+}
+
 @Injectable()
 export class SearchService {
   private readonly logger = new Logger('Search');
@@ -42,14 +54,17 @@ export class SearchService {
     private readonly lexicon: SearchLexiconService,
     @Inject(SEARCH_PORT) private readonly port: SearchPort,
     @Inject(ENV) private readonly env: EnvToken,
-    private readonly sponsored: SponsoredServingService,
   ) {}
 
   private get excludeDemo() {
     return this.env.APP_ENV === 'production';
   }
 
-  async search(q: SearchQuery): Promise<SearchResponse> {
+  /**
+   * Organik arama. Sponsorlu yerleşimler burada hesaplanmaz: bu modül kampanya verisine erişmez
+   * (REQ-MIM-005, AK-04); sunum katmanı `placement` bağlamıyla ayrı çağrıda birleştirir.
+   */
+  async search(q: SearchQuery): Promise<OrganicSearch> {
     if ((q.lat === undefined) !== (q.lng === undefined)) {
       throw invalid('/query/lat', 'Enlem ve boylam birlikte verilmeli');
     }
@@ -181,18 +196,16 @@ export class SearchService {
         : [];
 
     await this.recordEvent(q, criteria, total);
-    // Sponsorlu yerleşimler organik sonuçtan sonra ve ondan bağımsız hesaplanır (REQ-SPN-002, REQ-ARA-009).
     // Yalnızca içerik aranırken (type=ARTICLE) listeleme yerleşimi gösterilmez.
-    const sponsored = criteria.docTypes.includes('LISTING')
-      ? await this.sponsored.forList({
-          surface: 'SEARCH',
+    const placement = criteria.docTypes.includes('LISTING')
+      ? {
           criteria,
           organicCount: rows.length,
           categoryId: criteria.categoryId,
           provinceId: criteria.provinceId,
-        })
-      : [];
-    return {
+        }
+      : null;
+    const result = {
       data: rows.map((r) => ({
         type: r.docType,
         id: r.refId,
@@ -208,7 +221,6 @@ export class SearchService {
         dataOrigin: r.dataOrigin,
         commercial: { type: 'NONE' as const },
       })),
-      sponsored,
       total,
       page: q.page,
       pageSize: q.pageSize,
@@ -217,6 +229,7 @@ export class SearchService {
       fuzzyFallback,
       relaxations,
     };
+    return { result, placement };
   }
 
   async suggest(raw: string): Promise<SuggestResponse> {

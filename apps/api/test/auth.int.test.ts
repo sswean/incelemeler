@@ -129,7 +129,7 @@ describe('üyelik ve e-posta doğrulama', () => {
     expect(Problem.parse(res.body).code).toBe('WEAK_PASSWORD');
   });
 
-  it('[REQ-HSP-014] 18+ beyanı olmadan kayıt reddedilir', async () => {
+  it('[REQ-HSP-014] [REQ-KVK-026] 18+ beyanı olmadan kayıt reddedilir', async () => {
     await http()
       .post('/v1/auth/register')
       .send({

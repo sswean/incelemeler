@@ -18,7 +18,7 @@ import type { AuthContext } from '../identity/auth.context.js';
 import { OutboxService } from '../outbox/outbox.service.js';
 import { AuditService } from '../platform/audit.service.js';
 import { RateLimitService } from '../platform/rate-limit.service.js';
-import { SponsoredServingService } from '../sponsorship/sponsored-serving.service.js';
+import { SponsorLinkLookup } from '../../common/sponsor-link.js';
 import { APPEAL_WINDOW_DAYS, ReviewsService } from './reviews.service.js';
 
 type Tx = Prisma.TransactionClient;
@@ -52,7 +52,7 @@ export class ModerationService {
     private readonly audit: AuditService,
     private readonly rateLimit: RateLimitService,
     private readonly reviews: ReviewsService,
-    private readonly sponsored: SponsoredServingService,
+    private readonly sponsored: SponsorLinkLookup,
   ) {}
 
   async queue(

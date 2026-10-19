@@ -10,13 +10,14 @@ export function fieldErrorMessage(code: string | undefined): string | null {
     : tr.taxonomy.fieldErrors.invalid;
 }
 
-/** `errors[].pointer` → alan adı → hata kodu (ilk hata). */
-export function fieldErrorsOf(error: unknown): Record<string, string> {
+/** `errors[].pointer` → alan adı (ya da `full` ise tam yol, ör. `location/districtId`) → hata kodu. */
+export function fieldErrorsOf(error: unknown, full = false): Record<string, string> {
   const out: Record<string, string> = {};
   const errors = (error as { errors?: Array<{ pointer: string; code: string }> } | undefined)
     ?.errors;
   for (const e of errors ?? []) {
-    const field = e.pointer.replace(/^\//, '').split('/')[0] || 'form';
+    const path = e.pointer.replace(/^\//, '');
+    const field = (full ? path : path.split('/')[0]) || 'form';
     out[field] ??= e.code;
   }
   return out;

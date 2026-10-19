@@ -38,6 +38,8 @@ await db.connect();
 const extraStaff = [
   ...PROJECTS.slice(1).map((p) => [staffEmail(p), 'E2E Yönetici 2']),
   ...PROJECTS.map((p) => [`e2e-taksonomi-${p}@example.test`, 'E2E Taksonomi']),
+  ...PROJECTS.map((p) => [`e2e-katalog-${p}@example.test`, 'E2E Katalog']),
+  ...PROJECTS.map((p) => [`e2e-katalog2-${p}@example.test`, 'E2E Katalog 2']),
 ];
 for (const [email, name] of extraStaff) {
   const { rows } = await db.query(
@@ -48,5 +50,10 @@ for (const [email, name] of extraStaff) {
   );
   await db.query(`INSERT INTO staff_roles (user_id, role) VALUES ($1, 'ADMIN')`, [rows[0].id]);
 }
+// REQ-KAT-004 / E2E-020: yalnızca test ortamında yüklenen hukuki kapı fikstürü (DEMO listelemeler için).
+await db.query(
+  `INSERT INTO legal_approvals (id, category_id, approved_by, note)
+   SELECT gen_random_uuid(), id, 'TEST-FIXTURE', 'E2E test fikstürü — üretimde geçersiz' FROM categories WHERE slug = 'konaklama'`,
+);
 await db.end();
 console.log('E2E veritabanı hazır: incelemeler_e2e');

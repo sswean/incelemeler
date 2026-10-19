@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./consent-cookie": {
+      "types": "./dist/consent-cookie.d.ts",
+      "default": "./dist/consent-cookie.js"
     }
   },
   "scripts": {

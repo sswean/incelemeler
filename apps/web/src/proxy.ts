@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { tr } from '@incelemeler/i18n';
 import { listingPath, normalizePath, parseListingPath } from '@incelemeler/routes';
+import { contentSecurityPolicy, createNonce } from '@incelemeler/utils';
 
 /**
  * URL normalleştirme ve listeleme yönlendirmeleri (REQ-SEO-003, REQ-VER-013, REQ-SEO-012):
@@ -13,7 +14,7 @@ export async function proxy(request: NextRequest) {
   if (normalized) return redirect301(request, normalized + search);
 
   const ref = parseListingPath(pathname);
-  if (!ref) return NextResponse.next();
+  if (!ref) return withCsp(request);
   const base = process.env.API_INTERNAL_URL ?? 'http://localhost:4000';
   let res: Response;
   try {
@@ -21,9 +22,9 @@ export async function proxy(request: NextRequest) {
       cache: 'no-store',
     });
   } catch {
-    return NextResponse.next(); // API erişilemezse sayfa kendi hata durumunu gösterir.
+    return withCsp(request); // API erişilemezse sayfa kendi hata durumunu gösterir.
   }
-  if (!res.ok) return NextResponse.next();
+  if (!res.ok) return withCsp(request);
   const r = (await res.json()) as {
     status: 'ok' | 'moved' | 'gone' | 'missing';
     kind: Parameters<typeof listingPath>[0]['kind'] | null;
@@ -32,10 +33,28 @@ export async function proxy(request: NextRequest) {
   };
   if ((r.status === 'ok' || r.status === 'moved') && r.kind && r.slug) {
     const target = listingPath({ kind: r.kind, slug: r.slug, carRental: r.carRental });
-    return target === pathname ? NextResponse.next() : redirect301(request, target + search);
+    return target === pathname ? withCsp(request) : redirect301(request, target + search);
   }
   if (r.status === 'gone') return gone();
-  return NextResponse.next();
+  return withCsp(request);
+}
+
+/**
+ * Sayfa yanıtları istek başına nonce'lu CSP ile (REQ-GUV-005); Next satır içi betiklerine nonce'u istek
+ * başlığından alır. HSTS yalnızca HTTPS arkasında (preload kararı İnsan).
+ */
+function withCsp(request: NextRequest): NextResponse {
+  const nonce = createNonce();
+  const csp = contentSecurityPolicy(nonce, { dev: process.env.NODE_ENV === 'development' });
+  const headers = new Headers(request.headers);
+  headers.set('x-nonce', nonce);
+  headers.set('Content-Security-Policy', csp);
+  const res = NextResponse.next({ request: { headers } });
+  res.headers.set('Content-Security-Policy', csp);
+  if (request.headers.get('x-forwarded-proto') === 'https') {
+    res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+  return res;
 }
 
 function redirect301(request: NextRequest, path: string) {

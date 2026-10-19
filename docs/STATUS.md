@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 13 — sertleştirme (dilim 12 analitik: `docs/status-log/F1-D12.md`)
+- Aktif dilim: Faz 1 kapanışı (dilim 13 sertleştirme: `docs/status-log/F1-D13.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -63,7 +63,10 @@
 ## Dilim 12 özeti (analitik)
 - API: `/v1/analytics/events` (rızalı), `/v1/admin/analytics/overview`, `/v1/admin/dashboard`, `/v1/admin/reports/revenue`. Web: rızalı sayfa olayları (`/olay/analitik`). Panel: genel pano, `/analitik`, `/raporlar/gelir` (+ CSV). Sözlük: `docs/analytics/olay-sozlugu.md`.
 
-## Sonraki 3 adım (Faz 1, §9.3 önerilen sıra)
-1. Dilim 13 — Sertleştirme: performans bütçeleri (Lighthouse), erişilebilirlik taraması, güvenlik başlıkları/taraması, Dilim 7 kalanları (fotoğraf/EXIF, hukuki talepler, yaptırımlar).
-2. Faz 1 kapanış raporu (REQ durum özeti, açık L/X/Q kayıtları).
-3. Faz 1→2 geçişi C sınıfı: İnsan onayı beklenir.
+## Dilim 13 özeti (sertleştirme)
+- Web/panel: istek başına nonce CSP (`proxy.ts`), güvenlik başlıkları, `/.well-known/security.txt` + `/sorumlu-aciklama` (TASLAK), azaltılmış hareket. API: güvenlik başlıkları, katı gövde doğrulaması, 413/400 problem eşlemesi, `JsonLogger` (maskeleme + `security.*` olayları). ESLint: ham SQL ve `dangerouslySetInnerHTML` kısıtları. E2E `hardening.spec` (başlıklar, tek h1, 320 px, JS bütçesi ≤ 170 KB).
+
+## Sonraki 3 adım
+1. Faz 1 kapanış raporu (`docs/status-log/FAZ-1-raporu.md`): REQ durum özeti, açık L/X/Q kayıtları.
+2. Faz 1→2 geçişi C sınıfı: İnsan onayı beklenir (Q-001, Q-003, Q-005, Q-007 dahil).
+3. Onay gelirse: Faz 1 KISMİ/BAŞLANMADI ZORUNLU REQ'lerin kapatılması ya da gerekçeli ertelenmesi (kapı `req:check --gate`).

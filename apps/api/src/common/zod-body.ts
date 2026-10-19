@@ -1,10 +1,12 @@
 import { HttpStatus } from '@nestjs/common';
-import type { z } from 'zod';
+import { z } from 'zod';
 import { ProblemException } from './problem.js';
 
 /** İstek gövdesini şemaya göre doğrular; geçersizse 422 (REQ-MIM-010, REQ-GUV-002). */
 export function parseBody<T extends z.ZodType>(schema: T, body: unknown): z.infer<T> {
-  const parsed = schema.safeParse(body ?? {});
+  // Bilinmeyen üst düzey alanlar reddedilir (REQ-GUV-002); şema kendisi gevşek tanımlansa da.
+  const strict = schema instanceof z.ZodObject ? (schema.strict() as unknown as T) : schema;
+  const parsed = strict.safeParse(body ?? {});
   if (!parsed.success) {
     throw new ProblemException(
       HttpStatus.UNPROCESSABLE_ENTITY,

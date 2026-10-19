@@ -12,8 +12,9 @@ const config: NextConfig = {
         headers: [
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'no-referrer' },
-          // Panel çerçeve içine alınamaz (REQ-GUV-005); arama motorlarına kapalı (REQ-ADM-001).
-          { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+          // CSP (frame-ancestors 'none' dahil) istek başına nonce ile proxy'de (REQ-GUV-005).
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
           { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
         ],
       },

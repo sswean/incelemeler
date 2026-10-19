@@ -104,6 +104,7 @@ export const STATIC_PATHS = {
   independence: '/editoryal-bagimsizlik',
   sponsoredPolicy: '/sponsorlu-icerik-politikasi',
   corrections: '/duzeltme-politikasi',
+  disclosure: '/sorumlu-aciklama',
 } as const;
 
 /** Mutlak URL (canonical, site haritası, JSON-LD). */

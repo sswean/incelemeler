@@ -2565,48 +2565,48 @@
       "title": "Girdi doğrulama",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/security.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Gövde zod ile katı (bilinmeyen alan 422), bilinmeyen sorgu parametresi 400, bozuk JSON 400, gövde > 100 KB 413; dosyalar sihirli bayt + boyut (media.int)."
     },
     {
       "id": "REQ-GUV-003",
       "title": "Enjeksiyon",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/security.int.test.ts", "eslint.config.mjs#REQ-GUV-003"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Ham SQL yalnızca etiketli şablon ($queryRaw`…`/Prisma.sql); *Unsafe ve Prisma.raw ESLint ile yasak; sıralama beyaz liste haritasından; SQL meta karakterli sorgular veri olarak işlenir."
     },
     {
       "id": "REQ-GUV-004",
       "title": "XSS",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/web/src/lib/seo.test.ts", "eslint.config.mjs#REQ-GUV-004"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "dangerouslySetInnerHTML yalnızca jsonLdScript(...) ile (ESLint no-restricted-syntax, istisnasız); serileştirici `<` kaçışlar (birim testi); içerik blok JSON, değerlendirmeler düz metin."
     },
     {
       "id": "REQ-GUV-005",
       "title": "Güvenlik başlıkları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/security.int.test.ts", "tests/e2e/specs/hardening.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Web ve panel: istek başına nonce + strict-dynamic CSP, frame-ancestors none, nosniff, Referrer-Policy, Permissions-Policy (konum kapalı), COOP; HSTS yalnızca HTTPS arkasında (preload kararı İnsan — Q-007). API: nosniff, default-src none, no-referrer, CORP. E2E başlık testi."
     },
     {
       "id": "REQ-GUV-006",
@@ -2625,12 +2625,12 @@
       "title": "SSRF",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/src/modules/outbound/outbound-url.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Sunucunun URL getirdiği tek yer bağlantı sağlığı denetimi (D8): yalnızca https, DNS çözümlemesi sonrası özel/yerel/meta veri aralıkları engelli (IPv4/IPv6, eşlenmiş), yönlendirme izlenmez, HEAD + zaman aşımı. Eksik: çözülen IP'nin bağlantıya sabitlenmesi (DNS rebinding) — görsel içe aktarma/OG önizleme eklenince ortak güvenli fetch istemcisi."
     },
     {
       "id": "REQ-GUV-008",
@@ -2709,36 +2709,39 @@
       "title": "Log güvenliği",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": [
+        "apps/api/src/common/json-logger.test.ts",
+        "apps/api/src/common/problem.filter.test.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "JsonLogger: satır başına JSON, e-posta/telefon/TCKN/IBAN/IP/Bearer ve sır anahtarları maskelenir, satır sonu kaçışlı; 401/403/429 ayrı security.* olay türü."
     },
     {
       "id": "REQ-GUV-015",
       "title": "Hata yanıtları iç bilgi sızdırmaz (REQ-MIM-010)",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/src/common/problem.filter.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Beklenmeyen hata genel 500 problem; ileti/SQL/yığın izi istemciye gitmez; body-parser hataları 4xx problem."
     },
     {
       "id": "REQ-GUV-016",
       "title": "/.well-known/security.txt ve sorumlu açıklama (responsible disclosure) sayfası taslağı",
       "level": "OLMALI",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["tests/e2e/specs/hardening.spec.ts"],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "/.well-known/security.txt (RFC 9116; Expires 180 gün, TASLAK yorumu) + TASLAK /sorumlu-aciklama; güvenlik e-posta adresi İnsan kararı (Q-007)."
     },
     {
       "id": "REQ-GUV-017",
@@ -2985,12 +2988,12 @@
       "title": "Anlamlı HTML",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "E2E: anahtar şablonlarda tek h1, tek main, İçeriğe atla. Form hatalarının aria-describedby ilişkisi dilim testlerinde; tüm formlar için sistematik test Faz 2 öncesi."
     },
     {
       "id": "REQ-ERS-005",
@@ -3033,12 +3036,12 @@
       "title": "Dokunma hedefleri ≥ 24×24 CSS px (WCAG 2.2 asgari) ve birincil eylemlerde ≥ 44×44",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "E2E: 320 px yatay kaydırma yok (4 şablon), prefers-reduced-motion geçişleri kapatır. Dokunma hedefi ölçümü ve %200 yakınlaştırma testi eksik."
     },
     {
       "id": "REQ-ERS-009",
@@ -3081,12 +3084,12 @@
       "title": "Laboratuvar bütçeleri (Lighthouse CI, mobil profil, pilot şablonlar",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "İlk yükleme JS (gzip, nomodule hariç) E2E bütçesi ≤ 170 KB: hub 159,9 / detay 166,6 / arama 161,5 / ana sayfa 160,8 KB (F1-D13). Lighthouse CI kurulmadı (araç kararı A-027)."
     },
     {
       "id": "REQ-PRF-003",
@@ -3105,12 +3108,12 @@
       "title": "Gereksiz JavaScript azaltılır",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Sunucu bileşenleri varsayılan; istemci paketine zod girmez (contracts/consent-cookie alt yolu). i18n sözlüğünün tamamı istemcide (~24 KB gzip) — sonraki iyileştirme. Paket analizi CI raporu yok."
     },
     {
       "id": "REQ-PRF-005",

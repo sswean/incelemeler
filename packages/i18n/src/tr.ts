@@ -1463,6 +1463,7 @@ export const tr = {
     privacy: 'KVKK aydınlatma metni',
     cookies: 'Çerez tercihleri',
     dataRequest: 'KVKK başvurusu',
+    disclosure: 'Güvenlik açığı bildirimi',
   },
   /** Editoryal metodoloji sayfaları (REQ-ICR-012) — TASLAK; kurallar Ek A6/A8'den. */
   methodology: {
@@ -1520,6 +1521,15 @@ export const tr = {
       'Yayımlanmış bir içerikte olgusal bir hata düzeltildiğinde sayfada "Düzeltme: {tarih} — {ne düzeltildi}" notu görünür ve düzeltme denetim kaydına girer.',
       'Anlamlı içerik güncellemelerinde "Son güncelleme" tarihi yenilenir ve kısa bir değişiklik notu eklenir; yazım düzeltmeleri tarihi değiştirmez.',
       'Hata bildirimi kanalı yayına geçmeden önce bu sayfaya eklenecektir.',
+    ],
+    /** Sorumlu açıklama (REQ-GUV-016) — TASLAK; iletişim kanalı İnsan onayıyla eklenir. */
+    disclosureTitle: 'Güvenlik açığı bildirimi (sorumlu açıklama)',
+    disclosure: [
+      'Sitemizde ya da uygulamalarımızda bir güvenlik açığı bulduğunu düşünüyorsan bize bildirmeni rica ederiz; iyi niyetli bildirimleri teşekkürle karşılarız.',
+      'Güvenlik bildirim kanalı (e-posta adresi) yayına geçmeden önce bu sayfaya ve /.well-known/security.txt dosyasına eklenecektir.',
+      'Lütfen yalnızca kendi hesabına ait verilerle deneme yap; başka kullanıcıların verilerine erişme, verileri değiştirme ya da silme.',
+      'Hizmeti aksatacak testler (yük, hizmet dışı bırakma), sosyal mühendislik ve fiziksel erişim denemeleri kapsam dışıdır.',
+      'Bildirimini aldığımızı makul sürede teyit eder, düzeltme tamamlanana kadar ayrıntıları kamuya açıklamamanı rica ederiz.',
     ],
   },
   legal: {

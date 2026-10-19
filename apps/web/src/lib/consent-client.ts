@@ -4,7 +4,7 @@ import {
   CONSENT_TEXT_VERSION,
   type ConsentState,
   encodeConsent,
-} from '@incelemeler/contracts';
+} from '@incelemeler/contracts/consent-cookie';
 
 export type ConsentChoice = Pick<ConsentState, 'functional' | 'analytics' | 'marketing'>;
 

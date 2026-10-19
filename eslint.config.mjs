@@ -41,6 +41,39 @@ export default tseslint.config(
     },
   },
   {
+    files: ['apps/api/src/**/*.ts'],
+    rules: {
+      // REQ-GUV-003: ham SQL yalnızca parametreli etiketli şablonlarla ($queryRaw`…`, Prisma.sql`…`).
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'MemberExpression[property.name=/^\\$(queryRaw|executeRaw)Unsafe$/]',
+          message: 'Parametresiz ham SQL yasak; $queryRaw`…` etiketli şablonunu kullan.',
+        },
+        {
+          selector: "MemberExpression[object.name='Prisma'][property.name='raw']",
+          message:
+            'Prisma.raw yasak; dinamik parçalar beyaz listeli Prisma.sql parçalarından seçilir.',
+        },
+      ],
+    },
+  },
+  {
+    files: ['apps/**/*.tsx'],
+    rules: {
+      // REQ-GUV-004: ham HTML yalnızca JSON-LD için, `</script>` kaçışlı güvenli serileştiriciyle.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "JSXAttribute[name.name='dangerouslySetInnerHTML']:not(:has(CallExpression[callee.name='jsonLdScript']))",
+          message:
+            'dangerouslySetInnerHTML yalnızca jsonLdScript(...) ile JSON-LD için kullanılabilir.',
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.int.test.ts'],
     plugins: { vitest },
     rules: {

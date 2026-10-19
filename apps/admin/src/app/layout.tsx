@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { connection } from 'next/server';
 import { tr } from '@incelemeler/i18n';
 import './globals.css';
 
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+/** Tüm panel sayfaları dinamik: nonce'lu CSP statik ön işlenmiş sayfaya uygulanamaz. */
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+  await connection();
   return (
     <html lang="tr">
       <body className="min-h-screen bg-bg-subtle text-text-primary antialiased">

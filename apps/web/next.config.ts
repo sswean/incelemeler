@@ -3,7 +3,8 @@ import type { NextConfig } from 'next';
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self)' },
+  // Konum izni şu an hiçbir sayfada gerekmiyor; gerektiğinde yalnızca o rotada açılır (REQ-GUV-005).
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
   { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
 ];
 

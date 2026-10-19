@@ -36,3 +36,9 @@ Biçim: Ek C-5. B sınıfı: varsayılanla devam edilir. C sınıfı: o iş duru
 - Sınıf: B · Engellediği: pilot dışı illerin ilçeleri, mahalle düzeyi filtreler
 - Seçenekler: A) Kamu kurumunun açık lisanslı veri seti (lisansı doğrulanır). B) Lisanslı ticari adres veri sağlayıcısı (X-kaydı, maliyet C sınıfı).
 - Yanıt gelmezse: 81 il + lansman illerinin ilçeleri (elle girilmiş olgular, MQA-003) ile devam; diğer illerde ilçe zorunluluğu yayın kuralında karşılanamaz.
+
+## Q-007: HSTS preload ve güvenlik iletişim adresi (security.txt `Contact`) (REQ-GUV-005/016)
+- Sınıf: **C** (dış taahhüt: preload listesi geri alınması aylar sürer; iletişim adresi gerçek bir posta kutusu gerektirir)
+- Seçenekler: A) Preload yok; `max-age=31536000; includeSubDomains` (şu an). B) Alan adı ve tüm alt alan adları HTTPS'e hazır olunca `preload` + hstspreload.org başvurusu.
+- Önerim: Üretim ortamı (Q-005) belli olana kadar A. Güvenlik e-posta adresi (ör. ayrı bir posta kutusu) İnsan tarafından açılır; o zamana dek `Contact` sorumlu açıklama sayfasını gösterir.
+- Yanıt gelmezse: A ile devam; security.txt ve `/sorumlu-aciklama` TASLAK kalır.

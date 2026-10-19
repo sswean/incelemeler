@@ -3,15 +3,18 @@ import { NestFactory } from '@nestjs/core';
 import type { INestApplication } from '@nestjs/common';
 import { AppModule, type AppOverrides } from './app.module.js';
 import type { Env } from './config/env.js';
+import { JsonLogger } from './common/json-logger.js';
+import { securityHeaders } from './common/security-headers.js';
 import { traceMiddleware } from './common/trace.js';
 
 /** Uygulamayı oluşturur (testler ve main.ts ortak kullanır). */
 export async function createApp(env: Env, overrides: AppOverrides = {}): Promise<INestApplication> {
   const app = await NestFactory.create(AppModule.forRoot(env, overrides), {
-    logger: env.APP_ENV === 'test' ? ['error'] : ['log', 'warn', 'error'],
+    logger: new JsonLogger(env.APP_ENV === 'test' ? ['error'] : ['log', 'warn', 'error']),
     bodyParser: true,
   });
   app.use(traceMiddleware);
+  app.use(securityHeaders);
   const http = app.getHttpAdapter().getInstance() as {
     disable(name: string): void;
     set(name: string, value: unknown): void;

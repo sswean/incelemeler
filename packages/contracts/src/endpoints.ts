@@ -44,6 +44,14 @@ import {
 } from './outbound.js';
 import { ConsentBody } from './consent.js';
 import {
+  AdminTakedown,
+  AdminTakedownCreateBody,
+  AdminTakedownList,
+  TakedownAck,
+  TakedownCreateBody,
+  TakedownUpdateBody,
+} from './takedown.js';
+import {
   AdminSanction,
   AdminSanctionList,
   IntegrityActionBody,
@@ -1437,6 +1445,46 @@ export const endpoints: EndpointDef[] = [
       'Toplu sahte değerlendirme temizliği: değerlendirmeler kaldırılır (itiraz edilebilir), ortalamadan çıkar, listelemede tarihli bildirim',
     body: IntegrityActionBody,
     responses: { 200: ok('Uygulandı', IntegrityActionResult) },
+  },
+  {
+    method: 'post',
+    path: '/v1/takedown-requests',
+    operationId: 'createTakedownRequest',
+    tags: ['legal'],
+    summary:
+      'Hukuki talep (/hukuki-talep): telif, kişilik hakkı, diğer; resmî kararlar bu kanaldan alınmaz; alındı e-postası ve yanıt süresi',
+    body: TakedownCreateBody,
+    responses: { 202: ok('Kabul edildi', TakedownAck) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/takedown-requests',
+    operationId: 'adminListTakedownRequests',
+    tags: ['admin', 'legal'],
+    auth: 'staff-mfa',
+    summary: 'Hukuki talepler: süre sayacı, yaklaşan/süresi geçen uyarıları',
+    responses: { 200: ok('Talepler', AdminTakedownList) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/takedown-requests',
+    operationId: 'adminCreateTakedownRequest',
+    tags: ['admin', 'legal'],
+    auth: 'staff-mfa',
+    summary: 'Elle kayıt; mahkeme ve idari kararlar yalnızca bu akışla ve karar referansıyla',
+    body: AdminTakedownCreateBody,
+    responses: { 201: ok('Oluşturuldu', AdminTakedown) },
+  },
+  {
+    method: 'patch',
+    path: '/v1/admin/takedown-requests/{id}',
+    operationId: 'adminUpdateTakedownRequest',
+    tags: ['admin', 'legal'],
+    auth: 'staff-mfa',
+    summary:
+      'İnceleme, işlem (değerlendirme hedefinde hukuki gerekçeyle kaldırma) ya da gerekçeli ret; talep edene e-posta, denetim kaydı',
+    body: TakedownUpdateBody,
+    responses: { 200: ok('Güncellendi', AdminTakedown) },
   },
   {
     method: 'get',

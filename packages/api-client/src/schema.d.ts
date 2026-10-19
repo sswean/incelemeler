@@ -1844,6 +1844,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/takedown-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Hukuki talep (/hukuki-talep): telif, kişilik hakkı, diğer; resmî kararlar bu kanaldan alınmaz; alındı e-postası ve yanıt süresi */
+        post: operations["createTakedownRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/takedown-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Hukuki talepler: süre sayacı, yaklaşan/süresi geçen uyarıları */
+        get: operations["adminListTakedownRequests"];
+        put?: never;
+        /** Elle kayıt; mahkeme ve idari kararlar yalnızca bu akışla ve karar referansıyla */
+        post: operations["adminCreateTakedownRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/takedown-requests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** İnceleme, işlem (değerlendirme hedefinde hukuki gerekçeyle kaldırma) ya da gerekçeli ret; talep edene e-posta, denetim kaydı */
+        patch: operations["adminUpdateTakedownRequest"];
+        trace?: never;
+    };
     "/v1/me/legal-acceptances/pending": {
         parameters: {
             query?: never;
@@ -3355,6 +3407,96 @@ export interface components {
         OutboundLinkList: {
             data: components["schemas"]["OutboundLink"][];
         };
+        TakedownCreateBody: {
+            /** @enum {string} */
+            kind: "COPYRIGHT" | "PERSONALITY_RIGHTS" | "OTHER_LEGAL";
+            requesterName: string;
+            requesterOrg?: string;
+            requesterEmail: unknown;
+            /** @enum {string} */
+            requesterCapacity: "RIGHT_HOLDER" | "REPRESENTATIVE" | "AFFECTED_PERSON" | "AUTHORITY" | "OTHER";
+            legalBasis: string;
+            /** Format: uri */
+            targetUrl: string;
+            documentsNote?: string;
+            /** @enum {boolean} */
+            goodFaithAck: true;
+        };
+        AdminTakedownCreateBody: {
+            /** @enum {string} */
+            kind: "COPYRIGHT" | "PERSONALITY_RIGHTS" | "OTHER_LEGAL" | "COURT_ORDER" | "ADMINISTRATIVE_ORDER";
+            requesterName: string;
+            requesterOrg?: string;
+            requesterEmail: unknown;
+            /** @enum {string} */
+            requesterCapacity: "RIGHT_HOLDER" | "REPRESENTATIVE" | "AFFECTED_PERSON" | "AUTHORITY" | "OTHER";
+            legalBasis: string;
+            /** Format: uri */
+            targetUrl: string;
+            documentsNote?: string;
+            authorityReference?: string;
+            /** Format: date-time */
+            receivedAt?: string;
+        };
+        TakedownUpdateBody: {
+            version: number;
+            /** @enum {string} */
+            status: "IN_REVIEW" | "ACTIONED" | "REJECTED" | "WITHDRAWN";
+            /** @enum {string} */
+            targetType?: "review" | "listing" | "article" | "media" | "other";
+            /** Format: uuid */
+            targetId?: string;
+            /** @default false */
+            removeTarget: boolean;
+            /** @enum {string} */
+            rejectionReason?: "INSUFFICIENT_INFORMATION" | "NOT_UNLAWFUL" | "NOT_OUR_CONTENT" | "ALREADY_REMOVED" | "ABUSIVE_REQUEST";
+            decisionNote?: string;
+        };
+        AdminTakedown: {
+            id: string;
+            /** @enum {string} */
+            kind: "COPYRIGHT" | "PERSONALITY_RIGHTS" | "OTHER_LEGAL" | "COURT_ORDER" | "ADMINISTRATIVE_ORDER";
+            /** @enum {string} */
+            channel: "WEB_FORM" | "MANUAL";
+            requesterName: string;
+            requesterOrg: string | null;
+            requesterEmail: string;
+            /** @enum {string} */
+            requesterCapacity: "RIGHT_HOLDER" | "REPRESENTATIVE" | "AFFECTED_PERSON" | "AUTHORITY" | "OTHER";
+            legalBasis: string;
+            authorityReference: string | null;
+            targetUrl: string;
+            /** @enum {string|null} */
+            targetType: "review" | "listing" | "article" | "media" | "other" | null;
+            targetId: string | null;
+            documentsNote: string | null;
+            /** @enum {string} */
+            status: "RECEIVED" | "IN_REVIEW" | "ACTIONED" | "REJECTED" | "WITHDRAWN";
+            /** Format: date-time */
+            receivedAt: string;
+            /** Format: date-time */
+            dueAt: string;
+            hoursLeft: number;
+            /** @enum {string} */
+            alert: "NONE" | "DUE_SOON" | "OVERDUE";
+            /** Format: date-time */
+            decidedAt: string | null;
+            /** @enum {string|null} */
+            rejectionReason: "INSUFFICIENT_INFORMATION" | "NOT_UNLAWFUL" | "NOT_OUR_CONTENT" | "ALREADY_REMOVED" | "ABUSIVE_REQUEST" | null;
+            decisionNote: string | null;
+            version: number;
+        };
+        AdminTakedownList: {
+            data: components["schemas"]["AdminTakedown"][];
+            overdue: number;
+        };
+        TakedownAck: {
+            /** @enum {boolean} */
+            accepted: true;
+            reference: string;
+            /** Format: date-time */
+            dueAt: string;
+        };
         SanctionCreateBody: {
             /** Format: email */
             email: string;
@@ -3753,6 +3895,22 @@ export interface components {
         ComplianceConfig: {
             dsrResponseDays: number;
             accountDeletionDays: number;
+            /**
+             * @default {
+             *       "COPYRIGHT": 72,
+             *       "PERSONALITY_RIGHTS": 24,
+             *       "OTHER_LEGAL": 168,
+             *       "COURT_ORDER": 24,
+             *       "ADMINISTRATIVE_ORDER": 24
+             *     }
+             */
+            takedownResponseHours: {
+                COPYRIGHT: number;
+                PERSONALITY_RIGHTS: number;
+                OTHER_LEGAL: number;
+                COURT_ORDER: number;
+                ADMINISTRATIVE_ORDER: number;
+            };
             retention: {
                 expiredTokensDays: number;
                 expiredSessionsDays: number;
@@ -9423,6 +9581,180 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["IntegrityActionResult"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    createTakedownRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    kind: "COPYRIGHT" | "PERSONALITY_RIGHTS" | "OTHER_LEGAL";
+                    requesterName: string;
+                    requesterOrg?: string;
+                    /** Format: email */
+                    requesterEmail: string;
+                    /** @enum {string} */
+                    requesterCapacity: "RIGHT_HOLDER" | "REPRESENTATIVE" | "AFFECTED_PERSON" | "AUTHORITY" | "OTHER";
+                    legalBasis: string;
+                    /** Format: uri */
+                    targetUrl: string;
+                    documentsNote?: string;
+                    /** @enum {boolean} */
+                    goodFaithAck: true;
+                };
+            };
+        };
+        responses: {
+            /** @description Kabul edildi */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TakedownAck"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListTakedownRequests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Talepler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTakedownList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateTakedownRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    kind: "COPYRIGHT" | "PERSONALITY_RIGHTS" | "OTHER_LEGAL" | "COURT_ORDER" | "ADMINISTRATIVE_ORDER";
+                    requesterName: string;
+                    requesterOrg?: string;
+                    /** Format: email */
+                    requesterEmail: string;
+                    /** @enum {string} */
+                    requesterCapacity: "RIGHT_HOLDER" | "REPRESENTATIVE" | "AFFECTED_PERSON" | "AUTHORITY" | "OTHER";
+                    legalBasis: string;
+                    /** Format: uri */
+                    targetUrl: string;
+                    documentsNote?: string;
+                    authorityReference?: string;
+                    /** Format: date-time */
+                    receivedAt?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTakedown"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateTakedownRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    /** @enum {string} */
+                    status: "IN_REVIEW" | "ACTIONED" | "REJECTED" | "WITHDRAWN";
+                    /** @enum {string} */
+                    targetType?: "review" | "listing" | "article" | "media" | "other";
+                    /** Format: uuid */
+                    targetId?: string;
+                    /** @default false */
+                    removeTarget?: boolean;
+                    /** @enum {string} */
+                    rejectionReason?: "INSUFFICIENT_INFORMATION" | "NOT_UNLAWFUL" | "NOT_OUR_CONTENT" | "ALREADY_REMOVED" | "ABUSIVE_REQUEST";
+                    decisionNote?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTakedown"];
                 };
             };
             /** @description Hata (RFC 9457) */

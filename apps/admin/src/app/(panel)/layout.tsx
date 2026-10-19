@@ -113,6 +113,14 @@ export default async function PanelLayout({ children }: { children: ReactNode })
           ) : null}
           {user.permissions.includes('audit.read') ? (
             <Link
+              href="/hukuki-talepler"
+              className="min-h-11 content-center text-brand-default underline"
+            >
+              {tr.admin.nav.takedown}
+            </Link>
+          ) : null}
+          {user.permissions.includes('audit.read') ? (
+            <Link
               href="/kvkk-basvurulari"
               className="min-h-11 content-center text-brand-default underline"
             >

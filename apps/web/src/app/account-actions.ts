@@ -94,3 +94,28 @@ export async function sanctionAppealAction(form: FormData): Promise<void> {
       : '/itiraz/yaptirim?durum=gonderildi',
   );
 }
+
+/** Hukuki talep (REQ-GUN-005): girişsiz; resmî kararlar bu kanaldan alınmaz. */
+export async function takedownAction(form: FormData): Promise<void> {
+  const opt = (k: string) => (str(form, k).trim() ? str(form, k).trim() : undefined);
+  const { data, error } = await (
+    await api()
+  ).POST('/v1/takedown-requests', {
+    body: {
+      kind: str(form, 'kind') as 'COPYRIGHT',
+      requesterName: str(form, 'requesterName'),
+      ...(opt('requesterOrg') ? { requesterOrg: opt('requesterOrg') } : {}),
+      requesterEmail: str(form, 'requesterEmail'),
+      requesterCapacity: str(form, 'requesterCapacity') as 'RIGHT_HOLDER',
+      targetUrl: str(form, 'targetUrl'),
+      legalBasis: str(form, 'legalBasis'),
+      ...(opt('documentsNote') ? { documentsNote: opt('documentsNote') } : {}),
+      // İşaretsizse false gider; sözleşme reddeder.
+      goodFaithAck: (form.get('goodFaithAck') === '1') as true,
+    },
+  });
+  if (!data) redirect(`/hukuki-talep?hata=${problemCode(error)}`);
+  redirect(
+    `/hukuki-talep?durum=alindi&ref=${encodeURIComponent(data.reference)}&son=${encodeURIComponent(data.dueAt)}`,
+  );
+}

@@ -9850,6 +9850,378 @@
         }
       }
     },
+    "/v1/takedown-requests": {
+      "post": {
+        "operationId": "createTakedownRequest",
+        "summary": "Hukuki talep (/hukuki-talep): telif, kişilik hakkı, diğer; resmî kararlar bu kanaldan alınmaz; alındı e-postası ve yanıt süresi",
+        "tags": [
+          "legal"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "COPYRIGHT",
+                      "PERSONALITY_RIGHTS",
+                      "OTHER_LEGAL"
+                    ]
+                  },
+                  "requesterName": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 120
+                  },
+                  "requesterOrg": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 160
+                  },
+                  "requesterEmail": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "requesterCapacity": {
+                    "type": "string",
+                    "enum": [
+                      "RIGHT_HOLDER",
+                      "REPRESENTATIVE",
+                      "AFFECTED_PERSON",
+                      "AUTHORITY",
+                      "OTHER"
+                    ]
+                  },
+                  "legalBasis": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 4000
+                  },
+                  "targetUrl": {
+                    "type": "string",
+                    "maxLength": 500,
+                    "format": "uri"
+                  },
+                  "documentsNote": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "goodFaithAck": {
+                    "type": "boolean",
+                    "enum": [
+                      true
+                    ]
+                  }
+                },
+                "required": [
+                  "kind",
+                  "requesterName",
+                  "requesterEmail",
+                  "requesterCapacity",
+                  "legalBasis",
+                  "targetUrl",
+                  "goodFaithAck"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Kabul edildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TakedownAck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/takedown-requests": {
+      "get": {
+        "operationId": "adminListTakedownRequests",
+        "summary": "Hukuki talepler: süre sayacı, yaklaşan/süresi geçen uyarıları",
+        "tags": [
+          "admin",
+          "legal"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Talepler",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminTakedownList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "adminCreateTakedownRequest",
+        "summary": "Elle kayıt; mahkeme ve idari kararlar yalnızca bu akışla ve karar referansıyla",
+        "tags": [
+          "admin",
+          "legal"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "COPYRIGHT",
+                      "PERSONALITY_RIGHTS",
+                      "OTHER_LEGAL",
+                      "COURT_ORDER",
+                      "ADMINISTRATIVE_ORDER"
+                    ]
+                  },
+                  "requesterName": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 120
+                  },
+                  "requesterOrg": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 160
+                  },
+                  "requesterEmail": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "requesterCapacity": {
+                    "type": "string",
+                    "enum": [
+                      "RIGHT_HOLDER",
+                      "REPRESENTATIVE",
+                      "AFFECTED_PERSON",
+                      "AUTHORITY",
+                      "OTHER"
+                    ]
+                  },
+                  "legalBasis": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 4000
+                  },
+                  "targetUrl": {
+                    "type": "string",
+                    "maxLength": 500,
+                    "format": "uri"
+                  },
+                  "documentsNote": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "authorityReference": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 200
+                  },
+                  "receivedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "requesterName",
+                  "requesterEmail",
+                  "requesterCapacity",
+                  "legalBasis",
+                  "targetUrl"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Oluşturuldu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminTakedown"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/takedown-requests/{id}": {
+      "patch": {
+        "operationId": "adminUpdateTakedownRequest",
+        "summary": "İnceleme, işlem (değerlendirme hedefinde hukuki gerekçeyle kaldırma) ya da gerekçeli ret; talep edene e-posta, denetim kaydı",
+        "tags": [
+          "admin",
+          "legal"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "IN_REVIEW",
+                      "ACTIONED",
+                      "REJECTED",
+                      "WITHDRAWN"
+                    ]
+                  },
+                  "targetType": {
+                    "type": "string",
+                    "enum": [
+                      "review",
+                      "listing",
+                      "article",
+                      "media",
+                      "other"
+                    ]
+                  },
+                  "targetId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "removeTarget": {
+                    "default": false,
+                    "type": "boolean"
+                  },
+                  "rejectionReason": {
+                    "type": "string",
+                    "enum": [
+                      "INSUFFICIENT_INFORMATION",
+                      "NOT_UNLAWFUL",
+                      "NOT_OUR_CONTENT",
+                      "ALREADY_REMOVED",
+                      "ABUSIVE_REQUEST"
+                    ]
+                  },
+                  "decisionNote": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 2000
+                  }
+                },
+                "required": [
+                  "version",
+                  "status"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Güncellendi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminTakedown"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/me/legal-acceptances/pending": {
       "get": {
         "operationId": "pendingLegalAcceptances",
@@ -16957,6 +17329,400 @@
         ],
         "additionalProperties": false
       },
+      "TakedownCreateBody": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "COPYRIGHT",
+              "PERSONALITY_RIGHTS",
+              "OTHER_LEGAL"
+            ]
+          },
+          "requesterName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "requesterOrg": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 160
+          },
+          "requesterEmail": {},
+          "requesterCapacity": {
+            "type": "string",
+            "enum": [
+              "RIGHT_HOLDER",
+              "REPRESENTATIVE",
+              "AFFECTED_PERSON",
+              "AUTHORITY",
+              "OTHER"
+            ]
+          },
+          "legalBasis": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 4000
+          },
+          "targetUrl": {
+            "type": "string",
+            "maxLength": 500,
+            "format": "uri"
+          },
+          "documentsNote": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "goodFaithAck": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "requesterName",
+          "requesterEmail",
+          "requesterCapacity",
+          "legalBasis",
+          "targetUrl",
+          "goodFaithAck"
+        ],
+        "additionalProperties": false
+      },
+      "AdminTakedownCreateBody": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "COPYRIGHT",
+              "PERSONALITY_RIGHTS",
+              "OTHER_LEGAL",
+              "COURT_ORDER",
+              "ADMINISTRATIVE_ORDER"
+            ]
+          },
+          "requesterName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "requesterOrg": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 160
+          },
+          "requesterEmail": {},
+          "requesterCapacity": {
+            "type": "string",
+            "enum": [
+              "RIGHT_HOLDER",
+              "REPRESENTATIVE",
+              "AFFECTED_PERSON",
+              "AUTHORITY",
+              "OTHER"
+            ]
+          },
+          "legalBasis": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 4000
+          },
+          "targetUrl": {
+            "type": "string",
+            "maxLength": 500,
+            "format": "uri"
+          },
+          "documentsNote": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "authorityReference": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          }
+        },
+        "required": [
+          "kind",
+          "requesterName",
+          "requesterEmail",
+          "requesterCapacity",
+          "legalBasis",
+          "targetUrl"
+        ],
+        "additionalProperties": false
+      },
+      "TakedownUpdateBody": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "IN_REVIEW",
+              "ACTIONED",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "targetType": {
+            "type": "string",
+            "enum": [
+              "review",
+              "listing",
+              "article",
+              "media",
+              "other"
+            ]
+          },
+          "targetId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "removeTarget": {
+            "default": false,
+            "type": "boolean"
+          },
+          "rejectionReason": {
+            "type": "string",
+            "enum": [
+              "INSUFFICIENT_INFORMATION",
+              "NOT_UNLAWFUL",
+              "NOT_OUR_CONTENT",
+              "ALREADY_REMOVED",
+              "ABUSIVE_REQUEST"
+            ]
+          },
+          "decisionNote": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "version",
+          "status",
+          "removeTarget"
+        ],
+        "additionalProperties": false
+      },
+      "AdminTakedown": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "COPYRIGHT",
+              "PERSONALITY_RIGHTS",
+              "OTHER_LEGAL",
+              "COURT_ORDER",
+              "ADMINISTRATIVE_ORDER"
+            ]
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "WEB_FORM",
+              "MANUAL"
+            ]
+          },
+          "requesterName": {
+            "type": "string"
+          },
+          "requesterOrg": {
+            "nullable": true,
+            "type": "string"
+          },
+          "requesterEmail": {
+            "type": "string"
+          },
+          "requesterCapacity": {
+            "type": "string",
+            "enum": [
+              "RIGHT_HOLDER",
+              "REPRESENTATIVE",
+              "AFFECTED_PERSON",
+              "AUTHORITY",
+              "OTHER"
+            ]
+          },
+          "legalBasis": {
+            "type": "string"
+          },
+          "authorityReference": {
+            "nullable": true,
+            "type": "string"
+          },
+          "targetUrl": {
+            "type": "string"
+          },
+          "targetType": {
+            "nullable": true,
+            "type": "string",
+            "enum": [
+              "review",
+              "listing",
+              "article",
+              "media",
+              "other"
+            ]
+          },
+          "targetId": {
+            "nullable": true,
+            "type": "string"
+          },
+          "documentsNote": {
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "RECEIVED",
+              "IN_REVIEW",
+              "ACTIONED",
+              "REJECTED",
+              "WITHDRAWN"
+            ]
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "hoursLeft": {
+            "type": "number"
+          },
+          "alert": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "DUE_SOON",
+              "OVERDUE"
+            ]
+          },
+          "decidedAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "rejectionReason": {
+            "nullable": true,
+            "type": "string",
+            "enum": [
+              "INSUFFICIENT_INFORMATION",
+              "NOT_UNLAWFUL",
+              "NOT_OUR_CONTENT",
+              "ALREADY_REMOVED",
+              "ABUSIVE_REQUEST"
+            ]
+          },
+          "decisionNote": {
+            "nullable": true,
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "channel",
+          "requesterName",
+          "requesterOrg",
+          "requesterEmail",
+          "requesterCapacity",
+          "legalBasis",
+          "authorityReference",
+          "targetUrl",
+          "targetType",
+          "targetId",
+          "documentsNote",
+          "status",
+          "receivedAt",
+          "dueAt",
+          "hoursLeft",
+          "alert",
+          "decidedAt",
+          "rejectionReason",
+          "decisionNote",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "AdminTakedownList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminTakedown"
+            }
+          },
+          "overdue": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "data",
+          "overdue"
+        ],
+        "additionalProperties": false
+      },
+      "TakedownAck": {
+        "type": "object",
+        "properties": {
+          "accepted": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "reference": {
+            "type": "string"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          }
+        },
+        "required": [
+          "accepted",
+          "reference",
+          "dueAt"
+        ],
+        "additionalProperties": false
+      },
       "SanctionCreateBody": {
         "type": "object",
         "properties": {
@@ -18857,6 +19623,51 @@
             "minimum": 1,
             "maximum": 90
           },
+          "takedownResponseHours": {
+            "default": {
+              "COPYRIGHT": 72,
+              "PERSONALITY_RIGHTS": 24,
+              "OTHER_LEGAL": 168,
+              "COURT_ORDER": 24,
+              "ADMINISTRATIVE_ORDER": 24
+            },
+            "type": "object",
+            "properties": {
+              "COPYRIGHT": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 720
+              },
+              "PERSONALITY_RIGHTS": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 720
+              },
+              "OTHER_LEGAL": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 720
+              },
+              "COURT_ORDER": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 720
+              },
+              "ADMINISTRATIVE_ORDER": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 720
+              }
+            },
+            "required": [
+              "COPYRIGHT",
+              "PERSONALITY_RIGHTS",
+              "OTHER_LEGAL",
+              "COURT_ORDER",
+              "ADMINISTRATIVE_ORDER"
+            ],
+            "additionalProperties": false
+          },
           "retention": {
             "type": "object",
             "properties": {
@@ -18930,6 +19741,7 @@
         "required": [
           "dsrResponseDays",
           "accountDeletionDays",
+          "takedownResponseHours",
           "retention",
           "version"
         ],

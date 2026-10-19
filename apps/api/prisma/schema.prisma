@@ -1661,3 +1661,55 @@ model ListingIntegrityNotice {
   @@index([listingId, detectedAt(sort: Desc)])
   @@map("listing_integrity_notices")
 }
+
+// ── Hukuki talepler ve bildirim-kaldırma (REQ-GUN-005, A-031) ──
+
+enum TakedownKind {
+  COPYRIGHT
+  PERSONALITY_RIGHTS
+  OTHER_LEGAL
+  COURT_ORDER
+  ADMINISTRATIVE_ORDER
+}
+
+enum TakedownStatus {
+  RECEIVED
+  IN_REVIEW
+  ACTIONED
+  REJECTED
+  WITHDRAWN
+}
+
+model TakedownRequest {
+  id                 String         @id @default(uuid(7)) @db.Uuid
+  kind               TakedownKind
+  /// WEB_FORM (herkese açık form) | MANUAL (panelden; resmî kararlar yalnızca bu kanaldan)
+  channel            String
+  requesterName      String         @map("requester_name")
+  requesterOrg       String?        @map("requester_org")
+  requesterEmail     String         @map("requester_email")
+  /// Hak sahibi, vekil, kurum…
+  requesterCapacity  String         @map("requester_capacity")
+  legalBasis         String         @map("legal_basis")
+  /// Resmî karar sayı/tarih bilgisi (mahkeme/idari kararlarda zorunlu).
+  authorityReference String?        @map("authority_reference")
+  targetUrl          String         @map("target_url")
+  /// Personel çözümler: review | listing | article | media | other
+  targetType         String?        @map("target_type")
+  targetId           String?        @map("target_id")
+  /// Belgeler e-postayla istenir (anonim yükleme X-010 olmadan kapalı); burada yalnızca açıklama.
+  documentsNote      String?        @map("documents_note")
+  status             TakedownStatus @default(RECEIVED)
+  receivedAt         DateTime       @default(now()) @map("received_at") @db.Timestamptz(3)
+  dueAt              DateTime       @map("due_at") @db.Timestamptz(3)
+  decidedAt          DateTime?      @map("decided_at") @db.Timestamptz(3)
+  decidedById        String?        @map("decided_by") @db.Uuid
+  rejectionReason    String?        @map("rejection_reason")
+  decisionNote       String?        @map("decision_note")
+  createdAt          DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+  version            Int            @default(1)
+
+  @@index([status, dueAt])
+  @@map("takedown_requests")
+}

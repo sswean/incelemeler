@@ -28,6 +28,7 @@ const FOOTER_LINKS: Array<[string, string]> = [
   ['/kvkk-basvuru', tr.footer.dataRequest],
   [STATIC_PATHS.addBusiness, tr.footer.addBusiness],
   [STATIC_PATHS.advertise, tr.footer.advertise],
+  [STATIC_PATHS.takedown, tr.footer.takedown],
   [STATIC_PATHS.disclosure, tr.footer.disclosure],
 ];
 

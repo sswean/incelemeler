@@ -83,6 +83,22 @@ export const ComplianceConfig = z
   .object({
     dsrResponseDays: z.number().int().min(1).max(90),
     accountDeletionDays: z.number().int().min(1).max(90),
+    /** Hukuki talep yanıt süreleri (saat) — varsayılanlar hukuken doğrulanacak (L-013, A-031). */
+    takedownResponseHours: z
+      .object({
+        COPYRIGHT: z.number().int().min(1).max(720),
+        PERSONALITY_RIGHTS: z.number().int().min(1).max(720),
+        OTHER_LEGAL: z.number().int().min(1).max(720),
+        COURT_ORDER: z.number().int().min(1).max(720),
+        ADMINISTRATIVE_ORDER: z.number().int().min(1).max(720),
+      })
+      .default({
+        COPYRIGHT: 72,
+        PERSONALITY_RIGHTS: 24,
+        OTHER_LEGAL: 168,
+        COURT_ORDER: 24,
+        ADMINISTRATIVE_ORDER: 24,
+      }),
     retention: z.object({
       expiredTokensDays: z.number().int().min(1),
       expiredSessionsDays: z.number().int().min(1),

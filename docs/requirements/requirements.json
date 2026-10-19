@@ -461,7 +461,7 @@
       "acceptance": null,
       "tests": ["apps/api/test/privacy.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": "consent_records, data_subject_requests, legal_document_versions, legal_acceptances, breach_incidents, legal_approvals var. Eksik: takedown_requests, license_verifications, processor_inventory."
+      "notes": "consent_records, data_subject_requests, legal_document_versions, legal_acceptances, breach_incidents, legal_approvals var. takedown_requests eklendi (F1-D16c). Eksik: license_verifications, processor_inventory."
     },
     {
       "id": "REQ-VER-021",
@@ -1152,12 +1152,16 @@
       "title": "Hukuki talepler ve bildirim-kaldırma",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": [
+        "apps/api/test/takedown.int.test.ts",
+        "packages/contracts/src/takedown.test.ts",
+        "tests/e2e/specs/takedown.spec.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": "takedown_requests akışı yok (F1-D7'den ertelenmişti)."
+      "notes": "takedown_requests (talep eden, sıfat, dayanak, hedef URL/tür/kimlik, belge açıklaması, durum, karar, alınma/son tarih); form + ayrı resmî karar akışı (panel, karar referansı, CHECK); süreler compliance_config (doğrulanmamış varsayılanlar — L-013); değerlendirme hedefinde hukuki gerekçeli kaldırma; talep edene alındı/sonuç e-postası; denetim kaydı (A-031). Belge dosyası yükleme X-010 ile."
     },
     {
       "id": "REQ-GUN-006",

@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 16c — hukuki talepler (dilim 16b: `docs/status-log/F1-D16b.md`)
+- Aktif dilim: Faz 1 dilim 17 — operasyon (dilim 16c: `docs/status-log/F1-D16c.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -73,6 +73,6 @@
 - Web `/isletmeni-ekle`, `/reklam-ve-sponsorluk` (+ `/dogrula`); API `/v1/applications` (+ `/verify`), `/v1/admin/applications`; panel `/basvurular` (onay → listeleme taslağı, gerekçeli ret).
 
 ## Sonraki 3 adım
-1. Dilim 16c — Hukuki talepler ve bildirim-kaldırma (GUN-005). (16a: hız sınırı/step-up/DB rolleri; 16b: yaptırımlar — tamam.)
-2. Dilim 17 — Operasyon: runbook'lar, yedek/geri yükleme tatbikatı, bakım ve özellik anahtarları, kapsam eşikleri.
-3. D18–D22 (plan `docs/status-log/F1-D14.md`); Faz 1→2 geçişi yalnızca çıkış ölçütleri sağlanınca ve İnsan onayıyla (C).
+1. Dilim 17 — Operasyon: runbook'lar (OPS-008), yedek/geri yükleme tatbikatı (OPS-005), geri alma ve migration güvenliği (OPS-004), bakım ve özellik anahtarları (OPS-009, MIM-017), kapsam eşikleri (TST-002), canlıya geçiş listesi (OPS-010), barındırma ADR önerisi (OPS-003, karar C).
+2. D18–D22 (plan `docs/status-log/F1-D14.md`).
+3. Faz 1→2 geçişi yalnızca çıkış ölçütleri sağlanınca ve İnsan onayıyla (C).

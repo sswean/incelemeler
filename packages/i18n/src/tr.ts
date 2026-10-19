@@ -145,6 +145,7 @@ export const admin = {
     dataRequests: 'KVKK başvuruları',
     applications: 'Başvurular',
     sanctions: 'Yaptırımlar',
+    takedown: 'Hukuki talepler',
     homeEditor: 'Ana sayfa',
     analytics: 'Analitik',
     revenue: 'Gelir raporu',
@@ -1488,6 +1489,85 @@ export const author = {
   noArticles: 'Henüz yayımlanmış içerik yok.',
 } as const;
 
+/** Hukuki talepler ve bildirim-kaldırma (REQ-GUN-005). Metinler TASLAK (AK-12). */
+export const takedown = {
+  title: 'Hukuki talep ve içerik kaldırma bildirimi',
+  intro:
+    'Sitemizdeki bir içeriğin haklarını ihlal ettiğini düşünüyorsan bu formla bildirebilirsin. Talebin, yanıt süresi içinde hukuki açıdan değerlendirilir; sonucu e-postayla bildirilir. Mahkeme ve idari kararlar resmî kanallardan iletilmelidir.',
+  kinds: {
+    COPYRIGHT: 'Telif hakkı ihlali',
+    PERSONALITY_RIGHTS: 'Kişilik hakkı ihlali',
+    OTHER_LEGAL: 'Diğer hukuki talep',
+    COURT_ORDER: 'Mahkeme kararı',
+    ADMINISTRATIVE_ORDER: 'İdari karar',
+  },
+  capacities: {
+    RIGHT_HOLDER: 'Hak sahibiyim',
+    REPRESENTATIVE: 'Hak sahibinin temsilcisiyim (avukat vb.)',
+    AFFECTED_PERSON: 'İçerikten etkilenen kişiyim',
+    AUTHORITY: 'Resmî kurum',
+    OTHER: 'Diğer',
+  },
+  rejections: {
+    INSUFFICIENT_INFORMATION: 'Değerlendirme için bilgi yetersiz',
+    NOT_UNLAWFUL: 'İçerikte hukuka aykırılık tespit edilmedi',
+    NOT_OUR_CONTENT: 'İçerik platformumuzda değil',
+    ALREADY_REMOVED: 'İçerik zaten kaldırılmış',
+    ABUSIVE_REQUEST: 'Talep kötüye kullanım niteliğinde',
+  },
+  statuses: {
+    RECEIVED: 'Alındı',
+    IN_REVIEW: 'İnceleniyor',
+    ACTIONED: 'İşlem yapıldı',
+    REJECTED: 'Reddedildi',
+    WITHDRAWN: 'Geri çekildi',
+  },
+  alerts: { DUE_SOON: 'Süre dolmak üzere', OVERDUE: 'Süresi geçti' },
+  kind: 'Talep türü',
+  requesterName: 'Adın soyadın',
+  requesterOrg: 'Kurum/büro (isteğe bağlı)',
+  requesterEmail: 'E-posta adresin',
+  requesterCapacity: 'Sıfatın',
+  targetUrl: 'İçeriğin adresi (URL)',
+  legalBasis: 'Talebin ve dayanağı',
+  legalBasisHint: 'İhlal edilen hakkı ve içeriğin hangi kısmının sorunlu olduğunu açıkla.',
+  documentsNote: 'Destekleyici belgeler (isteğe bağlı açıklama)',
+  documentsHint:
+    'Belge yükleme şimdilik kapalı; gerekirse ekibimiz belgeleri e-postayla isteyecek.',
+  goodFaithAck:
+    'Bildirdiğim bilgilerin doğru olduğunu ve bu talebi iyi niyetle yaptığımı beyan ederim.',
+  submit: 'Talebi gönder',
+  sent: 'Talebini aldık ({reference}). En geç {due} tarihine kadar değerlendirip e-postayla bildireceğiz.',
+  // Panel
+  adminTitle: 'Hukuki talepler',
+  adminIntro:
+    'Telif, kişilik hakkı ve diğer talepler formdan; mahkeme ve idari kararlar yalnızca bu panelden, karar referansıyla girilir. Yanıt süreleri uyum ayarlarındadır (doğrulanacak varsayılanlar).',
+  overdueAlarm: '{n} talebin yanıt süresi geçti.',
+  empty: 'Açık hukuki talep yok.',
+  received: 'Alındı: {date}',
+  due: 'Son: {date}',
+  status: 'Durum',
+  targetType: 'Hedef türü',
+  targetId: 'Hedef kimliği',
+  removeTarget: 'Hedef değerlendirmeyi hukuki gerekçeyle kaldır',
+  rejectionReason: 'Ret gerekçesi',
+  noRejection: 'Ret değil',
+  decisionNote: 'Karar notu (talep edene gönderilir)',
+  save: 'Kaydet',
+  saved: 'Talep güncellendi.',
+  manualTitle: 'Elle kayıt (resmî kararlar dahil)',
+  authorityReference: 'Karar sayısı/tarihi (resmî kararlarda zorunlu)',
+  create: 'Kaydet',
+  created: 'Talep kaydedildi.',
+  targetTypes: {
+    review: 'Değerlendirme',
+    listing: 'Listeleme',
+    article: 'İçerik',
+    media: 'Görsel',
+    other: 'Diğer',
+  },
+} as const;
+
 /** Hesap yaptırımları ve değerlendirme bütünlüğü (REQ-GUN-007). Metinler TASLAK. */
 export const sanctions = {
   levels: {
@@ -1666,6 +1746,7 @@ export const footer = {
   privacy: 'KVKK aydınlatma metni',
   cookies: 'Çerez tercihleri',
   dataRequest: 'KVKK başvurusu',
+  takedown: 'Hukuki talep bildirimi',
   disclosure: 'Güvenlik açığı bildirimi',
   addBusiness: 'İşletmeni ekle',
   advertise: 'Reklam ve sponsorluk',
@@ -1798,6 +1879,7 @@ export const tr = {
   hub,
   reviews,
   author,
+  takedown,
   sanctions,
   applications,
   footer,

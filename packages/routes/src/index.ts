@@ -107,6 +107,7 @@ export const STATIC_PATHS = {
   disclosure: '/sorumlu-aciklama',
   addBusiness: '/isletmeni-ekle',
   advertise: '/reklam-ve-sponsorluk',
+  takedown: '/hukuki-talep',
 } as const;
 
 /** Mutlak URL (canonical, site haritası, JSON-LD). */

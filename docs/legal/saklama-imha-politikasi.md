@@ -24,6 +24,7 @@ Platformun işlediği kişisel veri kategorileri, saklama süreleri ve imha yön
 | Hesap silme talebi | geri alma penceresi 30 gün | Silme + hesap kaydının anonimleştirilmesi | A-022 |
 | Denetim kayıtları | **doğrulanacak** | — | Güvenlik ve hukuki yükümlülük; erişim kısıtlı |
 | KVKK başvuruları | **doğrulanacak** | — | |
+| Hukuki talepler (bildirim-kaldırma) | **doğrulanacak** | — | Yanıt süreleri de doğrulanacak (L-013, A-031) |
 
 ## Yedekler
 Yedeklerdeki kişisel verilerin imhası: yedek saklama süresi sonunda yedeğin tamamen silinmesiyle (X-002 barındırma

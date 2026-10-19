@@ -125,3 +125,15 @@ export const sanctionEmails = {
     text: 'Merhaba,\n\nHesabına uygulanan yaptırım kaldırıldı.',
   }),
 };
+
+/** Hukuki talep bildirimleri (REQ-GUN-005; TASLAK metinler). */
+export const takedownEmails = {
+  received: (reference: string, due: string) => ({
+    subject: `Hukuki talebini aldık (${reference})`,
+    text: `Merhaba,\n\nTalebini aldık ve ${reference} referansıyla kaydettik. ${due} tarihine kadar değerlendirip sonucu bu adrese bildireceğiz. Destekleyici belge gerekirse ekibimiz senden e-postayla isteyecek.`,
+  }),
+  decided: (reference: string, actioned: boolean, reason: string | null, note: string | null) => ({
+    subject: `Hukuki talebin sonuçlandı (${reference})`,
+    text: `Merhaba,\n\n${reference} referanslı talebin değerlendirildi: ${actioned ? 'gerekli işlem yapıldı.' : `talep kabul edilmedi.${reason ? `\nGerekçe: ${reason}` : ''}`}${note ? `\nAçıklama: ${note}` : ''}`,
+  }),
+};

@@ -10,6 +10,13 @@ const KEY = 'compliance';
 export const DEFAULT_COMPLIANCE: Omit<ComplianceConfig, 'version'> = {
   dsrResponseDays: 30,
   accountDeletionDays: 30,
+  takedownResponseHours: {
+    COPYRIGHT: 72,
+    PERSONALITY_RIGHTS: 24,
+    OTHER_LEGAL: 168,
+    COURT_ORDER: 24,
+    ADMINISTRATIVE_ORDER: 24,
+  },
   retention: {
     expiredTokensDays: 7,
     expiredSessionsDays: 30,

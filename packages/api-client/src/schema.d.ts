@@ -399,6 +399,76 @@ export interface paths {
         patch: operations["adminUpdateCriterion"];
         trace?: never;
     };
+    "/v1/admin-areas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** İdari bölgeler (il, ilçe) */
+        get: operations["listAdminAreas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/listings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listelemeler (tür, durum, kategori, ada göre; cursor sayfalama) */
+        get: operations["adminListListings"];
+        put?: never;
+        /** Listeleme oluşturur (TASLAK) */
+        post: operations["adminCreateListing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/listings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listeleme ayrıntısı ve yayın için eksikler */
+        get: operations["adminGetListing"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Listelemeyi günceller (sürüm uyuşmazlığında 412) */
+        patch: operations["adminUpdateListing"];
+        trace?: never;
+    };
+    "/v1/admin/listings/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Durum geçişi (yayın için zorunlu alanlar ve hukuki kapı denetlenir) */
+        post: operations["adminSetListingStatus"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -618,6 +688,210 @@ export interface components {
                 id: string;
                 name: string;
             } | null;
+        };
+        AdminArea: {
+            id: string;
+            /** @enum {string} */
+            level: "PROVINCE" | "DISTRICT";
+            name: string;
+            slug: string;
+            code: string | null;
+            parentId: string | null;
+        };
+        AdminAreaList: {
+            data: components["schemas"]["AdminArea"][];
+        };
+        ListingContacts: {
+            phone?: string;
+            /** Format: uri */
+            website?: string;
+            /** Format: email */
+            email?: string;
+            /** Format: uri */
+            reservationUrl?: string;
+        };
+        ListingLocationInput: {
+            /** Format: uuid */
+            provinceId: string;
+            /** Format: uuid */
+            districtId?: string | null;
+            neighborhood?: string | null;
+            addressLine?: string | null;
+            postalCode?: string | null;
+            latitude?: unknown;
+            longitude?: unknown;
+        };
+        ListingDetailsInput: {
+            lodging?: {
+                tourismLicenseNo?: string | null;
+                /** Format: date-time */
+                licenseVerifiedAt?: string | null;
+                checkInTime?: string | null;
+                checkOutTime?: string | null;
+            };
+            product?: {
+                brand: string;
+                model: string;
+                gtin?: string | null;
+                /** Format: date */
+                releaseDate?: string | null;
+            };
+            experience?: {
+                durationMinutes?: number | null;
+                startPoint?: string | null;
+            };
+            event?: {
+                /** Format: date-time */
+                startsAt?: string | null;
+                /** Format: date-time */
+                endsAt?: string | null;
+                /** Format: uuid */
+                venueListingId?: string | null;
+            };
+            guide?: {
+                languages?: string[];
+                /** Format: date-time */
+                licenseVerifiedAt?: string | null;
+                /** Format: date-time */
+                consentAt?: string | null;
+            };
+        };
+        ListingCreateBody: {
+            /** @enum {string} */
+            kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+            /**
+             * @default EDITORIAL
+             * @enum {string}
+             */
+            dataOrigin: "EDITORIAL" | "DEMO";
+            name: string;
+            slug?: string;
+            shortDescription?: string | null;
+            description?: {
+                /** @enum {string} */
+                type: "paragraph";
+                text: string;
+            }[] | null;
+            /** Format: uuid */
+            primaryCategoryId: string;
+            secondaryCategoryIds?: string[];
+            /** Format: uuid */
+            organizationId?: string | null;
+            priceLevel?: number | null;
+            attributes?: {
+                [key: string]: unknown;
+            };
+            contacts?: components["schemas"]["ListingContacts"];
+            location?: components["schemas"]["ListingLocationInput"] | null;
+            serviceAreaProvinceIds?: string[];
+            details?: components["schemas"]["ListingDetailsInput"];
+            source: string;
+            /** Format: date-time */
+            sourceVerifiedAt?: string | null;
+        };
+        ListingUpdateBody: {
+            version: number;
+            name?: string;
+            slug?: string;
+            shortDescription?: string | null;
+            description?: {
+                /** @enum {string} */
+                type: "paragraph";
+                text: string;
+            }[] | null;
+            /** Format: uuid */
+            primaryCategoryId?: string;
+            secondaryCategoryIds?: string[];
+            /** Format: uuid */
+            organizationId?: string | null;
+            priceLevel?: number | null;
+            attributes?: {
+                [key: string]: unknown;
+            };
+            contacts?: components["schemas"]["ListingContacts"];
+            location?: components["schemas"]["ListingLocationInput"] | null;
+            serviceAreaProvinceIds?: string[];
+            details?: components["schemas"]["ListingDetailsInput"];
+            source?: string;
+            /** Format: date-time */
+            sourceVerifiedAt?: string | null;
+        };
+        ListingStatusBody: {
+            version: number;
+            /** @enum {string} */
+            status: "DRAFT" | "IN_REVIEW" | "PUBLISHED" | "CLOSED_TEMPORARILY" | "CLOSED_PERMANENTLY" | "ARCHIVED";
+        };
+        AdminListing: {
+            id: string;
+            /** @enum {string} */
+            kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+            slug: string;
+            name: string;
+            shortDescription: string | null;
+            description: {
+                /** @enum {string} */
+                type: "paragraph";
+                text: string;
+            }[] | null;
+            primaryCategory: {
+                id: string;
+                name: string;
+                slug: string;
+            };
+            secondaryCategoryIds: string[];
+            organizationId: string | null;
+            /** @enum {string} */
+            status: "DRAFT" | "IN_REVIEW" | "PUBLISHED" | "CLOSED_TEMPORARILY" | "CLOSED_PERMANENTLY" | "ARCHIVED";
+            priceLevel: number | null;
+            attributes: {
+                [key: string]: unknown;
+            };
+            attributeSchemaVersion: number;
+            contacts: components["schemas"]["ListingContacts"];
+            location: {
+                provinceId: string;
+                provinceName: string;
+                districtId: string | null;
+                districtName: string | null;
+                neighborhood: string | null;
+                addressLine: string | null;
+                postalCode: string | null;
+                latitude: number | null;
+                longitude: number | null;
+            } | null;
+            serviceAreaProvinceIds: string[];
+            details: components["schemas"]["ListingDetailsInput"];
+            dataOrigin: string;
+            source: string;
+            /** Format: date-time */
+            sourceVerifiedAt: string | null;
+            /** Format: date-time */
+            publishedAt: string | null;
+            /** Format: date-time */
+            updatedAt: string;
+            version: number;
+            publishBlockers: {
+                pointer: string;
+                code: string;
+            }[];
+        };
+        AdminListingSummary: {
+            id: string;
+            /** @enum {string} */
+            kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+            slug: string;
+            name: string;
+            /** @enum {string} */
+            status: "DRAFT" | "IN_REVIEW" | "PUBLISHED" | "CLOSED_TEMPORARILY" | "CLOSED_PERMANENTLY" | "ARCHIVED";
+            primaryCategoryName: string;
+            provinceName: string | null;
+            dataOrigin: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        AdminListingList: {
+            data: components["schemas"]["AdminListingSummary"][];
+            page: components["schemas"]["PageInfo"];
         };
         RegisterBody: {
             email: unknown;
@@ -1653,6 +1927,374 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReviewCriterion"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    listAdminAreas: {
+        parameters: {
+            query?: {
+                level?: "PROVINCE" | "DISTRICT";
+                parentId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Bölgeler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAreaList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminListListings: {
+        parameters: {
+            query?: {
+                kind?: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+                status?: "DRAFT" | "IN_REVIEW" | "PUBLISHED" | "CLOSED_TEMPORARILY" | "CLOSED_PERMANENTLY" | "ARCHIVED";
+                categoryId?: string;
+                q?: string;
+                limit?: number;
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Listelemeler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminListingList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminCreateListing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK";
+                    /**
+                     * @default EDITORIAL
+                     * @enum {string}
+                     */
+                    dataOrigin?: "EDITORIAL" | "DEMO";
+                    name: string;
+                    slug?: string;
+                    shortDescription?: string | null;
+                    description?: {
+                        /** @enum {string} */
+                        type: "paragraph";
+                        text: string;
+                    }[] | null;
+                    /** Format: uuid */
+                    primaryCategoryId: string;
+                    secondaryCategoryIds?: string[];
+                    /** Format: uuid */
+                    organizationId?: string | null;
+                    priceLevel?: number | null;
+                    attributes?: {
+                        [key: string]: unknown;
+                    };
+                    contacts?: {
+                        phone?: string;
+                        /** Format: uri */
+                        website?: string;
+                        /** Format: email */
+                        email?: string;
+                        /** Format: uri */
+                        reservationUrl?: string;
+                    };
+                    location?: {
+                        /** Format: uuid */
+                        provinceId: string;
+                        /** Format: uuid */
+                        districtId?: string | null;
+                        neighborhood?: string | null;
+                        addressLine?: string | null;
+                        postalCode?: string | null;
+                        latitude?: number | null;
+                        longitude?: number | null;
+                    } | null;
+                    serviceAreaProvinceIds?: string[];
+                    details?: {
+                        lodging?: {
+                            tourismLicenseNo?: string | null;
+                            /** Format: date-time */
+                            licenseVerifiedAt?: string | null;
+                            checkInTime?: string | null;
+                            checkOutTime?: string | null;
+                        };
+                        product?: {
+                            brand: string;
+                            model: string;
+                            gtin?: string | null;
+                            /** Format: date */
+                            releaseDate?: string | null;
+                        };
+                        experience?: {
+                            durationMinutes?: number | null;
+                            startPoint?: string | null;
+                        };
+                        event?: {
+                            /** Format: date-time */
+                            startsAt?: string | null;
+                            /** Format: date-time */
+                            endsAt?: string | null;
+                            /** Format: uuid */
+                            venueListingId?: string | null;
+                        };
+                        guide?: {
+                            languages?: string[];
+                            /** Format: date-time */
+                            licenseVerifiedAt?: string | null;
+                            /** Format: date-time */
+                            consentAt?: string | null;
+                        };
+                    };
+                    source: string;
+                    /** Format: date-time */
+                    sourceVerifiedAt?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Oluşturuldu */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminListing"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetListing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Listeleme */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminListing"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminUpdateListing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    name?: string;
+                    slug?: string;
+                    shortDescription?: string | null;
+                    description?: {
+                        /** @enum {string} */
+                        type: "paragraph";
+                        text: string;
+                    }[] | null;
+                    /** Format: uuid */
+                    primaryCategoryId?: string;
+                    secondaryCategoryIds?: string[];
+                    /** Format: uuid */
+                    organizationId?: string | null;
+                    priceLevel?: number | null;
+                    attributes?: {
+                        [key: string]: unknown;
+                    };
+                    contacts?: {
+                        phone?: string;
+                        /** Format: uri */
+                        website?: string;
+                        /** Format: email */
+                        email?: string;
+                        /** Format: uri */
+                        reservationUrl?: string;
+                    };
+                    location?: {
+                        /** Format: uuid */
+                        provinceId: string;
+                        /** Format: uuid */
+                        districtId?: string | null;
+                        neighborhood?: string | null;
+                        addressLine?: string | null;
+                        postalCode?: string | null;
+                        latitude?: number | null;
+                        longitude?: number | null;
+                    } | null;
+                    serviceAreaProvinceIds?: string[];
+                    details?: {
+                        lodging?: {
+                            tourismLicenseNo?: string | null;
+                            /** Format: date-time */
+                            licenseVerifiedAt?: string | null;
+                            checkInTime?: string | null;
+                            checkOutTime?: string | null;
+                        };
+                        product?: {
+                            brand: string;
+                            model: string;
+                            gtin?: string | null;
+                            /** Format: date */
+                            releaseDate?: string | null;
+                        };
+                        experience?: {
+                            durationMinutes?: number | null;
+                            startPoint?: string | null;
+                        };
+                        event?: {
+                            /** Format: date-time */
+                            startsAt?: string | null;
+                            /** Format: date-time */
+                            endsAt?: string | null;
+                            /** Format: uuid */
+                            venueListingId?: string | null;
+                        };
+                        guide?: {
+                            languages?: string[];
+                            /** Format: date-time */
+                            licenseVerifiedAt?: string | null;
+                            /** Format: date-time */
+                            consentAt?: string | null;
+                        };
+                    };
+                    source?: string;
+                    /** Format: date-time */
+                    sourceVerifiedAt?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminListing"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminSetListingStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                    /** @enum {string} */
+                    status: "DRAFT" | "IN_REVIEW" | "PUBLISHED" | "CLOSED_TEMPORARILY" | "CLOSED_PERMANENTLY" | "ARCHIVED";
+                };
+            };
+        };
+        responses: {
+            /** @description Güncellendi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminListing"];
                 };
             };
             /** @description Hata (RFC 9457) */

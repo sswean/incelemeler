@@ -13,3 +13,9 @@ Biçim: Ek C-9. Ortamda doğrulanamayan kontroller; durum İnsan sonucu girdiği
 - Adımlar: Staging ve üretim için ayrı veritabanı, depolama ve sırların oluşturulduğunu doğrulayın; staging'in `noindex` ve temel kimlik doğrulamalı olduğunu kontrol edin.
 - Beklenen sonuç: Ortamlar arası paylaşılan sır/veri yok.
 - Sonuç: __ · Tarih: __ · Test eden: __
+
+## MQA-003: İdari bölge listesinin resmî kaynakla karşılaştırılması (ADR-0011, REQ-VER-009)
+- Ön koşullar: `pnpm run setup` tamam.
+- Adımlar: `GET /v1/admin-areas?level=PROVINCE` (81 il, plaka kodları) ve lansman illerinin ilçelerini (`?parentId=`) İçişleri Bakanlığı/TÜİK güncel idari bölünme listesiyle karşılaştırın.
+- Beklenen sonuç: Ad, yazım (ör. Hakkâri, Eyüpsultan) ve sayılar (İstanbul 39, İzmir 30, Antalya 19, Muğla 13, Nevşehir 8) birebir aynı.
+- Sonuç: __ · Tarih: __ · Test eden: __

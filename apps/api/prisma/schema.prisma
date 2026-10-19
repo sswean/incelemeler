@@ -81,6 +81,8 @@ model Category {
   attributes             AttributeDefinition[]
   criteria               ReviewCriterion[]
   schemaVersions         CategorySchemaVersion[]
+  listingCategories      ListingCategory[]
+  legalApprovals         LegalApproval[]
 
   @@index([status, sortOrder, id])
   @@index([parentId])
@@ -157,6 +159,8 @@ model Listing {
   priceLevel             Int?          @map("price_level") @db.SmallInt
   attributes             Json          @default("{}")
   attributeSchemaVersion Int           @default(1) @map("attribute_schema_version")
+  /// İletişim kanalları: { phone?, website?, email?, reservationUrl? } (zod ile doğrulanır)
+  contacts               Json          @default("{}")
   dataOrigin             DataOrigin    @map("data_origin")
   /// Bilginin kaynağı (§12.4): editör girişi, işletme beyanı, lisanslı veri…
   source                 String
@@ -166,6 +170,16 @@ model Listing {
   updatedAt              DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
   deletedAt              DateTime?     @map("deleted_at") @db.Timestamptz(3)
   version                Int           @default(1)
+
+  secondaryCategories ListingCategory[]
+  location            ListingLocation?
+  serviceAreas        ListingServiceArea[]
+  lodging             ListingLodging?
+  product             ListingProduct?
+  experience          ListingExperience?
+  event               ListingEvent?        @relation("EventDetails")
+  hostedEvents        ListingEvent[]       @relation("EventVenue")
+  guide               ListingGuide?
 
   @@index([kind, status, primaryCategoryId])
   @@index([organizationId])
@@ -380,4 +394,157 @@ model ReviewCriterion {
 
   @@unique([categoryId, key])
   @@map("review_criteria")
+}
+
+enum AdminAreaLevel {
+  PROVINCE
+  DISTRICT
+}
+
+/// İdari bölgeler (REQ-VER-009): il → ilçe. Referans verisi migration ile yüklenir (ADR-0011).
+model AdminArea {
+  id                String               @id @default(uuid(7)) @db.Uuid
+  level             AdminAreaLevel
+  name              String
+  slug              String
+  /// İl plaka kodu (yalnızca PROVINCE)
+  code              String?
+  parentId          String?              @map("parent_id") @db.Uuid
+  parent            AdminArea?           @relation("AdminAreaTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children          AdminArea[]          @relation("AdminAreaTree")
+  provinceLocations ListingLocation[]    @relation("LocationProvince")
+  districtLocations ListingLocation[]    @relation("LocationDistrict")
+  serviceAreas      ListingServiceArea[]
+
+  @@unique([parentId, slug])
+  @@index([level])
+  @@map("admin_areas")
+}
+
+/// İkincil kategoriler: en fazla 3, birincil kategoriyle aynı türe izin veren (Ek A4.1).
+model ListingCategory {
+  listingId  String   @map("listing_id") @db.Uuid
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  categoryId String   @map("category_id") @db.Uuid
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@id([listingId, categoryId])
+  @@index([categoryId])
+  @@map("listing_categories")
+}
+
+/// Konum (REQ-VER-009): koordinat 6 ondalık; `geo` sütunu migration'da üretilen PostGIS sütunudur.
+model ListingLocation {
+  listingId    String                                @id @map("listing_id") @db.Uuid
+  listing      Listing                               @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  provinceId   String                                @map("province_id") @db.Uuid
+  province     AdminArea                             @relation("LocationProvince", fields: [provinceId], references: [id], onDelete: Restrict)
+  districtId   String?                               @map("district_id") @db.Uuid
+  district     AdminArea?                            @relation("LocationDistrict", fields: [districtId], references: [id], onDelete: Restrict)
+  neighborhood String?
+  addressLine  String?                               @map("address_line")
+  postalCode   String?                               @map("postal_code")
+  latitude     Decimal?                              @db.Decimal(9, 6)
+  longitude    Decimal?                              @db.Decimal(9, 6)
+  /// Enlem/boylamdan tetikleyiciyle doldurulan PostGIS noktası (migration); uygulama yazmaz.
+  geo          Unsupported("geography(Point,4326)")?
+
+  @@index([provinceId, districtId])
+  @@index([geo], type: Gist)
+  @@map("listing_locations")
+}
+
+/// Hizmet bölgesi (hizmet işletmesi, turist rehberi): il düzeyinde.
+model ListingServiceArea {
+  listingId  String    @map("listing_id") @db.Uuid
+  listing    Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  provinceId String    @map("province_id") @db.Uuid
+  province   AdminArea @relation(fields: [provinceId], references: [id], onDelete: Restrict)
+
+  @@id([listingId, provinceId])
+  @@map("listing_service_areas")
+}
+
+/// Konaklama uzantısı: turizm belge numarası hukuki kapıya tabidir (Ek A4.4, Ek D1).
+model ListingLodging {
+  listingId         String    @id @map("listing_id") @db.Uuid
+  listing           Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  tourismLicenseNo  String?   @map("tourism_license_no")
+  licenseVerifiedAt DateTime? @map("license_verified_at") @db.Timestamptz(3)
+  checkInTime       String?   @map("check_in_time")
+  checkOutTime      String?   @map("check_out_time")
+
+  @@map("listing_lodging")
+}
+
+model ListingProduct {
+  listingId   String    @id @map("listing_id") @db.Uuid
+  listing     Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  brand       String
+  model       String
+  gtin        String?   @unique
+  releaseDate DateTime? @map("release_date") @db.Date
+
+  @@index([brand, model])
+  @@map("listing_product")
+}
+
+model ListingExperience {
+  listingId       String  @id @map("listing_id") @db.Uuid
+  listing         Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  durationMinutes Int?    @map("duration_minutes")
+  startPoint      String? @map("start_point")
+
+  @@map("listing_experience")
+}
+
+model ListingEvent {
+  listingId      String    @id @map("listing_id") @db.Uuid
+  listing        Listing   @relation("EventDetails", fields: [listingId], references: [id], onDelete: Cascade)
+  startsAt       DateTime? @map("starts_at") @db.Timestamptz(3)
+  endsAt         DateTime? @map("ends_at") @db.Timestamptz(3)
+  venueListingId String?   @map("venue_listing_id") @db.Uuid
+  venue          Listing?  @relation("EventVenue", fields: [venueListingId], references: [id], onDelete: Restrict)
+
+  @@index([startsAt])
+  @@map("listing_event")
+}
+
+/// Turist rehberi uzantısı: ruhsat doğrulaması ve kişinin açık rızası olmadan yayın yok (Ek A4.4).
+model ListingGuide {
+  listingId         String    @id @map("listing_id") @db.Uuid
+  listing           Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  languages         String[]
+  licenseVerifiedAt DateTime? @map("license_verified_at") @db.Timestamptz(3)
+  consentAt         DateTime? @map("consent_at") @db.Timestamptz(3)
+
+  @@map("listing_guide")
+}
+
+/// Eski slug'lar kalıcı 301 için saklanır (REQ-VER-013).
+model SlugHistory {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id") @db.Uuid
+  slug       String
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@unique([entityType, slug])
+  @@index([entityType, entityId])
+  @@map("slug_history")
+}
+
+/// Hukuki kapı onayı (REQ-KAT-004, Ek D1): YMYL/lisanslı kategoride gerçek listeleme yayını için.
+/// Üretimde yalnızca İnsan onayıyla yazılır (C sınıfı); `TEST-FIXTURE` onayı üretimde yok sayılır.
+model LegalApproval {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  categoryId String    @map("category_id") @db.Uuid
+  category   Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  approvedBy String    @map("approved_by")
+  note       String?
+  approvedAt DateTime  @default(now()) @map("approved_at") @db.Timestamptz(3)
+  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz(3)
+
+  @@index([categoryId])
+  @@map("legal_approvals")
 }

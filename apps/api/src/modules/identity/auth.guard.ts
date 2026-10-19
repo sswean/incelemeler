@@ -53,7 +53,8 @@ export class AuthGuard implements CanActivate {
         );
       }
     }
-    if (requirement.permission && !can(ctx.roles, requirement.permission)) {
+    const required = requirement.permission === undefined ? [] : [requirement.permission].flat();
+    if (required.length && !required.some((p) => can(ctx.roles, p))) {
       throw new ProblemException(HttpStatus.FORBIDDEN, 'FORBIDDEN', 'Bu işlem için yetkin yok');
     }
     if (requirement.stepUp) {

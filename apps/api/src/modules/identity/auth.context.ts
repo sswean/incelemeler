@@ -19,7 +19,8 @@ export interface AuthContext {
 export interface AuthRequirement {
   /** session: geçerli oturum · staff-mfa: 2FA doğrulanmış personel oturumu */
   level: 'session' | 'staff-mfa';
-  permission?: Permission;
+  /** Dizi verilirse izinlerden herhangi biri yeterlidir. */
+  permission?: Permission | readonly Permission[];
   /** Son 10 dakika içinde ikinci faktör doğrulaması (REQ-HSP-007). */
   stepUp?: boolean;
 }

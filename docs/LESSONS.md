@@ -16,3 +16,6 @@ Bir ders bir madde; ilk satır tek cümlelik özet. Yanlış çıkan ders silini
 - **E2E'de tüm tarayıcı istekleri 127.0.0.1'den gelir; IP hız sınırları testleri birbirine bağlar.** Her teste ayrı `X-Forwarded-For` veren otomatik fixture (`tests/e2e/support/fixtures.ts`).
 - **Next.js App Router yerleşimleri (layout) istemci gezintisinde yeniden çizilmez.** Yetki denetimi yalnız yerleşimde yapılırsa sayfalar korunmaz; her panel sayfası `requireStaff()` çağırır (asıl yetki API'de).
 - **Tohum (seed) verisi domain kurallarını atlayabilir.** Kural hem servis hem veritabanı CHECK kısıtıyla korunur; tohum `update: {}` ile panel değişikliklerini ezmez.
+- **Prisma, şemada olmayan sütun/indeksleri bir sonraki `migrate dev`'de silmek ister ve etkileşimli onay bekler (TTY yoksa asılı kalır).** Ham SQL ile eklenen her nesne şemada `Unsupported`/`@@index` ile ifade edilmeli; fark `prisma migrate diff --from-config-datasource --to-schema … --script` ile denetlenir.
+- **Prisma, ajan tarafından çağrılan `migrate reset`'i kullanıcı onayı olmadan reddeder.** Uygulanmış migration düzenlenmez; düzeltme yeni migration ile yapılır (gerekirse `migrate resolve --rolled-back`).
+- **Elle adlandırılan migration klasörü gerçek UTC zaman damgası taşımalı** (`date -u +%Y%m%d%H%M%S`); aksi hâlde temiz veritabanında uygulama sırası değişir.

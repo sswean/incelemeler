@@ -31,3 +31,8 @@ Biçim: Ek C-5. B sınıfı: varsayılanla devam edilir. C sınıfı: o iş duru
 - Seçenekler: A) Türkiye'de barındırma (KVKK aktarım yükü düşük). B) AB bölgesi (KVKK m.9 aktarım dayanağı gerekir).
 - Önerim: Hukuk danışmanı görüşüyle karar; Faz 1 boyunca yerel geliştirme yeterli.
 - Yanıt gelmezse: Dağıtım yapılmaz.
+
+## Q-006: İdari bölge (il/ilçe/mahalle) verisinin lisanslı kaynağı (ADR-0011)
+- Sınıf: B · Engellediği: pilot dışı illerin ilçeleri, mahalle düzeyi filtreler
+- Seçenekler: A) Kamu kurumunun açık lisanslı veri seti (lisansı doğrulanır). B) Lisanslı ticari adres veri sağlayıcısı (X-kaydı, maliyet C sınıfı).
+- Yanıt gelmezse: 81 il + lansman illerinin ilçeleri (elle girilmiş olgular, MQA-003) ile devam; diğer illerde ilçe zorunluluğu yayın kuralında karşılanamaz.

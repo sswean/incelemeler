@@ -95,10 +95,10 @@
       "phase": 1,
       "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "İmzalı cursor + limit ≤ 100: kategoriler, panel kategori ve listeleme listeleri.",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": "Faz 0: İmzalı cursor + limit ≤ 100 (kategoriler). Faz 1: tüm listeler."
+      "notes": "Diğer listeler ilgili dilimlerde."
     },
     {
       "id": "REQ-MIM-009",
@@ -237,12 +237,12 @@
       "title": "categories",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Kategori ağacı (≤3 seviye), allowedKinds, sıralama, bayraklar (ymyl, requiresExpertReview, ugcEnabled, sponsorshipAllowed, requiresLicense) ve hukuki kapı onayları (legal_approvals).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "SEO alanları D4; lisans türü alanı ve sponsorluk yerleşim engeli D9."
     },
     {
       "id": "REQ-VER-003",
@@ -321,12 +321,12 @@
       "title": "addresses + admin_areas (il / ilçe / mahalle hiyerarşisi",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "admin_areas (81 il + lansman illerinin 109 ilçesi, ADR-0011), listing_locations (6 ondalık, PostGIS geo + GiST; ST_DWithin testi).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Diğer illerin ilçeleri ve mahalle hiyerarşisi lisanslı kaynakla (Q-006); MQA-003."
     },
     {
       "id": "REQ-VER-010",
@@ -369,12 +369,12 @@
       "title": "slugs + slug_history + redirects",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "slug_history: yayımlanmış listelemede eski slug saklanır, başka kayda verilmez, geri dönülünce kalkar (listings.int).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "301/410 yanıtları ve zincir sıkıştırma web detay sayfalarıyla (D4)."
     },
     {
       "id": "REQ-VER-014",
@@ -753,12 +753,12 @@
       "title": "Her listeleme türü için sayfa şablonu, yayın için zorunlu alanlar, tipe özgü bloklar, b…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Tür bazında yayın için zorunlu alanlar API'de (publish-rules birim testi; listings.int 422 + eksikler listesi `publishBlockers`).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Sayfa şablonları, tipe özgü bloklar ve CTA/yasak CTA tablosu D4 (detay sayfaları)."
     },
     {
       "id": "REQ-LST-010",

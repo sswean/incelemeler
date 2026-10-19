@@ -128,6 +128,25 @@ export class CategorySchemaService {
     };
   }
 
+  /** Listeleme yazımı için: kategori zinciri ve etkin (arşivlenmemiş) özellik tanımları. */
+  async effective(categoryId: string): Promise<{
+    chain: Category[];
+    definitions: AttributeDefinition[];
+    schemaVersion: number;
+  }> {
+    const category = await this.category(categoryId);
+    const chain = await this.chain(category);
+    const rows = await this.prisma.attributeDefinition.findMany({
+      where: { categoryId: { in: chain.map((c) => c.id) }, archivedAt: null },
+      orderBy: [{ sortOrder: 'asc' }, { key: 'asc' }],
+    });
+    return {
+      chain,
+      definitions: rows.map(toAttribute),
+      schemaVersion: category.attributeSchemaVersion,
+    };
+  }
+
   // ── Özellikler ──
 
   async createAttribute(

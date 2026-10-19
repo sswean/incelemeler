@@ -14,6 +14,9 @@ import { AdminCategoriesService } from './modules/taxonomy/admin-categories.serv
 import { CategorySchemaController } from './modules/taxonomy/category-schema.controller.js';
 import { CategorySchemaService } from './modules/taxonomy/category-schema.service.js';
 import { OutboxService } from './modules/outbox/outbox.service.js';
+import { AdminListingsController } from './modules/catalog/admin-listings.controller.js';
+import { AdminListingsService } from './modules/catalog/admin-listings.service.js';
+import { AdminAreasController } from './modules/geo/admin-areas.controller.js';
 import {
   AdminAccessController,
   AuthController,
@@ -53,6 +56,8 @@ export const CONTROLLERS = [
   AdminAccessController,
   AdminCategoriesController,
   CategorySchemaController,
+  AdminAreasController,
+  AdminListingsController,
 ];
 
 @Module({})
@@ -73,6 +78,7 @@ export class AppModule {
         CategoriesService,
         AdminCategoriesService,
         CategorySchemaService,
+        AdminListingsService,
         OutboxService,
       ],
     };

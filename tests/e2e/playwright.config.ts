@@ -1,0 +1,45 @@
+import { defineConfig, devices } from '@playwright/test';
+import { ADMIN_PORT, API_PORT, E2E_DATABASE_URL, WEB_PORT } from './env.js';
+
+const apiUrl = `http://localhost:${API_PORT}`;
+
+export default defineConfig({
+  testDir: './specs',
+  fullyParallel: false,
+  forbidOnly: true,
+  retries: 0,
+  reporter: [['list']],
+  use: { trace: 'retain-on-failure' },
+  projects: [
+    { name: 'mobile-390', use: { ...devices['Desktop Chrome'], viewport: { width: 390, height: 844 } } },
+    { name: 'desktop-1280', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
+  ],
+  webServer: [
+    {
+      command: 'node dist/main.js',
+      cwd: '../../apps/api',
+      url: `${apiUrl}/v1/health`,
+      reuseExistingServer: false,
+      env: {
+        APP_ENV: 'test',
+        DATABASE_URL: E2E_DATABASE_URL,
+        API_PORT: String(API_PORT),
+        CURSOR_SECRET: 'e2e-cursor-secret-not-a-real-secret-0000',
+      },
+    },
+    {
+      command: `pnpm exec next start --port ${WEB_PORT}`,
+      cwd: '../../apps/web',
+      url: `http://localhost:${WEB_PORT}`,
+      reuseExistingServer: false,
+      env: { API_INTERNAL_URL: apiUrl },
+    },
+    {
+      command: `pnpm exec next start --port ${ADMIN_PORT}`,
+      cwd: '../../apps/admin',
+      url: `http://localhost:${ADMIN_PORT}`,
+      reuseExistingServer: false,
+      env: { API_INTERNAL_URL: apiUrl },
+    },
+  ],
+});

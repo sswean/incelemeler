@@ -4,12 +4,31 @@ import { Problem } from './problem.js';
 
 type JsonObject = Record<string, unknown>;
 
+const REF_PREFIX = '#/components/schemas/';
+
+/** Kimlikli (meta id) şemalar components/schemas altına konur ve $ref ile kullanılır. */
 function toSchema(schema: z.ZodType, io: 'input' | 'output' = 'output'): JsonObject {
+  const id = z.globalRegistry.get(schema)?.id;
+  if (id && io === 'output') return { $ref: REF_PREFIX + id };
   return z.toJSONSchema(schema, {
     target: 'openapi-3.0',
     io,
     unrepresentable: 'any',
   }) as JsonObject;
+}
+
+function buildComponents(): JsonObject {
+  const all = z.toJSONSchema(z.globalRegistry, {
+    target: 'openapi-3.0',
+    unrepresentable: 'any',
+    uri: (refId) => REF_PREFIX + refId,
+  }) as { schemas: Record<string, JsonObject> };
+  const schemas: JsonObject = {};
+  for (const [id, schema] of Object.entries(all.schemas)) {
+    const { $id: _ignored, ...rest } = schema as JsonObject & { $id?: string };
+    schemas[id] = rest;
+  }
+  return schemas;
 }
 
 /** OpenAPI 3.0 belgesini sözleşme listesinden üretir (REQ-MIM-006). */
@@ -64,5 +83,6 @@ export function buildOpenApiDocument(version: string): JsonObject {
     info: { title: 'İncelemeler API', version },
     servers: [{ url: '/' }],
     paths,
+    components: { schemas: buildComponents() },
   };
 }

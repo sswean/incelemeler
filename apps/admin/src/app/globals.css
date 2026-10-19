@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+@import '@incelemeler/tokens/tokens.css';
+@import '@incelemeler/tokens/theme.css';
+
+html {
+  background: var(--color-bg-default);
+  color: var(--color-text-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}

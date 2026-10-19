@@ -12,7 +12,9 @@ test.describe('Faz 1 · listeleme detay sayfası ve SEO temeli', () => {
     // JS olmadan sunucu HTML'i birincil içeriği içerir.
     const html = await (await request.get(`${web}/mekan/e2e-test-lokantasi`)).text();
     expect(html).toContain('E2E Test Lokantası');
-    expect(html).toContain('Henüz değerlendirme yok.');
+    // Değerlendirme yokken boş durum (A6.2) sunucu HTML'inde; sahte puan yok.
+    expect(html).toContain('Henüz değerlendirme yok');
+    expect(html).not.toContain('aggregateRating');
 
     await page.goto(`${web}/mekan/e2e-test-lokantasi`);
     await expect(page).toHaveTitle('E2E Test Lokantası – Kadıköy, İstanbul · İncelemeler');

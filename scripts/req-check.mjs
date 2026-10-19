@@ -49,7 +49,9 @@ for (const id of refs.keys())
 //     Faz kapısında (`--gate`): aktif fazın TÜM ZORUNLU REQ'leri bağlı olmalı.
 const gate = process.argv.includes('--gate');
 const active = req.requirements.filter((r) => r.phase === activePhase && r.level === 'ZORUNLU');
-const toCheck = gate ? active : active.filter((r) => !['BAŞLANMADI', 'ERTELENDİ'].includes(r.status));
+const toCheck = gate
+  ? active
+  : active.filter((r) => !['BAŞLANMADI', 'ERTELENDİ'].includes(r.status));
 for (const r of toCheck) {
   const linked = refs.has(r.id) || manualQa.includes(r.id) || (r.tests ?? []).length > 0;
   const justified =

@@ -8,7 +8,14 @@ const web = `http://localhost:${WEB_PORT}`;
 // Projeler ayrı arama bağlamında çalışır: aynı yuvada birbirinin kampanyasıyla yarışmasınlar.
 const CASE: Record<
   string,
-  { category: string; sponsored: string; slug: string; neighbour: string; sponsor: string }
+  {
+    category: string;
+    sponsored: string;
+    slug: string;
+    neighbour: string;
+    sponsor: string;
+    ipOctet: number;
+  }
 > = {
   'mobile-390': {
     category: 'kahvalti-mekanlari',
@@ -16,6 +23,7 @@ const CASE: Record<
     slug: 'ornek-gun-isigi-kahvalti-salonu-demo',
     neighbour: 'ornek-koy-kahvaltisi-kadikoy-demo',
     sponsor: 'Örnek Kahvaltı Reklamvereni (Demo)',
+    ipOctet: 1,
   },
   'desktop-1280': {
     category: 'restoranlar',
@@ -23,6 +31,7 @@ const CASE: Record<
     slug: 'ornek-nisantasi-bistro-demo',
     neighbour: 'ornek-balikci-lokantasi-kumkapi-demo',
     sponsor: 'Örnek Restoran Reklamvereni (Demo)',
+    ipOctet: 2,
   },
 };
 
@@ -49,7 +58,7 @@ test.describe('Faz 1 · sponsorluk kampanyası ve yerleşim', () => {
   }, info) => {
     const p = info.project.name;
     const c = CASE[p]!;
-    const n = p === 'mobile-390' ? 1 : 2;
+    const n = c.ipOctet;
     const searchUrl = `${web}/ara?il=istanbul&kategori=${c.category}`;
     await page.goto(searchUrl);
     const before = await organicTitles(page);

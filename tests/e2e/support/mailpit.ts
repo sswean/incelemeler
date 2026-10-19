@@ -3,8 +3,8 @@ import { MAILPIT_URL } from '../env.js';
 
 type Summary = { ID: string; Subject: string };
 
-/** Yerel e-posta yakalayıcıdan (Mailpit) alıcıya giden son iletinin metnini bekler. */
-export async function waitForMail(to: string): Promise<string> {
+/** Yerel e-posta yakalayıcıdan (Mailpit) alıcıya giden son iletinin (isteğe bağlı konu süzgeciyle) metnini bekler. */
+export async function waitForMail(to: string, subject?: string): Promise<string> {
   let id: string | undefined;
   await expect
     .poll(
@@ -13,7 +13,7 @@ export async function waitForMail(to: string): Promise<string> {
           `${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(`to:"${to}"`)}`,
         );
         const body = (await res.json()) as { messages: Summary[] };
-        id = body.messages[0]?.ID;
+        id = body.messages.find((m) => !subject || m.Subject.includes(subject))?.ID;
         return id;
       },
       { timeout: 15_000 },

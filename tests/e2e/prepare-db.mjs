@@ -66,6 +66,16 @@ for (const p of PROJECTS) {
      FROM users WHERE email = $2`,
     [`e2e-uye-${p}@example.test`, staffEmail(PROJECTS[0]), `Deneyimli Gezgin ${p}`],
   );
+  for (const [email, name] of [
+    [`e2e-hesap-${p}@example.test`, `Hesap Testi ${p}`],
+    [`e2e-silme-${p}@example.test`, `Silme Testi ${p}`],
+  ]) {
+    await db.query(
+      `INSERT INTO users (id, email, email_verified_at, password_hash, display_name, age_confirmed_at, terms_version, updated_at)
+       SELECT gen_random_uuid(), $1, now(), password_hash, $3, now(), 'test', now() FROM users WHERE email = $2`,
+      [email, staffEmail(PROJECTS[0]), name],
+    );
+  }
 }
 // REQ-KAT-004 / E2E-020: yalnızca test ortamında yüklenen hukuki kapı fikstürü (DEMO listelemeler için).
 await db.query(

@@ -645,9 +645,9 @@
       "title": "Hesap silme web'de (Faz 2'de uygulama içinde de) self-servis",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Web'de self-servis silme (parola + onay), silme bekliyor durumu (giriş kapalı, oturumlar kapanır), 30 gün geri alma (e-posta bağlantısı), süre sonunda silme/anonimleştirme (account.int, account.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -657,12 +657,12 @@
       "title": "Kullanıcı verilerini makine tarafından okunabilir biçimde (JSON) dışa aktarabilir",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Hesabım › Verilerimi indir: JSON dışa aktarma; parola karması/token yok (account.int, account.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Talep kaydı ve süre takibi (data_subject_requests) D10c'de."
     },
     {
       "id": "REQ-HSP-013",
@@ -2865,9 +2865,9 @@
       "title": "Hesap silme yolları",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Hesabım › Hesabımı sil (3 adım) ve herkese açık /hesap-silme (girişsiz, e-posta doğrulamalı; hesabın varlığı sızmaz) (account.int, account.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
       "notes": ""
@@ -2877,12 +2877,12 @@
       "title": "Silme sonucu",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "KISMİ",
       "verification": "T",
-      "acceptance": null,
+      "acceptance": "Hesap, profil, kaydedilenler, değerlendirmeler, taslaklar, oturumlar silinir; kayıt anonimleşir; silinen/saklanan veri türleri kullanıcıya gösterilir (account.int, account.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "Yasal saklama arşivi ve imha süreleri (REQ-KVK-023) ile compliance_config D10c'de; push token yok (Faz 2)."
     },
     {
       "id": "REQ-KVK-022",

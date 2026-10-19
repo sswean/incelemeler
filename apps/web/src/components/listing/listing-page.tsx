@@ -17,6 +17,7 @@ import { canonical, jsonLdScript, robots } from '../../lib/seo';
 import { RatingSummaryView } from '../reviews/rating-summary';
 import { ReviewListView } from '../reviews/review-list';
 import { SponsoredBox } from '../sponsored/box';
+import { FavoriteButton } from '../account/favorite-button';
 import { breadcrumbJsonLd, listingJsonLd } from './json-ld';
 
 const T = tr.listingPage;
@@ -313,6 +314,7 @@ export async function ListingPage(
             })}
           </ul>
         ) : null}
+        <FavoriteButton listingId={l.id} returnTo={path} />
         {anyCommercial ? (
           <p className="text-sm text-text-secondary">
             {T.commercialNote}{' '}

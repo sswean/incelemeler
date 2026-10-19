@@ -1518,6 +1518,127 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/me/favorites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kaydedilenler (yalnızca sahibine) */
+        get: operations["listFavorites"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/favorites/{listingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listeleme kaydedildi mi */
+        get: operations["favoriteState"];
+        /** Listelemeyi kaydeder (idempotent) */
+        put: operations["addFavorite"];
+        post?: never;
+        /** Kaydı kaldırır (idempotent) */
+        delete: operations["removeFavorite"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Verilerimi makine tarafından okunabilir JSON olarak dışa aktarır (REQ-HSP-012) */
+        get: operations["exportAccount"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/deletion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Hesap silme talebi (parola ile): hesap "silme bekliyor" olur, oturumlar kapanır; 30 gün içinde geri alınabilir */
+        post: operations["requestAccountDeletion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/account-deletion/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Girişsiz silme talebi (/hesap-silme): kayıtlı e-postaya onay bağlantısı gider; yanıt hesabın varlığını sızdırmaz */
+        post: operations["requestAccountDeletionByEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/account-deletion/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** E-postadaki bağlantıyla silme talebini onaylar */
+        post: operations["confirmAccountDeletion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/account-deletion/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Geri alma penceresinde silmeyi iptal eder (hesap yeniden etkin) */
+        post: operations["cancelAccountDeletion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1529,7 +1650,7 @@ export interface components {
             detail?: string;
             instance?: string;
             /** @enum {string} */
-            code: "VALIDATION_FAILED" | "NOT_FOUND" | "UNAUTHENTICATED" | "FORBIDDEN" | "MFA_REQUIRED" | "CONFLICT" | "PRECONDITION_FAILED" | "RATE_LIMITED" | "INTERNAL_ERROR" | "SERVICE_UNAVAILABLE" | "INVALID_CREDENTIALS" | "INVALID_TOKEN" | "WEAK_PASSWORD" | "ACCOUNT_SUSPENDED" | "MFA_INVALID" | "STEP_UP_REQUIRED" | "EMAIL_NOT_VERIFIED" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE";
+            code: "VALIDATION_FAILED" | "NOT_FOUND" | "UNAUTHENTICATED" | "FORBIDDEN" | "MFA_REQUIRED" | "CONFLICT" | "PRECONDITION_FAILED" | "RATE_LIMITED" | "INTERNAL_ERROR" | "SERVICE_UNAVAILABLE" | "INVALID_CREDENTIALS" | "INVALID_TOKEN" | "WEAK_PASSWORD" | "ACCOUNT_SUSPENDED" | "ACCOUNT_PENDING_DELETION" | "MFA_INVALID" | "STEP_UP_REQUIRED" | "EMAIL_NOT_VERIFIED" | "PAYLOAD_TOO_LARGE" | "UNSUPPORTED_MEDIA_TYPE";
             traceId: string;
             errors?: {
                 pointer: string;
@@ -2805,6 +2926,114 @@ export interface components {
         };
         OutboundLinkList: {
             data: components["schemas"]["OutboundLink"][];
+        };
+        FavoriteList: {
+            data: {
+                listing: {
+                    /** @enum {string} */
+                    type: "LISTING" | "ARTICLE";
+                    id: string;
+                    title: string;
+                    subtitle: string | null;
+                    path: string;
+                    /** @enum {string|null} */
+                    kind: "PLACE" | "LODGING" | "PRODUCT" | "SERVICE_PROVIDER" | "GUIDE_PERSON" | "EXPERIENCE" | "POI" | "DESTINATION" | "EVENT" | "WORK" | null;
+                    /** @enum {string|null} */
+                    articleType: "GUIDE" | "LIST" | "COMPARISON" | "REVIEW" | "NEWS" | "SPONSORED" | null;
+                    status: string | null;
+                    priceLevel: number | null;
+                    ratingCount: number;
+                    distanceKm: number | null;
+                    dataOrigin: string;
+                    commercial: {
+                        /** @enum {string} */
+                        type: "NONE";
+                    } | {
+                        /** @enum {string} */
+                        type: "SPONSORED";
+                        sponsor: string;
+                        label: string;
+                        why: string;
+                    };
+                };
+                /** Format: date-time */
+                createdAt: string;
+            }[];
+        };
+        FavoriteState: {
+            saved: boolean;
+        };
+        AccountDeletionStatus: {
+            /** @enum {string} */
+            status: "PENDING_DELETION";
+            /** Format: date-time */
+            scheduledFor: string;
+        };
+        AccountExport: {
+            /** Format: date-time */
+            exportedAt: string;
+            /** @enum {string} */
+            format: "incelemeler-account-export/1";
+            profile: {
+                email: string;
+                displayName: string;
+                /** Format: date-time */
+                emailVerifiedAt: string | null;
+                /** Format: date-time */
+                ageConfirmedAt: string | null;
+                termsVersion: string | null;
+                /** Format: date-time */
+                createdAt: string;
+            };
+            reviews: {
+                id: string;
+                listing: {
+                    id: string;
+                    name: string;
+                };
+                rating: number;
+                title: string | null;
+                body: string;
+                status: string;
+                experienceMonth: string | null;
+                incentivized: boolean;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                publishedAt: string | null;
+            }[];
+            reviewDrafts: {
+                listingId: string;
+                /** Format: date-time */
+                updatedAt: string;
+                data: unknown;
+            }[];
+            favorites: {
+                listingId: string;
+                name: string;
+                /** Format: date-time */
+                createdAt: string;
+            }[];
+            reports: {
+                id: string;
+                reason: string;
+                status: string;
+                /** Format: date-time */
+                createdAt: string;
+            }[];
+            appeals: {
+                id: string;
+                status: string;
+                /** Format: date-time */
+                createdAt: string;
+            }[];
+            sessions: {
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                lastSeenAt: string | null;
+                userAgent: string | null;
+            }[];
         };
         PlacementSlot: {
             id: string;
@@ -7495,6 +7724,300 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CampaignReport"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    listFavorites: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Kaydedilenler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoriteList"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    favoriteState: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Durum */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoriteState"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    addFavorite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Durum */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoriteState"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    removeFavorite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Durum */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoriteState"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    exportAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Dışa aktarma */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountExport"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    requestAccountDeletion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    password: string;
+                    /** @enum {boolean} */
+                    confirm: true;
+                };
+            };
+        };
+        responses: {
+            /** @description Silme bekliyor */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountDeletionStatus"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    requestAccountDeletionByEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: email */
+                    email: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Kabul edildi */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Accepted"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    confirmAccountDeletion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    token: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Silme bekliyor */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountDeletionStatus"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    cancelAccountDeletion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    token: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Kabul edildi */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Accepted"];
                 };
             };
             /** @description Hata (RFC 9457) */

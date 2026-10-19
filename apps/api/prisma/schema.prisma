@@ -190,6 +190,7 @@ model Listing {
   outboundLinks       OutboundLink[]
   reviewDrafts        ReviewDraft[]
   campaignPlacements  CampaignPlacement[]
+  favorites           Favorite[]
 
   @@index([kind, status, primaryCategoryId])
   @@index([organizationId])
@@ -220,6 +221,7 @@ enum EmailTokenPurpose {
   VERIFY_EMAIL
   RESET_PASSWORD
   DELETE_ACCOUNT
+  CANCEL_DELETION
 }
 
 model User {
@@ -257,6 +259,7 @@ model User {
   appeals             ModerationAppeal[]    @relation("AppealAppellant")
   outboundLinks       OutboundLink[]
   decidedAppeals      ModerationAppeal[]    @relation("AppealDecider")
+  favorites           Favorite[]
 
   @@index([status])
   @@map("users")
@@ -1342,4 +1345,17 @@ model ReviewRemovalRequest {
 
   @@index([status, createdAt])
   @@map("review_removal_requests")
+}
+
+/// Kaydedilenler (favoriler): yalnızca sahibine görünür; hesap silinince silinir (REQ-KVK-021).
+model Favorite {
+  userId    String   @map("user_id") @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String   @map("listing_id") @db.Uuid
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@id([userId, listingId])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("favorites")
 }

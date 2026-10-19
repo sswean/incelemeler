@@ -46,7 +46,11 @@
 - API: `/v1/admin/placement-slots|organizations|campaigns` (+ yerleşim, kreatif, geçiş, rapor), `/v1/listings/{id}/sponsored`, `/v1/sponsored/events`, `/v1/sponsored/{id}/click`; arama ve hub yanıtında ayrı `sponsored` dizisi; moderasyonda sponsor bağlantılı kaldırmaya ikinci onay (`/v1/admin/moderation/removals/{id}/decision`).
 - Web: arama ve hub'da etiketli sponsorlu kart ("Neden bunu görüyorum?"), listeleme detayında rakip kutu, görüntülenme ölçümü, `/git/s/{id}`. Hub sayfaları dinamik (ADR-0013). Panel: `/kampanyalar`, `/ayarlar/yuvalar`, moderasyonda "İkinci onay" kuyruğu.
 
+## Dilim 10a özeti (kaydedilenler + dışa aktarma + hesap silme)
+- API: `/v1/me/favorites` (+ `/{listingId}` GET/PUT/DELETE), `/v1/me/export`, `/v1/me/deletion`, `/v1/account-deletion/request|confirm|cancel`; worker silme işi.
+- Web: listeleme sayfasında Kaydet, `/hesabim/kaydedilenler`, `/hesabim/verilerim` (JSON), `/hesabim/hesabi-sil`, `/hesap-silme` (+ `/onay`, `/iptal`).
+
 ## Sonraki 3 adım (Faz 1, §9.3 önerilen sıra)
-1. Dilim 10 — Favoriler, hesap/KVKK talepleri (erişim/silme/taşıma), CMP (çerez tercih merkezi).
+1. Dilim 10b/10c — CMP (çerez bandı + tercih merkezi + consent_records), hukuki belge sürümleri, KVKK başvuruları (data_subject_requests), saklama/imha işi.
 2. Dilim 11 — Ana sayfa modülleri (sponsorlu ana sayfa yuvası dahil).
 3. Dilim 7 kalanları — değerlendirme fotoğrafları/EXIF, hukuki talepler, yaptırımlar (D13 öncesi).

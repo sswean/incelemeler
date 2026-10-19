@@ -146,6 +146,14 @@ export class AuthService {
         'Hesabın askıya alınmış',
       );
     }
+    if (user.status === 'PENDING_DELETION') {
+      // Geri alma e-postadaki bağlantıyla (REQ-HSP-011); giriş silme beklerken kapalı.
+      throw new ProblemException(
+        HttpStatus.FORBIDDEN,
+        'ACCOUNT_PENDING_DELETION',
+        'Hesabın silme bekliyor',
+      );
+    }
     if (user.status !== 'ACTIVE') throw invalidCredentials();
 
     const roles = user.roles.map((r) => r.role as StaffRole);

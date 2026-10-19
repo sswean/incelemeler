@@ -22,11 +22,18 @@ export default async function AccountPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <PageTitle>{tr.auth.accountTitle}</PageTitle>
-      <p>
-        <Link href="/hesabim/degerlendirmelerim" className="text-brand-default underline">
-          {tr.reviews.mine}
-        </Link>
-      </p>
+      <ul className="flex flex-wrap gap-x-6 gap-y-2">
+        <li>
+          <Link href="/hesabim/degerlendirmelerim" className="text-brand-default underline">
+            {tr.reviews.mine}
+          </Link>
+        </li>
+        <li>
+          <Link href="/hesabim/kaydedilenler" className="text-brand-default underline">
+            {tr.account.saved}
+          </Link>
+        </li>
+      </ul>
       <section className="space-y-1" data-testid="account-summary">
         <p className="font-medium">{me.displayName}</p>
         <p className="text-text-secondary">{me.email}</p>
@@ -59,6 +66,22 @@ export default async function AccountPage() {
             </li>
           ))}
         </ul>
+      </section>
+      <section aria-labelledby="verilerim" className="space-y-2">
+        <h2 id="verilerim" className="text-lg font-semibold">
+          {tr.account.export}
+        </h2>
+        <p className="text-sm text-text-secondary">{tr.account.exportHint}</p>
+        <p>
+          <a href="/hesabim/verilerim" download className="text-brand-default underline">
+            {tr.account.export}
+          </a>
+        </p>
+        <p>
+          <Link href="/hesabim/hesabi-sil" className="text-brand-default underline">
+            {tr.account.deleteAccount}
+          </Link>
+        </p>
       </section>
       <form action={logoutAction}>
         <button type="submit" className="min-h-11 text-brand-default underline">

@@ -18,6 +18,26 @@ export const emailTemplates = {
   }),
 };
 
+/** Hesap silme bildirimleri (REQ-KVK-020/021; TASLAK metinler — saklama süreleri hukuki incelemeyle kesinleşir). */
+export const accountEmails = {
+  confirmDeletion: (link: string) => ({
+    subject: 'Hesap silme talebini onayla',
+    text: `Merhaba,\n\nİncelemeler hesabının silinmesi için bir talep aldık. Onaylamak için bu bağlantıyı 1 saat içinde aç:\n${link}\n\nBu isteği sen yapmadıysan bu e-postayı yok sayabilirsin; hesabın değişmez.`,
+  }),
+  deletionScheduled: (date: string, cancelLink: string) => ({
+    subject: 'Hesabın silinmek üzere',
+    text: `Merhaba,\n\nHesabın "silme bekliyor" durumunda ve giriş kapatıldı. ${date} tarihinde hesabın, profilin, kaydedilenlerin, değerlendirmelerin ve taslakların silinecek. Güvenlik ve hukuki yükümlülük için tutulan denetim kayıtları erişimi kısıtlı olarak saklanır ve süre sonunda imha edilir.\n\nFikrini değiştirirsen bu tarihe kadar bu bağlantıyla silmeyi iptal edebilirsin:\n${cancelLink}`,
+  }),
+  deletionCancelled: () => ({
+    subject: 'Hesap silme iptal edildi',
+    text: 'Merhaba,\n\nHesap silme talebin iptal edildi; hesabın yeniden etkin. Giriş yapabilirsin.',
+  }),
+  deleted: () => ({
+    subject: 'Hesabın silindi',
+    text: 'Merhaba,\n\nİncelemeler hesabın ve ilişkili verilerin silindi. Bu e-posta bu adrese gönderdiğimiz son iletidir.',
+  }),
+};
+
 /** Değerlendirme ve moderasyon bildirimleri (A6.4: her geçişte işlemsel e-posta; TASLAK metinler). */
 export const reviewEmails = {
   pending: (listing: string) => ({

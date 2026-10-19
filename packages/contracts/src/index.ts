@@ -18,3 +18,4 @@ export * from './hubs.js';
 export * from './reviews.js';
 export * from './outbound.js';
 export * from './sponsorship.js';
+export * from './account.js';

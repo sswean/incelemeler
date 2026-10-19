@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import type { INestApplicationContext } from '@nestjs/common';
+import { AccountService } from './modules/account/account.service.js';
 import { AdminArticlesService } from './modules/editorial/admin-articles.service.js';
 import { OutboundService } from './modules/outbound/outbound.service.js';
 import { OutboxService } from './modules/outbox/outbox.service.js';
@@ -14,6 +15,7 @@ export async function runWorkerLoop(
   const articles = app.get(AdminArticlesService);
   const outbound = app.get(OutboundService);
   const campaigns = app.get(CampaignsService);
+  const account = app.get(AccountService);
   let nextHealthCheck = 0;
   let nextCampaignTick = 0;
   const logger = new Logger('Worker');
@@ -39,6 +41,10 @@ export async function runWorkerLoop(
       nextHealthCheck = Date.now() + 10 * 60_000;
       await outbound.checkDue().catch((e: unknown) => {
         logger.error(JSON.stringify({ event: 'worker.outbound_error', message: String(e) }));
+      });
+      // Geri alma penceresi dolan hesap silmeleri (REQ-KVK-021).
+      await account.purgeDue().catch((e: unknown) => {
+        logger.error(JSON.stringify({ event: 'worker.account_purge_error', message: String(e) }));
       });
     }
     if (n === 0) await new Promise((r) => setTimeout(r, 1000));

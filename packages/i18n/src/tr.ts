@@ -67,6 +67,8 @@ export const tr = {
     RATE_LIMITED: 'Çok fazla deneme yapıldı. Biraz bekleyip yeniden dene.',
     INVALID_TOKEN: 'Bağlantı geçersiz ya da süresi dolmuş.',
     ACCOUNT_SUSPENDED: 'Hesabın askıya alınmış.',
+    ACCOUNT_PENDING_DELETION:
+      'Hesabın silme bekliyor. Silmeyi iptal etmek için sana gönderdiğimiz e-postadaki bağlantıyı kullan.',
     MFA_INVALID: 'Kod hatalı. Yeniden dene.',
     MFA_REQUIRED: 'İki adımlı doğrulama gerekli.',
     FORBIDDEN: 'Bu işlem için yetkin yok.',
@@ -307,6 +309,53 @@ export const tr = {
     commercialNote:
       'Ortaklık bağlantıları üzerinden yapılan işlemlerden komisyon alabiliriz. Bu, puanları ve sıralamayı etkilemez.',
     commercialPolicy: 'Ticari ilişkiler politikası',
+  },
+  account: {
+    saved: 'Kaydedilenler',
+    savedEmpty: 'Henüz kaydettiğin bir yer yok.',
+    save: 'Kaydet',
+    savedState: 'Kaydedildi',
+    unsave: 'Kaydedilenlerden çıkar',
+    saveHint: 'Kaydetmek için giriş yap',
+    export: 'Verilerimi indir (JSON)',
+    exportHint:
+      'Hesabınla ilgili verilerin makine tarafından okunabilir bir dosya olarak indirilir.',
+    deleteAccount: 'Hesabımı sil',
+    deleteTitle: 'Hesabını sil',
+    deleteIntro:
+      'Onayladığında hesabın "silme bekliyor" durumuna geçer, tüm oturumların kapanır ve giriş yapamazsın. {days} gün içinde e-postana gönderdiğimiz bağlantıyla silmeyi iptal edebilirsin.',
+    deletedData: 'Silinecekler',
+    deletedItems: [
+      'Hesap ve profil bilgilerin',
+      'Kaydedilenlerin',
+      'Değerlendirmelerin ve taslakların',
+      'Oturumların ve bildirim tercihlerin',
+    ],
+    retainedData: 'Saklananlar',
+    retainedItems: [
+      'Güvenlik ve hukuki yükümlülük için tutulan denetim kayıtları (erişimi kısıtlı; süre sonunda imha edilir — süreler hukuki incelemeyle kesinleşecek)',
+      'Kişisel veri içermeyen istatistikler',
+    ],
+    contentChoice:
+      'Değerlendirmelerin de silinir. ("Anonim kalsın" seçeneği hukuki inceleme tamamlanana kadar kapalı.)',
+    password: 'Parolan',
+    confirm: 'Hesabımın ve verilerimin silinmesini istiyorum.',
+    submit: 'Hesabımı sil',
+    pendingTitle: 'Hesabın silinmek üzere',
+    pendingText:
+      'Silme talebin alındı. {date} tarihinde hesabın ve verilerin silinecek. Fikrini değiştirirsen e-postandaki bağlantıyla iptal edebilirsin.',
+    publicTitle: 'Hesap silme',
+    publicIntro:
+      'Giriş yapamıyorsan hesabına kayıtlı e-posta adresini yaz; silme talebini onaylaman için bir bağlantı gönderelim. Giriş yapabiliyorsan Hesabım › Hesabımı sil yolunu da kullanabilirsin.',
+    email: 'E-posta',
+    sendLink: 'Onay bağlantısı gönder',
+    linkSent:
+      'Bu adrese kayıtlı bir hesap varsa onay bağlantısı gönderdik. Bağlantı 1 saat geçerli.',
+    confirmTitle: 'Hesap silmeyi onayla',
+    confirmButton: 'Silme talebini onayla',
+    cancelTitle: 'Hesap silmeyi iptal et',
+    cancelButton: 'Silmeyi iptal et',
+    cancelled: 'Silme talebin iptal edildi; hesabın yeniden etkin. Giriş yapabilirsin.',
   },
   sponsored: {
     /** Sabit etiket sözlüğü (Ek A8.2; hukuki incelemeyle `compliance_config` üzerinden güncellenir — TASLAK). */

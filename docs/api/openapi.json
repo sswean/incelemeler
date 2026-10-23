@@ -10557,6 +10557,281 @@
         }
       }
     },
+    "/v1/admin/listings/{id}/verdict": {
+      "get": {
+        "operationId": "adminGetVerdict",
+        "summary": "Editör değerlendirmesi: güncel ve yayımlanmış sürüm, geçmiş (satış personeline kapalı)",
+        "tags": [
+          "admin",
+          "editorial"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Değerlendirme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminVerdictState"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "adminSaveVerdict",
+        "summary": "Yeni sürüm kaydeder (taban sürüm denetimli; önceki sürümler değişmez)",
+        "tags": [
+          "admin",
+          "editorial"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "baseVersion": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "experienceType": {
+                    "type": "string",
+                    "enum": [
+                      "TESTED_IN_PERSON",
+                      "VISITED",
+                      "STAYED",
+                      "USED_LONG_TERM",
+                      "RESEARCH_ONLY"
+                    ]
+                  },
+                  "experienceNote": {
+                    "nullable": true,
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "testedAt": {
+                    "nullable": true,
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                  },
+                  "score": {
+                    "nullable": true,
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 10
+                  },
+                  "criteria": {
+                    "maxItems": 12,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 2,
+                          "maxLength": 60
+                        },
+                        "score": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 10
+                        },
+                        "weight": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 5
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "score",
+                        "weight"
+                      ]
+                    }
+                  },
+                  "pros": {
+                    "maxItems": 10,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 2,
+                      "maxLength": 200
+                    }
+                  },
+                  "cons": {
+                    "maxItems": 10,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 2,
+                      "maxLength": 200
+                    }
+                  },
+                  "summary": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 2000
+                  },
+                  "articleId": {
+                    "nullable": true,
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                },
+                "required": [
+                  "baseVersion",
+                  "experienceType",
+                  "experienceNote",
+                  "testedAt",
+                  "score",
+                  "criteria",
+                  "pros",
+                  "cons",
+                  "summary",
+                  "articleId"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kaydedildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminVerdictState"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/listings/{id}/verdict/publish": {
+      "post": {
+        "operationId": "adminPublishVerdict",
+        "summary": "Güncel sürümü yayımlar (denetim kaydı)",
+        "tags": [
+          "admin",
+          "editorial"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "version"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Yayımlandı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminVerdictState"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/me/legal-acceptances/pending": {
       "get": {
         "operationId": "pendingLegalAcceptances",
@@ -17956,6 +18231,442 @@
         ],
         "additionalProperties": false
       },
+      "VerdictBody": {
+        "type": "object",
+        "properties": {
+          "baseVersion": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "experienceType": {
+            "type": "string",
+            "enum": [
+              "TESTED_IN_PERSON",
+              "VISITED",
+              "STAYED",
+              "USED_LONG_TERM",
+              "RESEARCH_ONLY"
+            ]
+          },
+          "experienceNote": {
+            "nullable": true,
+            "type": "string",
+            "maxLength": 200
+          },
+          "testedAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+          },
+          "score": {
+            "nullable": true,
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10
+          },
+          "criteria": {
+            "maxItems": 12,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 60
+                },
+                "score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10
+                },
+                "weight": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                }
+              },
+              "required": [
+                "name",
+                "score",
+                "weight"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "pros": {
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 200
+            }
+          },
+          "cons": {
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 200
+            }
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          },
+          "articleId": {
+            "nullable": true,
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "baseVersion",
+          "experienceType",
+          "experienceNote",
+          "testedAt",
+          "score",
+          "criteria",
+          "pros",
+          "cons",
+          "summary",
+          "articleId"
+        ],
+        "additionalProperties": false
+      },
+      "VerdictPublishBody": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "PublicVerdict": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "experienceType": {
+            "type": "string",
+            "enum": [
+              "TESTED_IN_PERSON",
+              "VISITED",
+              "STAYED",
+              "USED_LONG_TERM",
+              "RESEARCH_ONLY"
+            ]
+          },
+          "experienceNote": {
+            "nullable": true,
+            "type": "string"
+          },
+          "testedAt": {
+            "nullable": true,
+            "type": "string"
+          },
+          "score": {
+            "nullable": true,
+            "type": "number"
+          },
+          "criteria": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 60
+                },
+                "score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10
+                },
+                "weight": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                }
+              },
+              "required": [
+                "name",
+                "score",
+                "weight"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "pros": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "summary": {
+            "type": "string"
+          },
+          "author": {
+            "type": "object",
+            "properties": {
+              "displayName": {
+                "type": "string"
+              },
+              "slug": {
+                "nullable": true,
+                "type": "string"
+              }
+            },
+            "required": [
+              "displayName",
+              "slug"
+            ],
+            "additionalProperties": false
+          },
+          "publishedAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          }
+        },
+        "required": [
+          "version",
+          "experienceType",
+          "experienceNote",
+          "testedAt",
+          "score",
+          "criteria",
+          "pros",
+          "cons",
+          "summary",
+          "author",
+          "publishedAt",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "AdminVerdict": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "experienceType": {
+            "type": "string",
+            "enum": [
+              "TESTED_IN_PERSON",
+              "VISITED",
+              "STAYED",
+              "USED_LONG_TERM",
+              "RESEARCH_ONLY"
+            ]
+          },
+          "experienceNote": {
+            "nullable": true,
+            "type": "string"
+          },
+          "testedAt": {
+            "nullable": true,
+            "type": "string"
+          },
+          "score": {
+            "nullable": true,
+            "type": "number"
+          },
+          "criteria": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 60
+                },
+                "score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10
+                },
+                "weight": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                }
+              },
+              "required": [
+                "name",
+                "score",
+                "weight"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "pros": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "summary": {
+            "type": "string"
+          },
+          "author": {
+            "type": "object",
+            "properties": {
+              "displayName": {
+                "type": "string"
+              },
+              "slug": {
+                "nullable": true,
+                "type": "string"
+              }
+            },
+            "required": [
+              "displayName",
+              "slug"
+            ],
+            "additionalProperties": false
+          },
+          "publishedAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "id": {
+            "type": "string"
+          },
+          "articleId": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "experienceType",
+          "experienceNote",
+          "testedAt",
+          "score",
+          "criteria",
+          "pros",
+          "cons",
+          "summary",
+          "author",
+          "publishedAt",
+          "createdAt",
+          "id",
+          "articleId"
+        ],
+        "additionalProperties": false
+      },
+      "AdminVerdictState": {
+        "type": "object",
+        "properties": {
+          "current": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdminVerdict"
+              }
+            ]
+          },
+          "published": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdminVerdict"
+              }
+            ]
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "version": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "authorName": {
+                  "type": "string"
+                },
+                "score": {
+                  "nullable": true,
+                  "type": "number"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                },
+                "publishedAt": {
+                  "nullable": true,
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                }
+              },
+              "required": [
+                "version",
+                "authorName",
+                "score",
+                "createdAt",
+                "publishedAt"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "current",
+          "published",
+          "history"
+        ],
+        "additionalProperties": false
+      },
       "TakedownCreateBody": {
         "type": "object",
         "properties": {
@@ -23238,6 +23949,14 @@
               }
             ]
           },
+          "editorialVerdict": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PublicVerdict"
+              }
+            ]
+          },
           "integrityNotice": {
             "nullable": true,
             "type": "object",
@@ -23369,6 +24088,7 @@
           "media",
           "reviewCount",
           "openingHours",
+          "editorialVerdict",
           "integrityNotice",
           "outbound",
           "dataOrigin",

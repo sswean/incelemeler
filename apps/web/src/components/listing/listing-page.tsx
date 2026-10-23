@@ -11,7 +11,7 @@ import {
 } from '@incelemeler/contracts';
 import { tr } from '@incelemeler/i18n';
 import { listingPath } from '@incelemeler/routes';
-import { formatDate, formatLongDate, withCase } from '@incelemeler/utils';
+import { formatDate, formatEditorialScore, formatLongDate, withCase } from '@incelemeler/utils';
 import { serverApi } from '../../lib/api';
 import { canonical, jsonLdScript, robots } from '../../lib/seo';
 import { RatingSummaryView } from '../reviews/rating-summary';
@@ -20,6 +20,7 @@ import { SponsoredBox } from '../sponsored/box';
 import { FavoriteButton } from '../account/favorite-button';
 import { OutboundEvents, PageEvents } from '../analytics/page-events';
 import { breadcrumbJsonLd, listingJsonLd } from './json-ld';
+import { EditorialVerdictView } from './editorial-verdict';
 import { OpeningHoursView } from './opening-hours';
 
 const T = tr.listingPage;
@@ -271,6 +272,12 @@ export async function ListingPage(
         ) : (
           <p data-testid="rating-summary">{T.noReviews}</p>
         )}
+        {l.editorialVerdict?.score != null ? (
+          <p data-testid="editor-score-compact">
+            <span className="font-medium">{T.verdict.editorLabel}:</span>{' '}
+            {formatEditorialScore(l.editorialVerdict.score)}
+          </p>
+        ) : null}
         {showPrice ? (
           <p>
             {T.priceLevel}:{' '}
@@ -367,6 +374,8 @@ export async function ListingPage(
           )}
         </section>
       ) : null}
+
+      {l.editorialVerdict ? <EditorialVerdictView verdict={l.editorialVerdict} /> : null}
 
       {l.attributes.length || facts.length ? (
         <section aria-labelledby="ozellikler" className="space-y-2">

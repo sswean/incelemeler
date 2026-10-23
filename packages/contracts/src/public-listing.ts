@@ -2,6 +2,7 @@ import { PublicOutbound } from './outbound.js';
 import { z } from 'zod';
 import { ListingContacts, ListingDetailsInput, ListingStatus, OpeningHours } from './listings.js';
 import { ListingKind } from './taxonomy.js';
+import { PublicVerdict } from './verdicts.js';
 
 /** Herkese açık listeleme (yalnızca yayında ya da kapalı durumda; DEMO üretimde hiç dönmez). */
 export const PublicListing = z
@@ -63,6 +64,8 @@ export const PublicListing = z
     /** Toplu sahte değerlendirme temizliği bildirimi (son 180 gün; REQ-GUN-007). */
     /** Çalışma saatleri (REQ-VER-010); girilmemişse null. */
     openingHours: OpeningHours.nullable(),
+    /** Editör değerlendirmesi: kullanıcı puanından ayrı alan; ikisi hiçbir yerde birleştirilmez (REQ-VER-004). */
+    editorialVerdict: PublicVerdict.nullable(),
     integrityNotice: z
       .object({ detectedAt: z.iso.datetime(), removedCount: z.number().int() })
       .nullable(),

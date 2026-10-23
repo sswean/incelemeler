@@ -200,6 +200,7 @@ model Listing {
   hoursVerifiedAt   DateTime?                 @map("hours_verified_at") @db.Timestamptz(3)
   openingHours      ListingOpeningHours[]
   openingExceptions ListingOpeningException[]
+  verdicts          EditorialVerdict[]
 
   @@index([kind, status, primaryCategoryId])
   @@index([organizationId])
@@ -254,6 +255,8 @@ model User {
   uploadedMedia       MediaAsset[]
   importBatches       ImportBatch[]
   authoredArticles    Article[]             @relation("ArticleAuthor")
+  authoredVerdicts    EditorialVerdict[]    @relation("VerdictAuthor")
+  publishedVerdicts   EditorialVerdict[]    @relation("VerdictPublisher")
   editedArticles      Article[]             @relation("ArticleEditor")
   contentRevisions    ContentRevision[]
   authorProfile       AuthorProfile?
@@ -743,6 +746,7 @@ model Article {
   selectionMethod         String?            @map("selection_method")
   authorId                String             @map("author_id") @db.Uuid
   author                  User               @relation("ArticleAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  verdicts                EditorialVerdict[]
   editorId                String?            @map("editor_id") @db.Uuid
   editor                  User?              @relation("ArticleEditor", fields: [editorId], references: [id], onDelete: Restrict)
   /// Sponsorlu içerikte ticari açıklama kontrolünü yapan yönetici (REQ-ICR-005)
@@ -1747,4 +1751,35 @@ model ListingOpeningException {
 
   @@unique([listingId, date])
   @@map("listing_opening_exceptions")
+}
+
+/// Editör değerlendirmesi (REQ-VER-005): kullanıcı puanından ayrı tablo (REQ-VER-004). Her kayıt yeni sürüm;
+/// sürüm içeriği değişmez (tetikleyici). Herkese açık sayfada yayımlanan en son sürüm gösterilir.
+model EditorialVerdict {
+  id             String         @id @default(uuid(7)) @db.Uuid
+  listingId      String         @map("listing_id") @db.Uuid
+  listing        Listing        @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  articleId      String?        @map("article_id") @db.Uuid
+  article        Article?       @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  version        Int
+  isCurrent      Boolean        @default(true) @map("is_current")
+  experienceType ExperienceType @map("experience_type")
+  experienceNote String?        @map("experience_note")
+  testedAt       DateTime?      @map("tested_at") @db.Date
+  /// 0–10, 0,5 adım; RESEARCH_ONLY'de boş (CHECK).
+  score          Decimal?       @db.Decimal(3, 1)
+  criteria       Json           @default("[]")
+  pros           String[]       @default([])
+  cons           String[]       @default([])
+  summary        String
+  authorId       String         @map("author_id") @db.Uuid
+  author         User           @relation("VerdictAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  publishedAt    DateTime?      @map("published_at") @db.Timestamptz(3)
+  publishedById  String?        @map("published_by_id") @db.Uuid
+  publishedBy    User?          @relation("VerdictPublisher", fields: [publishedById], references: [id], onDelete: Restrict)
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@unique([listingId, version])
+  @@index([articleId])
+  @@map("editorial_verdicts")
 }

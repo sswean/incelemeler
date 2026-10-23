@@ -12,6 +12,7 @@ export * from './imports.js';
 export * from './cta.js';
 export * from './public-listing.js';
 export * from './content.js';
+export * from './verdicts.js';
 export * from './rich-text.js';
 export * from './search.js';
 export * from './hubs.js';

@@ -8,6 +8,7 @@ import { setListingStatusAction } from '../actions';
 import { blockerMessage, UI_TRANSITIONS } from '../messages';
 import { ListingEditForm } from './edit-form';
 import { HoursSection } from './hours-section';
+import { VerdictSection } from './verdict-section';
 import { MediaSection } from './media-section';
 import { OutboundSection } from './outbound-section';
 
@@ -19,32 +20,47 @@ export default async function ListingPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ durum?: string; hata?: string; baglanti?: string; saat?: string }>;
+  searchParams: Promise<{
+    durum?: string;
+    hata?: string;
+    baglanti?: string;
+    saat?: string;
+    degerlendirme?: string;
+  }>;
 }) {
   const { token, user } = await requireStaff();
   const { id } = await params;
-  const { durum, hata, baglanti, saat } = await searchParams;
+  const { durum, hata, baglanti, saat, degerlendirme } = await searchParams;
   const client = await api(token);
   const { data: listing } = await client.GET('/v1/admin/listings/{id}', {
     params: { path: { id } },
   });
   if (!listing) notFound();
+  const canVerdict = user.permissions.includes('editorial.verdict.write');
   const canLinks = user.permissions.some((p) => p === 'outbound.add' || p === 'affiliate.manage');
-  const [{ data: schema }, { data: provinces }, { data: districts }, links, providers, hours] =
-    await Promise.all([
-      client.GET('/v1/admin/categories/{id}/schema', {
-        params: { path: { id: listing.primaryCategory.id } },
-      }),
-      client.GET('/v1/admin-areas', { params: { query: { level: 'PROVINCE' } } }),
-      client.GET('/v1/admin-areas', { params: { query: { level: 'DISTRICT' } } }),
-      canLinks
-        ? client.GET('/v1/admin/listings/{id}/outbound-links', { params: { path: { id } } })
-        : Promise.resolve({ data: undefined }),
-      canLinks
-        ? client.GET('/v1/admin/integration-providers')
-        : Promise.resolve({ data: undefined }),
-      client.GET('/v1/admin/listings/{id}/opening-hours', { params: { path: { id } } }),
-    ]);
+  const [
+    { data: schema },
+    { data: provinces },
+    { data: districts },
+    links,
+    providers,
+    hours,
+    verdict,
+  ] = await Promise.all([
+    client.GET('/v1/admin/categories/{id}/schema', {
+      params: { path: { id: listing.primaryCategory.id } },
+    }),
+    client.GET('/v1/admin-areas', { params: { query: { level: 'PROVINCE' } } }),
+    client.GET('/v1/admin-areas', { params: { query: { level: 'DISTRICT' } } }),
+    canLinks
+      ? client.GET('/v1/admin/listings/{id}/outbound-links', { params: { path: { id } } })
+      : Promise.resolve({ data: undefined }),
+    canLinks ? client.GET('/v1/admin/integration-providers') : Promise.resolve({ data: undefined }),
+    client.GET('/v1/admin/listings/{id}/opening-hours', { params: { path: { id } } }),
+    canVerdict
+      ? client.GET('/v1/admin/listings/{id}/verdict', { params: { path: { id } } })
+      : Promise.resolve({ data: undefined }),
+  ]);
   const canPublish = user.permissions.includes('listings.write');
   const transitions = UI_TRANSITIONS[listing.status].filter(
     (s) => canPublish || s === 'DRAFT' || s === 'IN_REVIEW',
@@ -63,7 +79,9 @@ export default async function ListingPage({
       {durum === 'kaydedildi' || durum === 'olusturuldu' ? (
         <Alert kind="success">{tr.admin.saved}</Alert>
       ) : null}
-      {hata && !baglanti && !saat ? <Alert kind="error">{errorMessage(hata)}</Alert> : null}
+      {hata && !baglanti && !saat && !degerlendirme ? (
+        <Alert kind="error">{errorMessage(hata)}</Alert>
+      ) : null}
 
       <section aria-labelledby="yayin" className="space-y-3">
         <h2 id="yayin" className="text-lg font-semibold">
@@ -115,6 +133,15 @@ export default async function ListingPage({
           hours={hours.data}
           saved={durum === 'saatler-kaydedildi'}
           {...(saat ? { error: saat } : {})}
+        />
+      ) : null}
+
+      {verdict.data ? (
+        <VerdictSection
+          listingId={listing.id}
+          state={verdict.data}
+          {...(durum ? { notice: durum } : {})}
+          {...(degerlendirme ? { error: degerlendirme } : {})}
         />
       ) : null}
 

@@ -45,6 +45,7 @@ import {
 import { ConsentBody } from './consent.js';
 import { AdminOpsSwitches, OpsStatus, OpsSwitchesUpdateBody } from './operations.js';
 import { OpeningHours, OpeningHoursBody } from './listings.js';
+import { AdminVerdictState, VerdictBody, VerdictPublishBody } from './verdicts.js';
 import {
   AdminTakedown,
   AdminTakedownCreateBody,
@@ -1535,6 +1536,36 @@ export const endpoints: EndpointDef[] = [
       'Çalışma saatlerini tümüyle değiştirir (gece yarısını aşan aralıklar, bayram istisnaları; denetim kaydı)',
     body: OpeningHoursBody,
     responses: { 200: ok('Kaydedildi', OpeningHours) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/listings/{id}/verdict',
+    operationId: 'adminGetVerdict',
+    tags: ['admin', 'editorial'],
+    auth: 'staff-mfa',
+    summary:
+      'Editör değerlendirmesi: güncel ve yayımlanmış sürüm, geçmiş (satış personeline kapalı)',
+    responses: { 200: ok('Değerlendirme', AdminVerdictState) },
+  },
+  {
+    method: 'put',
+    path: '/v1/admin/listings/{id}/verdict',
+    operationId: 'adminSaveVerdict',
+    tags: ['admin', 'editorial'],
+    auth: 'staff-mfa',
+    summary: 'Yeni sürüm kaydeder (taban sürüm denetimli; önceki sürümler değişmez)',
+    body: VerdictBody,
+    responses: { 200: ok('Kaydedildi', AdminVerdictState) },
+  },
+  {
+    method: 'post',
+    path: '/v1/admin/listings/{id}/verdict/publish',
+    operationId: 'adminPublishVerdict',
+    tags: ['admin', 'editorial'],
+    auth: 'staff-mfa',
+    summary: 'Güncel sürümü yayımlar (denetim kaydı)',
+    body: VerdictPublishBody,
+    responses: { 200: ok('Yayımlandı', AdminVerdictState) },
   },
   {
     method: 'get',

@@ -1949,6 +1949,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/listings/{id}/verdict": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Editör değerlendirmesi: güncel ve yayımlanmış sürüm, geçmiş (satış personeline kapalı) */
+        get: operations["adminGetVerdict"];
+        /** Yeni sürüm kaydeder (taban sürüm denetimli; önceki sürümler değişmez) */
+        put: operations["adminSaveVerdict"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/listings/{id}/verdict/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Güncel sürümü yayımlar (denetim kaydı) */
+        post: operations["adminPublishVerdict"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/me/legal-acceptances/pending": {
         parameters: {
             query?: never;
@@ -3528,6 +3563,91 @@ export interface components {
             reviewsOpen: boolean;
             registrationOpen: boolean;
         };
+        VerdictBody: {
+            baseVersion: number;
+            /** @enum {string} */
+            experienceType: "TESTED_IN_PERSON" | "VISITED" | "STAYED" | "USED_LONG_TERM" | "RESEARCH_ONLY";
+            experienceNote: string | null;
+            /** Format: date */
+            testedAt: string | null;
+            score: number | null;
+            criteria: {
+                name: string;
+                score: number;
+                weight: number;
+            }[];
+            pros: string[];
+            cons: string[];
+            summary: string;
+            /** Format: uuid */
+            articleId: string | null;
+        };
+        VerdictPublishBody: {
+            version: number;
+        };
+        PublicVerdict: {
+            version: number;
+            /** @enum {string} */
+            experienceType: "TESTED_IN_PERSON" | "VISITED" | "STAYED" | "USED_LONG_TERM" | "RESEARCH_ONLY";
+            experienceNote: string | null;
+            testedAt: string | null;
+            score: number | null;
+            criteria: {
+                name: string;
+                score: number;
+                weight: number;
+            }[];
+            pros: string[];
+            cons: string[];
+            summary: string;
+            author: {
+                displayName: string;
+                slug: string | null;
+            };
+            /** Format: date-time */
+            publishedAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AdminVerdict: {
+            version: number;
+            /** @enum {string} */
+            experienceType: "TESTED_IN_PERSON" | "VISITED" | "STAYED" | "USED_LONG_TERM" | "RESEARCH_ONLY";
+            experienceNote: string | null;
+            testedAt: string | null;
+            score: number | null;
+            criteria: {
+                name: string;
+                score: number;
+                weight: number;
+            }[];
+            pros: string[];
+            cons: string[];
+            summary: string;
+            author: {
+                displayName: string;
+                slug: string | null;
+            };
+            /** Format: date-time */
+            publishedAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            id: string;
+            articleId: string | null;
+        };
+        AdminVerdictState: {
+            current: components["schemas"]["AdminVerdict"] | null;
+            published: components["schemas"]["AdminVerdict"] | null;
+            history: {
+                version: number;
+                authorName: string;
+                score: number | null;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                publishedAt: string | null;
+            }[];
+        };
         TakedownCreateBody: {
             /** @enum {string} */
             kind: "COPYRIGHT" | "PERSONALITY_RIGHTS" | "OTHER_LEGAL";
@@ -4663,6 +4783,7 @@ export interface components {
             }[];
             reviewCount: number;
             openingHours: components["schemas"]["OpeningHours"] | null;
+            editorialVerdict: components["schemas"]["PublicVerdict"] | null;
             integrityNotice: {
                 /** Format: date-time */
                 detectedAt: string;
@@ -10061,6 +10182,127 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OpeningHours"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetVerdict: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Değerlendirme */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminVerdictState"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminSaveVerdict: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    baseVersion: number;
+                    /** @enum {string} */
+                    experienceType: "TESTED_IN_PERSON" | "VISITED" | "STAYED" | "USED_LONG_TERM" | "RESEARCH_ONLY";
+                    experienceNote: string | null;
+                    /** Format: date */
+                    testedAt: string | null;
+                    score: number | null;
+                    criteria: {
+                        name: string;
+                        score: number;
+                        weight: number;
+                    }[];
+                    pros: string[];
+                    cons: string[];
+                    summary: string;
+                    /** Format: uuid */
+                    articleId: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Kaydedildi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminVerdictState"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminPublishVerdict: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    version: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Yayımlandı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminVerdictState"];
                 };
             };
             /** @description Hata (RFC 9457) */

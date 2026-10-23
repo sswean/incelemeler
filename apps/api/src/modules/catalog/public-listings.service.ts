@@ -16,6 +16,7 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 import { toMediaDto } from '../media/media.service.js';
 import { STORAGE_PORT, type StoragePort } from '../media/storage.port.js';
 import { CategorySchemaService } from '../taxonomy/category-schema.service.js';
+import { PUBLISHED_VERDICT, publicVerdictDto } from '../editorial/verdicts.service.js';
 
 /** Herkese açık durumlar: yayında ve kapalı (sayfa korunur — REQ-LST-006). */
 const PUBLIC_STATUSES = ['PUBLISHED', 'CLOSED_TEMPORARILY', 'CLOSED_PERMANENTLY'] as const;
@@ -33,6 +34,7 @@ const INCLUDE = {
   integrityNotices: { orderBy: { detectedAt: 'desc' as const }, take: 1 },
   openingHours: true,
   openingExceptions: { orderBy: { date: 'desc' as const }, take: 60 },
+  verdicts: PUBLISHED_VERDICT,
 } satisfies Prisma.ListingInclude;
 /** Bütünlük bildiriminin görünme süresi (A-030). */
 const INTEGRITY_NOTICE_MS = 180 * 86_400_000;
@@ -214,6 +216,7 @@ export class PublicListingsService {
         l.openingHours,
         l.openingExceptions.filter((e) => e.date.getTime() >= Date.now() - 2 * 86_400_000),
       ),
+      editorialVerdict: l.verdicts[0] ? publicVerdictDto(l.verdicts[0]) : null,
       dataOrigin: l.dataOrigin,
       sourceVerifiedAt: l.sourceVerifiedAt?.toISOString() ?? null,
       publishedAt: l.publishedAt?.toISOString() ?? null,

@@ -33,6 +33,7 @@ const base: PublicListing = {
   reviewCount: 0,
   integrityNotice: null,
   openingHours: null,
+  editorialVerdict: null,
   outbound: [],
   dataOrigin: 'EDITORIAL',
   sourceVerifiedAt: null,

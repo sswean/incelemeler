@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import {
   formatDate,
   formatDistance,
+  formatEditorialScore,
   formatLongDate,
   formatMoney,
+  formatMonthYear,
   formatRating,
   formatTime,
 } from './format.js';
@@ -28,6 +30,12 @@ describe('[REQ-YRL-003] tr-TR biçimleri', () => {
   it('puan virgülle tek ondalık', () => {
     expect(formatRating(4.25)).toBe('4,3');
     expect(formatRating(4)).toBe('4,0');
+  });
+  it('[REQ-VER-005] editör puanı 10 üzerinden, gerektiğinde tek ondalık; ziyaret ayı', () => {
+    expect(formatEditorialScore(8.5)).toBe('8,5/10');
+    expect(formatEditorialScore(8)).toBe('8/10');
+    expect(formatEditorialScore(0)).toBe('0/10');
+    expect(formatMonthYear(new Date('2026-09-12T12:00:00Z'))).toBe('Eylül 2026');
   });
   it('mesafe', () => {
     expect(formatDistance(350)).toBe('350 m');

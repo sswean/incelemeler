@@ -21,6 +21,8 @@ import { ImportsService } from './modules/catalog/imports.service.js';
 import { PublicListingsController } from './modules/catalog/public-listings.controller.js';
 import { PublicListingsService } from './modules/catalog/public-listings.service.js';
 import { AdminArticlesController } from './modules/editorial/admin-articles.controller.js';
+import { AdminVerdictsController } from './modules/editorial/admin-verdicts.controller.js';
+import { VerdictsService } from './modules/editorial/verdicts.service.js';
 import { AdminArticlesService } from './modules/editorial/admin-articles.service.js';
 import { ModerationSettingsService } from './modules/reviews/moderation-settings.service.js';
 import { ModerationService } from './modules/reviews/moderation.service.js';
@@ -123,6 +125,7 @@ export const CONTROLLERS = [
   ImportsController,
   PublicListingsController,
   AdminArticlesController,
+  AdminVerdictsController,
   PublicArticlesController,
   AuthorProfilesController,
   SearchController,
@@ -200,6 +203,7 @@ export class AppModule {
         TakedownService,
         OpsService,
         OpeningHoursService,
+        VerdictsService,
         RetentionService,
         HomeService,
         AnalyticsService,

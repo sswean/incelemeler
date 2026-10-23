@@ -39,6 +39,21 @@ export function formatTime(date: Date): string {
   }).format(date);
 }
 
+/** "Ekim 2026" (deneyim beyanında ziyaret ayı — REQ-ICR-007). */
+export function formatMonthYear(date: Date): string {
+  return new Intl.DateTimeFormat('tr-TR', {
+    timeZone: TIME_ZONE,
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+}
+
+/** Editör puanı gösterimi: 10 üzerinden, gerektiğinde tek ondalık ("8,5/10", "8/10"). */
+export function formatEditorialScore(score: number): string {
+  const n = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 1 }).format(score);
+  return `${n}/10`;
+}
+
 /** Kullanıcı puanı gösterimi: tek ondalık, virgülle ("4,3"). */
 export function formatRating(value: number): string {
   return new Intl.NumberFormat('tr-TR', {

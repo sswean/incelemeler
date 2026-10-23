@@ -264,24 +264,33 @@
       "title": "Editör puanı ve kullanıcı puanı ayrı tablolarda ve ayrı API alanlarındadır (editorialVe…",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "KISMİ",
+      "status": "TAMAM",
       "verification": "T",
       "acceptance": null,
-      "tests": ["apps/api/src/modules/reviews/rating-stats.test.ts"],
+      "tests": [
+        "apps/api/src/modules/reviews/rating-stats.test.ts",
+        "apps/api/test/verdicts.int.test.ts",
+        "tests/e2e/specs/verdicts.spec.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": "İstatistik yalnız kullanıcı puanıyla; editör verdict tablosu henüz yok (VER-005)."
+      "notes": "Editör puanı editorial_verdicts tablosunda ve PublicListing.editorialVerdict.score alanında; kullanıcı puanı listing_rating_stats/reviews. Birleştiren alan yok (verdicts.int, rating-stats.test); web ayrı \"Editör\" etiketiyle gösterir."
     },
     {
       "id": "REQ-VER-005",
       "title": "editorial_verdicts",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
-      "tests": [],
+      "acceptance": "editorial_verdicts: listingId, articleId?, score numeric(3,1) 0–10 0,5 adım (zod + CHECK), criteria[] (ad, puan, ağırlık), pros/cons, summary, experienceType, testedAt, authorId, version, isCurrent (tek güncel sürüm kısmi benzersiz indeks); RESEARCH_ONLY → puan ve ölçüt yok (zod + CHECK); sürüm içeriği değişmez (tetikleyici); yayın ayrı adım; herkese açık sayfada yayımlanan en son sürüm.",
+      "tests": [
+        "apps/api/test/verdicts.int.test.ts",
+        "tests/e2e/specs/verdicts.spec.ts",
+        "apps/admin/src/app/(panel)/listelemeler/[id]/verdict-form.test.ts",
+        "packages/utils/src/format.test.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": "Yalnız puan doğrulayıcı var; editorial_verdicts tablosu/API yok."
+      "notes": "A-034."
     },
     {
       "id": "REQ-VER-006",
@@ -957,9 +966,13 @@
       "status": "KISMİ",
       "verification": "T",
       "acceptance": "İncelemede deneyim beyanı zorunlu ve sayfada görünür; sponsorlu içerikte deneyim/puan iddiası engelli.",
-      "tests": [],
+      "tests": [
+        "apps/api/test/verdicts.int.test.ts",
+        "apps/web/src/components/listing/editorial-verdict.test.ts",
+        "tests/e2e/specs/verdicts.spec.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": "Editör puanı kuralı D7."
+      "notes": "Editör puanı kuralı D7. D18b: editör değerlendirmesinde deneyim beyanı zorunlu ve görünür (ayrıntı + ay/yıl); derlemede puan/ölçüt yok (zod + CHECK)."
     },
     {
       "id": "REQ-ICR-008",
@@ -1253,9 +1266,9 @@
       "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": [],
+      "tests": ["apps/api/test/verdicts.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": "SALES rolünün içerik izni yok (birim testi). Eksik: HTTP 403 testi, sponsorun yayın öncesi gördüğü bilgisinin açıklaması."
+      "notes": "SALES rolünün içerik izni yok (birim testi). Editör değerlendirmesi uçları (okuma dahil) SALES için HTTP 403 (verdicts.int). Eksik: sponsorun yayın öncesi gördüğü bilgisinin açıklaması."
     },
     {
       "id": "REQ-ARA-001",
@@ -1529,9 +1542,9 @@
       "status": "KISMİ",
       "verification": "T",
       "acceptance": "Sponsorlu içerik inceleme/deneyim iddiası taşıyamaz (article-rules.test).",
-      "tests": [],
+      "tests": ["apps/api/test/verdicts.int.test.ts"],
       "lastVerifiedCommit": null,
-      "notes": "Editör puanı ve rozet bileşenleri henüz yok; eklendiklerinde sponsorlu içerikte render yasağı tip + testle bağlanacak."
+      "notes": "Editör değerlendirmesi sponsorlu içeriğe bağlanamaz (422 sponsored_article, verdicts.int); sponsorlu makale sayfası puan bileşeni içermez. Eksik: rozet bileşenleri (\"Editörün seçimi\" vb.) eklendiğinde tip + test."
     },
     {
       "id": "REQ-SPN-008",

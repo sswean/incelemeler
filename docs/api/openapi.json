@@ -4999,6 +4999,18 @@
             }
           },
           {
+            "name": "openNow",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          },
+          {
             "name": "attr",
             "in": "query",
             "required": false,
@@ -10367,6 +10379,184 @@
         }
       }
     },
+    "/v1/admin/listings/{id}/opening-hours": {
+      "get": {
+        "operationId": "adminGetOpeningHours",
+        "summary": "Listelemenin çalışma saatleri ve istisnaları",
+        "tags": [
+          "admin",
+          "catalog"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Saatler",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpeningHours"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "adminPutOpeningHours",
+        "summary": "Çalışma saatlerini tümüyle değiştirir (gece yarısını aşan aralıklar, bayram istisnaları; denetim kaydı)",
+        "tags": [
+          "admin",
+          "catalog"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "timezone": {
+                    "default": "Europe/Istanbul",
+                    "type": "string",
+                    "pattern": "^[A-Za-z]+(\\/[A-Za-z_]+)+$|^UTC$"
+                  },
+                  "weekly": {
+                    "maxItems": 28,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "day": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 7
+                        },
+                        "opens": {
+                          "type": "string",
+                          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                        },
+                        "closes": {
+                          "type": "string",
+                          "pattern": "^(([01]\\d|2[0-3]):[0-5]\\d|24:00)$"
+                        }
+                      },
+                      "required": [
+                        "day",
+                        "opens",
+                        "closes"
+                      ]
+                    }
+                  },
+                  "exceptions": {
+                    "maxItems": 60,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "date": {
+                          "type": "string",
+                          "format": "date",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                        },
+                        "closed": {
+                          "type": "boolean"
+                        },
+                        "opens": {
+                          "type": "string",
+                          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                        },
+                        "closes": {
+                          "type": "string",
+                          "pattern": "^(([01]\\d|2[0-3]):[0-5]\\d|24:00)$"
+                        },
+                        "note": {
+                          "type": "string",
+                          "maxLength": 120
+                        }
+                      },
+                      "required": [
+                        "date",
+                        "closed"
+                      ]
+                    }
+                  },
+                  "verified": {
+                    "default": false,
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "weekly",
+                  "exceptions"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kaydedildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpeningHours"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Hata (RFC 9457)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/me/legal-acceptances/pending": {
       "get": {
         "operationId": "pendingLegalAcceptances",
@@ -13527,6 +13717,174 @@
         "required": [
           "data",
           "page"
+        ],
+        "additionalProperties": false
+      },
+      "OpeningHoursBody": {
+        "type": "object",
+        "properties": {
+          "timezone": {
+            "default": "Europe/Istanbul",
+            "type": "string",
+            "pattern": "^[A-Za-z]+(\\/[A-Za-z_]+)+$|^UTC$"
+          },
+          "weekly": {
+            "maxItems": 28,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "day": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 7
+                },
+                "opens": {
+                  "type": "string",
+                  "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                },
+                "closes": {
+                  "type": "string",
+                  "pattern": "^(([01]\\d|2[0-3]):[0-5]\\d|24:00)$"
+                }
+              },
+              "required": [
+                "day",
+                "opens",
+                "closes"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "exceptions": {
+            "maxItems": 60,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                },
+                "closed": {
+                  "type": "boolean"
+                },
+                "opens": {
+                  "type": "string",
+                  "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                },
+                "closes": {
+                  "type": "string",
+                  "pattern": "^(([01]\\d|2[0-3]):[0-5]\\d|24:00)$"
+                },
+                "note": {
+                  "type": "string",
+                  "maxLength": 120
+                }
+              },
+              "required": [
+                "date",
+                "closed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "verified": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "timezone",
+          "weekly",
+          "exceptions",
+          "verified"
+        ],
+        "additionalProperties": false
+      },
+      "OpeningHours": {
+        "type": "object",
+        "properties": {
+          "timezone": {
+            "type": "string"
+          },
+          "weekly": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "day": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "opens": {
+                  "type": "string"
+                },
+                "closes": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "day",
+                "opens",
+                "closes"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "exceptions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "closed": {
+                  "type": "boolean"
+                },
+                "opens": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "closes": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "note": {
+                  "nullable": true,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "date",
+                "closed",
+                "opens",
+                "closes",
+                "note"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "verifiedAt": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "openNow": {
+            "nullable": true,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "timezone",
+          "weekly",
+          "exceptions",
+          "verifiedAt",
+          "openNow"
         ],
         "additionalProperties": false
       },
@@ -22872,6 +23230,14 @@
             "minimum": -9007199254740991,
             "maximum": 9007199254740991
           },
+          "openingHours": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OpeningHours"
+              }
+            ]
+          },
           "integrityNotice": {
             "nullable": true,
             "type": "object",
@@ -23002,6 +23368,7 @@
           "details",
           "media",
           "reviewCount",
+          "openingHours",
           "integrityNotice",
           "outbound",
           "dataOrigin",

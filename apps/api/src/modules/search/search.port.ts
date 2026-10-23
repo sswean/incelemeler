@@ -43,6 +43,8 @@ export interface SearchCriteria {
   districtId: string | null;
   priceMax: number | null;
   minRating: number | null;
+  /** Bu anda açık olanlar (REQ-VER-010); null: süzme yok. */
+  openAt: Date | null;
   /** JSON içerme koşulu (özellik türüne göre hazırlanmış: bool, seçenek ya da çoklu seçenek dizisi). */
   attributes: Record<string, unknown>;
   excludeDemo: boolean;

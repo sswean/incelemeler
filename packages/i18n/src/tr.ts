@@ -284,6 +284,30 @@ export const listings = {
     transition_not_allowed: 'Bu durum geçişi yapılamaz.',
     invalid: 'Bu alanı kontrol et.',
   },
+  hours: {
+    title: 'Çalışma saatleri',
+    intro:
+      'Saatleri yalnızca doğrulanabilir bir kaynaktan gir. Kapanış açılıştan önceyse aralık gece yarısını aşar (18:00–02:00). Gün boyu açık için 00:00–24:00 yaz.',
+    timezone: 'Saat dilimi',
+    range: 'Aralık',
+    opens: 'Açılış',
+    closes: 'Kapanış',
+    clockHint: 'SS:DD',
+    exceptions: 'Özel günler',
+    exceptionsHint:
+      'Her satıra bir gün: "2026-10-29 kapalı" ya da "2026-10-30 20:00-23:00 Not". Bayram ve tatil günleri haftalık düzenin yerine geçer.',
+    verified: 'Saatleri kaynağından doğruladım',
+    lastVerified: 'Son doğrulama',
+    notVerified: 'Doğrulanmadı',
+    save: 'Saatleri kaydet',
+    saved: 'Çalışma saatleri kaydedildi.',
+    errors: {
+      invalid_clock: 'Saatleri SS:DD biçiminde gir (ör. 09:30).',
+      invalid_exception: 'Özel gün satırlarından biri anlaşılamadı.',
+      invalid_timezone: 'Saat dilimi tanınmadı.',
+      invalid: 'Çalışma saatlerini kontrol et.',
+    },
+  },
 } as const;
 
 export const listingPage = {
@@ -294,6 +318,24 @@ export const listingPage = {
   priceUnknown: 'Bilinmiyor',
   priceNote:
     'Fiyat seviyesi göreli bir göstergedir (₺ en uygun, ₺₺₺₺ en yüksek); kategori ve şehre göre yorumlanır.',
+  hoursTitle: 'Çalışma saatleri',
+  openNow: 'Şu an açık',
+  closedNow: 'Şu an kapalı',
+  hoursUnknownNow: 'Açık olup olmadığı bilinmiyor',
+  closedDay: 'Kapalı',
+  hoursVerified: 'Saatler {date} tarihinde doğrulandı.',
+  hoursNotVerified: 'Saatler henüz doğrulanmadı; gitmeden önce işletmeyle teyit et.',
+  hoursExceptions: 'Özel günler',
+  hoursTimezone: 'Saatler {tz} saatiyle.',
+  weekdays: {
+    1: 'Pazartesi',
+    2: 'Salı',
+    3: 'Çarşamba',
+    4: 'Perşembe',
+    5: 'Cuma',
+    6: 'Cumartesi',
+    7: 'Pazar',
+  },
   about: 'Hakkında',
   features: 'Özellikler',
   location: 'Konum ve adres',
@@ -1281,6 +1323,7 @@ export const search = {
   category: 'Kategori',
   kind: 'Tür',
   priceMax: 'En fazla fiyat seviyesi',
+  openNow: 'Şu an açık',
   minRating: 'Kullanıcı puanı',
   sort: 'Sıralama',
   any: 'Tümü',

@@ -119,6 +119,7 @@ export class HubsService {
       districtId: district?.id ?? null,
       priceMax: null,
       minRating: null,
+      openAt: null,
       attributes: {},
       excludeDemo: this.production,
       sort: 'recommended',

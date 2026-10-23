@@ -27,6 +27,7 @@ import { ModerationService } from './modules/reviews/moderation.service.js';
 import { SanctionsController } from './modules/reviews/sanctions.controller.js';
 import { TakedownController } from './modules/legal/takedown.controller.js';
 import { OpsController } from './modules/platform/ops.controller.js';
+import { OpeningHoursService } from './modules/catalog/opening-hours.service.js';
 import { OpsService } from './modules/platform/ops.service.js';
 import { TakedownService } from './modules/legal/takedown.service.js';
 import { SanctionsService } from './modules/reviews/sanctions.service.js';
@@ -198,6 +199,7 @@ export class AppModule {
         SanctionsService,
         TakedownService,
         OpsService,
+        OpeningHoursService,
         RetentionService,
         HomeService,
         AnalyticsService,

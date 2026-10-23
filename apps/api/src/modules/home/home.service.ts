@@ -195,6 +195,7 @@ export class HomeService {
           districtId: null,
           priceMax: null,
           minRating: null,
+          openAt: null,
           attributes: {},
           excludeDemo: this.production,
           sort: 'rating',

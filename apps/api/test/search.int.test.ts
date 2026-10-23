@@ -244,6 +244,7 @@ describe('indeksleme (REQ-ARA-002)', () => {
       districtId: null,
       priceMax: null,
       minRating: null,
+      openAt: null,
       attributes: {},
       sort: 'recommended' as const,
       near: null,

@@ -95,6 +95,7 @@ export class PostgresSearchAdapter implements SearchPort {
     for (const [key, value] of Object.entries(c.attributes)) {
       where.push(Prisma.sql`d.attributes @> ${JSON.stringify({ [key]: value })}::jsonb`);
     }
+    if (c.openAt) where.push(Prisma.sql`d.ref_id IN (${openListingsSql(c.openAt)})`);
     if (c.excludeDemo) where.push(Prisma.sql`d.data_origin <> 'DEMO'`);
     if (c.refIds) where.push(Prisma.sql`d.ref_id = ANY(${c.refIds}::uuid[])`);
 
@@ -201,4 +202,34 @@ export class PostgresSearchAdapter implements SearchPort {
       path: r.path,
     }));
   }
+}
+
+/**
+ * Verilen anda açık listelemeler (REQ-VER-010). `@incelemeler/utils` `isOpenAt` ile aynı kural: bugünün aralıkları
+ * (tarih istisnası varsa haftalık düzenin yerine) + dünün gece yarısını aşan aralığının devamı; yerel saat
+ * listelemenin saat dilimiyle. Saat girilmemiş listeleme dahil edilmez (bilinmiyor ≠ açık).
+ */
+export function openListingsSql(at: Date): Prisma.Sql {
+  const ranges = (day: Prisma.Sql, dow: Prisma.Sql) => Prisma.sql`
+    SELECT e.opens_min AS o, e.closes_min AS c FROM listing_opening_exceptions e
+     WHERE e.listing_id = l.id AND e.date = ${day} AND NOT e.closed
+    UNION ALL
+    SELECT h.opens_min, h.closes_min FROM listing_opening_hours h
+     WHERE h.listing_id = l.id AND h.weekday = ${dow}
+       AND NOT EXISTS (SELECT 1 FROM listing_opening_exceptions x2 WHERE x2.listing_id = l.id AND x2.date = ${day})`;
+  return Prisma.sql`
+    SELECT l.id FROM listings l
+    CROSS JOIN LATERAL (SELECT (${at}::timestamptz AT TIME ZONE l.timezone) AS lt) t
+    CROSS JOIN LATERAL (
+      SELECT t.lt::date AS today, (t.lt - interval '1 day')::date AS yday,
+             extract(isodow FROM t.lt)::int AS dow,
+             (extract(hour FROM t.lt) * 60 + extract(minute FROM t.lt))::int AS m
+    ) x
+    WHERE EXISTS (SELECT 1 FROM listing_opening_hours h0 WHERE h0.listing_id = l.id)
+      AND (
+        EXISTS (SELECT 1 FROM (${ranges(Prisma.sql`x.today`, Prisma.sql`x.dow`)}) r
+                 WHERE (r.c > r.o AND r.o <= x.m AND x.m < r.c) OR (r.c <= r.o AND r.o <= x.m))
+        OR EXISTS (SELECT 1 FROM (${ranges(Prisma.sql`x.yday`, Prisma.sql`(CASE WHEN x.dow = 1 THEN 7 ELSE x.dow - 1 END)`)}) r
+                 WHERE r.c <= r.o AND x.m < r.c)
+      )`;
 }

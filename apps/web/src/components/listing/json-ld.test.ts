@@ -32,6 +32,7 @@ const base: PublicListing = {
   media: [],
   reviewCount: 0,
   integrityNotice: null,
+  openingHours: null,
   outbound: [],
   dataOrigin: 'EDITORIAL',
   sourceVerifiedAt: null,

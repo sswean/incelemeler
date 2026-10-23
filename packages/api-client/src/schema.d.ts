@@ -1931,6 +1931,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/listings/{id}/opening-hours": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listelemenin çalışma saatleri ve istisnaları */
+        get: operations["adminGetOpeningHours"];
+        /** Çalışma saatlerini tümüyle değiştirir (gece yarısını aşan aralıklar, bayram istisnaları; denetim kaydı) */
+        put: operations["adminPutOpeningHours"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/me/legal-acceptances/pending": {
         parameters: {
             query?: never;
@@ -2640,6 +2658,43 @@ export interface components {
         AdminListingList: {
             data: components["schemas"]["AdminListingSummary"][];
             page: components["schemas"]["PageInfo"];
+        };
+        OpeningHoursBody: {
+            /** @default Europe/Istanbul */
+            timezone: string;
+            weekly: {
+                day: number;
+                opens: string;
+                closes: string;
+            }[];
+            exceptions: {
+                /** Format: date */
+                date: string;
+                closed: boolean;
+                opens?: string;
+                closes?: string;
+                note?: string;
+            }[];
+            /** @default false */
+            verified: boolean;
+        };
+        OpeningHours: {
+            timezone: string;
+            weekly: {
+                day: number;
+                opens: string;
+                closes: string;
+            }[];
+            exceptions: {
+                date: string;
+                closed: boolean;
+                opens: string | null;
+                closes: string | null;
+                note: string | null;
+            }[];
+            /** Format: date-time */
+            verifiedAt: string | null;
+            openNow: boolean | null;
         };
         ArticleCreateBody: {
             /** @enum {string} */
@@ -4607,6 +4662,7 @@ export interface components {
                 credit: string;
             }[];
             reviewCount: number;
+            openingHours: components["schemas"]["OpeningHours"] | null;
             integrityNotice: {
                 /** Format: date-time */
                 detectedAt: string;
@@ -7085,6 +7141,7 @@ export interface operations {
                 type?: "LISTING" | "ARTICLE";
                 priceMax?: number;
                 minRating?: "4" | "3.5" | "4.5";
+                openNow?: "true" | "false";
                 attr?: string | string[];
                 sort?: "recommended" | "rating" | "reviews" | "nearest" | "newest";
                 lat?: number;
@@ -9920,6 +9977,90 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminOpsSwitches"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminGetOpeningHours: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Saatler */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpeningHours"];
+                };
+            };
+            /** @description Hata (RFC 9457) */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    adminPutOpeningHours: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @default Europe/Istanbul */
+                    timezone?: string;
+                    weekly: {
+                        day: number;
+                        opens: string;
+                        closes: string;
+                    }[];
+                    exceptions: {
+                        /** Format: date */
+                        date: string;
+                        closed: boolean;
+                        opens?: string;
+                        closes?: string;
+                        note?: string;
+                    }[];
+                    /** @default false */
+                    verified?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Kaydedildi */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpeningHours"];
                 };
             };
             /** @description Hata (RFC 9457) */

@@ -44,6 +44,7 @@ import {
 } from './outbound.js';
 import { ConsentBody } from './consent.js';
 import { AdminOpsSwitches, OpsStatus, OpsSwitchesUpdateBody } from './operations.js';
+import { OpeningHours, OpeningHoursBody } from './listings.js';
 import {
   AdminTakedown,
   AdminTakedownCreateBody,
@@ -1514,6 +1515,26 @@ export const endpoints: EndpointDef[] = [
     summary: 'Anahtarları değiştirir (gerekçeli, denetim kaydı; sürüm denetimli)',
     body: OpsSwitchesUpdateBody,
     responses: { 200: ok('Güncellendi', AdminOpsSwitches) },
+  },
+  {
+    method: 'get',
+    path: '/v1/admin/listings/{id}/opening-hours',
+    operationId: 'adminGetOpeningHours',
+    tags: ['admin', 'catalog'],
+    auth: 'staff-mfa',
+    summary: 'Listelemenin çalışma saatleri ve istisnaları',
+    responses: { 200: ok('Saatler', OpeningHours) },
+  },
+  {
+    method: 'put',
+    path: '/v1/admin/listings/{id}/opening-hours',
+    operationId: 'adminPutOpeningHours',
+    tags: ['admin', 'catalog'],
+    auth: 'staff-mfa',
+    summary:
+      'Çalışma saatlerini tümüyle değiştirir (gece yarısını aşan aralıklar, bayram istisnaları; denetim kaydı)',
+    body: OpeningHoursBody,
+    responses: { 200: ok('Kaydedildi', OpeningHours) },
   },
   {
     method: 'get',

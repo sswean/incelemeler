@@ -11,6 +11,7 @@ import { decodeCursor, encodeCursor, InvalidCursorError } from '../../common/cur
 import { ProblemException } from '../../common/problem.js';
 import { ENV, type EnvToken } from '../../config/env.provider.js';
 import type { Prisma } from '../../generated/prisma/client.js';
+import { openingHoursDto } from './opening-hours.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { toMediaDto } from '../media/media.service.js';
 import { STORAGE_PORT, type StoragePort } from '../media/storage.port.js';
@@ -30,6 +31,8 @@ const INCLUDE = {
   guide: true,
   ratingStats: { select: { count: true } },
   integrityNotices: { orderBy: { detectedAt: 'desc' as const }, take: 1 },
+  openingHours: true,
+  openingExceptions: { orderBy: { date: 'desc' as const }, take: 60 },
 } satisfies Prisma.ListingInclude;
 /** Bütünlük bildiriminin görünme süresi (A-030). */
 const INTEGRITY_NOTICE_MS = 180 * 86_400_000;
@@ -205,6 +208,12 @@ export class PublicListingsService {
       media,
       reviewCount: l.ratingStats?.count ?? 0,
       integrityNotice: integrityNotice(l.integrityNotices[0]),
+      // Geçmiş istisnalar gösterilmez; dünkü istisna gece yarısını aşan aralık için gerekir (istek anında süzülür).
+      openingHours: openingHoursDto(
+        l,
+        l.openingHours,
+        l.openingExceptions.filter((e) => e.date.getTime() >= Date.now() - 2 * 86_400_000),
+      ),
       dataOrigin: l.dataOrigin,
       sourceVerifiedAt: l.sourceVerifiedAt?.toISOString() ?? null,
       publishedAt: l.publishedAt?.toISOString() ?? null,

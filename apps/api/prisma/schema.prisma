@@ -196,6 +196,11 @@ model Listing {
 
   integrityNotices ListingIntegrityNotice[]
 
+  timezone          String                    @default("Europe/Istanbul")
+  hoursVerifiedAt   DateTime?                 @map("hours_verified_at") @db.Timestamptz(3)
+  openingHours      ListingOpeningHours[]
+  openingExceptions ListingOpeningException[]
+
   @@index([kind, status, primaryCategoryId])
   @@index([organizationId])
   @@index([importBatchId])
@@ -1712,4 +1717,34 @@ model TakedownRequest {
 
   @@index([status, dueAt])
   @@map("takedown_requests")
+}
+
+// ── Çalışma saatleri (REQ-VER-010, A-033) ──
+
+/// Haftalık düzen: ISO gün (1 = Pazartesi), dakika; closes <= opens gece yarısını aşar.
+model ListingOpeningHours {
+  id        String  @id @default(uuid(7)) @db.Uuid
+  listingId String  @map("listing_id") @db.Uuid
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  weekday   Int     @db.SmallInt
+  opensMin  Int     @map("opens_min") @db.SmallInt
+  closesMin Int     @map("closes_min") @db.SmallInt
+
+  @@index([listingId, weekday])
+  @@map("listing_opening_hours")
+}
+
+/// Tarih istisnası: resmî/dini bayram, özel gün (kapalı ya da özel saat).
+model ListingOpeningException {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  listingId String   @map("listing_id") @db.Uuid
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  closed    Boolean
+  opensMin  Int?     @map("opens_min") @db.SmallInt
+  closesMin Int?     @map("closes_min") @db.SmallInt
+  note      String?
+
+  @@unique([listingId, date])
+  @@map("listing_opening_exceptions")
 }

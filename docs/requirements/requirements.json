@@ -336,12 +336,18 @@
       "title": "Çalışma saatleri",
       "level": "ZORUNLU",
       "phase": 1,
-      "status": "BAŞLANMADI",
+      "status": "TAMAM",
       "verification": "T",
-      "acceptance": null,
-      "tests": [],
+      "acceptance": "Haftalık aralıklar (gece yarısını aşan dahil), tarihli özel günler (bayram/tatil haftalığın yerine geçer), saat dilimi ve doğrulama tarihi; \"Şu an açık\" sunucuda hesaplanır (saat yoksa bilinmiyor, açık sayılmaz); arama filtresi; panel düzenleyici (E2E-002).",
+      "tests": [
+        "packages/utils/src/opening-hours.test.ts",
+        "apps/api/test/opening-hours.int.test.ts",
+        "apps/admin/src/app/(panel)/listelemeler/[id]/hours-form.test.ts",
+        "apps/web/src/lib/search-state.test.ts",
+        "tests/e2e/specs/opening-hours.spec.ts"
+      ],
       "lastVerifiedCommit": null,
-      "notes": "Çalışma saatleri modeli ve \"şimdi açık\" yok."
+      "notes": "utils isOpenAt (saf) ↔ postgres openListingsSql eşitliği 12 anda int testte; listing_opening_hours/exceptions + CHECK kısıtları; A-033."
     },
     {
       "id": "REQ-VER-011",
@@ -1393,7 +1399,7 @@
       "acceptance": "Mobilde alt sayfa filtre paneli, rozet, Temizle, Sonuçları göster (N) canlı sayı; URL durumu yansıtır, geri tuşu çalışır (search-state.test, E2E search.spec).",
       "tests": [],
       "lastVerifiedCommit": null,
-      "notes": ""
+      "notes": "\"Şu an açık\" filtresi (acik=1 → openNow) çip ve gevşetmeyle (E2E opening-hours.spec)."
     },
     {
       "id": "REQ-ARA-013",
@@ -3430,9 +3436,14 @@
       "status": "KISMİ",
       "verification": "T",
       "acceptance": null,
-      "tests": ["packages/utils/src/format.test.ts", "tests/e2e/prepare-db.mjs"],
+      "tests": [
+        "apps/api/test/opening-hours.int.test.ts",
+        "packages/utils/src/format.test.ts",
+        "packages/utils/src/opening-hours.test.ts",
+        "tests/e2e/prepare-db.mjs"
+      ],
       "lastVerifiedCommit": null,
-      "notes": "İzole E2E veritabanı, Testcontainers, deterministik IP, TZ biçim testi. Eksik: fabrikalar, sahte saat, gece yarısı/bayram testleri."
+      "notes": "İzole E2E veritabanı, Testcontainers, deterministik IP, TZ biçim testi; sabit anlı (sahte saat) gece yarısı ve bayram senaryoları (opening-hours). Eksik: fabrikalar."
     },
     {
       "id": "REQ-TST-005",

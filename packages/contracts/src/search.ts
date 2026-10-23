@@ -25,6 +25,8 @@ export const SearchQuery = z.object({
   type: z.enum(['LISTING', 'ARTICLE']).optional(),
   priceMax: z.coerce.number().int().min(1).max(4).optional(),
   minRating: z.enum(['3.5', '4', '4.5']).optional(),
+  /** Yalnızca şu an açık olanlar (REQ-VER-010, E2E-002); saat girilmemiş listelemeler dışarıda. */
+  openNow: bool.optional(),
   attr: z.union([attrFilter, z.array(attrFilter).max(10)]).optional(),
   sort: SearchSort.default('recommended'),
   lat: z.coerce.number().min(35).max(43).optional(),

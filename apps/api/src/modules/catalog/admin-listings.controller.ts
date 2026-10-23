@@ -1,10 +1,22 @@
-import { Body, Controller, Get, HttpCode, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import {
   AdminListingListQuery,
   ListingCreateBody,
   ListingStatusBody,
   ListingUpdateBody,
+  OpeningHoursBody,
 } from '@incelemeler/contracts';
 import { parseId } from '../../common/ids.js';
 import { requestMeta } from '../../common/request-meta.js';
@@ -13,13 +25,35 @@ import { parseQuery } from '../../common/zod-query.js';
 import type { Permission } from '../access/permissions.js';
 import { Auth, type AuthContext, RequireAuth } from '../identity/auth.context.js';
 import { AdminListingsService } from './admin-listings.service.js';
+import { OpeningHoursService } from './opening-hours.service.js';
 
 /** Yazar taslak, editör ve üstü yayın yetkisine sahiptir (rol matrisi, REQ-HSP-009). */
 const LISTING_EDITORS: Permission[] = ['listings.write', 'listings.draft'];
 
 @Controller('v1/admin/listings')
 export class AdminListingsController {
-  constructor(private readonly listings: AdminListingsService) {}
+  constructor(
+    private readonly listings: AdminListingsService,
+    private readonly hours: OpeningHoursService,
+  ) {}
+
+  @Get(':id/opening-hours')
+  @RequireAuth({ level: 'staff-mfa', permission: LISTING_EDITORS })
+  openingHours(@Param('id') id: string) {
+    return this.hours.get(parseId(id));
+  }
+
+  /** Çalışma saatleri (REQ-VER-010): yalnızca yayın yetkili editör (doğrulanmış kaynak beyanı). */
+  @Put(':id/opening-hours')
+  @RequireAuth({ level: 'staff-mfa', permission: 'listings.write' })
+  putOpeningHours(
+    @Auth() ctx: AuthContext,
+    @Param('id') id: string,
+    @Body() body: unknown,
+    @Req() req: Request,
+  ) {
+    return this.hours.put(ctx, parseId(id), parseBody(OpeningHoursBody, body), requestMeta(req));
+  }
 
   @Get()
   @RequireAuth({ level: 'staff-mfa', permission: LISTING_EDITORS })

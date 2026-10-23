@@ -1,7 +1,7 @@
 # Durum (STATUS)
 
 - **Aktif faz: 1** — Çalışan temel platform (Faz 0 tamamlandı: `docs/status-log/FAZ-0-raporu.md`)
-- Aktif dilim: Faz 1 dilim 18 — katalog verisi (dilim 17: `docs/status-log/F1-D17.md`)
+- Aktif dilim: Faz 1 dilim 18b — katalog verisi (dilim 18a: `docs/status-log/F1-D18a.md`)
 - Son yeşil `ci:local`: bkz. `.ci-local/last-run.json` (yerel; git dışı)
 - Dal: `claude/pensive-hopper-oftszn` (A-001)
 
@@ -75,7 +75,10 @@
 ## Dilim 17 özeti (operasyon)
 - Panel › İşletim anahtarları (bakım modu, sponsorlu/değerlendirme/kayıt/entegrasyon kapatma); özellik bayrağı kaydı; `pnpm migration:check`, `pnpm ops:check`, `pnpm restore:drill`; kapsam eşikleri (`ci:local` coverage adımı); docs/ops runbook'ları ve canlıya geçiş listesi; ADR-0014 barındırma önerisi.
 
+## Dilim 18a özeti (çalışma saatleri)
+- Panel › Listeleme › Çalışma saatleri; detayda saat bölümü ve sunucuda "Şu an açık"; `/ara?acik=1` filtresi (VER-010, E2E-002).
+
 ## Sonraki 3 adım
-1. Dilim 18 — Katalog verisi: çalışma saatleri + "Açık şimdi" (VER-010, E2E-002), editör verdict'leri (VER-005), user_preferences (VER-024), i18n ADR (VER-019), adres biçimi (YRL-004), kategori navigasyonu (KAT-005).
+1. Dilim 18b/c — Katalog verisi: editör verdict'leri (VER-005), user_preferences (VER-024), i18n ADR (VER-019), adres biçimi (YRL-004), kategori navigasyonu (KAT-005).
 2. D19–D22 (plan `docs/status-log/F1-D14.md`).
 3. Faz 1→2 geçişi yalnızca çıkış ölçütleri sağlanınca ve İnsan onayıyla (C).

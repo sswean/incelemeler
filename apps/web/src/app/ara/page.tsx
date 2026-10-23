@@ -142,6 +142,7 @@ export default async function SearchPage(props: Props) {
       icerik: s.icerik ? S.contentTypes[s.icerik] : undefined,
       fiyat: s.fiyat !== null ? price(s.fiyat) : undefined,
       puan: s.puan ? S.ratingOptions[s.puan] : undefined,
+      acik: S.openNow,
       ozellik: attrLabel,
     }),
   ];
@@ -233,6 +234,10 @@ export default async function SearchPage(props: Props) {
                   </option>
                 ))}
               </select>
+            </label>
+            <label className="flex min-h-11 items-center gap-2 text-sm">
+              <input type="checkbox" name="acik" value="1" defaultChecked={s.acik} />
+              <span className="font-medium">{S.openNow}</span>
             </label>
             {attributes.length ? (
               <fieldset className="space-y-1 text-sm">

@@ -20,6 +20,7 @@ import { SponsoredBox } from '../sponsored/box';
 import { FavoriteButton } from '../account/favorite-button';
 import { OutboundEvents, PageEvents } from '../analytics/page-events';
 import { breadcrumbJsonLd, listingJsonLd } from './json-ld';
+import { OpeningHoursView } from './opening-hours';
 
 const T = tr.listingPage;
 type Props = { params: Promise<{ slug: string }> };
@@ -405,6 +406,8 @@ export async function ListingPage(
           </address>
         </section>
       ) : null}
+
+      {l.openingHours ? <OpeningHoursView hours={l.openingHours} /> : null}
 
       {gallery.length ? (
         <section aria-labelledby="fotograflar" className="space-y-2">

@@ -107,6 +107,7 @@ export class SearchService {
         district?.id ?? (parsedPlace?.level === 'DISTRICT' ? parsedPlace.id : null) ?? null,
       priceMax: q.priceMax ?? intentFilter.priceLevelMax ?? null,
       minRating: q.minRating ? Number(q.minRating) : null,
+      openAt: q.openNow ? new Date() : null,
       attributes: { ...intentAttrs, ...explicitAttrs },
       excludeDemo: this.excludeDemo,
       sort: q.sort,
@@ -301,6 +302,13 @@ export class SearchService {
         drop: 'priceMax',
         label: '₺'.repeat(c.priceMax),
         apply: (x) => ({ ...x, priceMax: null }),
+      });
+    }
+    if (c.openAt !== null) {
+      options.push({
+        drop: 'openNow',
+        label: 'Şu an açık',
+        apply: (x) => ({ ...x, openAt: null }),
       });
     }
     if (c.minRating !== null) {

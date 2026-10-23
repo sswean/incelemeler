@@ -119,4 +119,20 @@ describe('[REQ-ARA-012] /ara URL durumu', () => {
     );
     expect(relaxed).toBe('/ara?kategori=kahvalti-mekanlari&yorumla=hayir');
   });
+
+  it('[REQ-VER-010] "Şu an açık" filtresi: URL acik=1, API openNow, çip ve gevşetme', () => {
+    const s = parseState({ kategori: 'kafeler', acik: '1' });
+    expect(s.acik).toBe(true);
+    expect(parseState({ acik: 'evet' }).acik).toBe(false);
+    expect(toApiQuery(s)).toMatchObject({ category: 'kafeler', openNow: 'true' });
+    expect(searchHref(s)).toBe('/ara?kategori=kafeler&acik=1');
+    expect(activeFilterCount(s)).toBe(2);
+    const chip = explicitChips(s, { ozellik: (a) => a, acik: 'Şu an açık' }).find(
+      (c) => c.id === 'acik',
+    )!;
+    expect(chip).toMatchObject({ label: 'Şu an açık', href: '/ara?kategori=kafeler' });
+    expect(
+      relaxHref(s, { ...interpretation, place: null, category: null, intents: [] }, 'openNow'),
+    ).toBe('/ara?kategori=kafeler&yorumla=hayir');
+  });
 });

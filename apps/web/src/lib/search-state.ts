@@ -13,6 +13,8 @@ export interface SearchState {
   icerik: 'LISTING' | 'ARTICLE' | null;
   fiyat: number | null;
   puan: '3.5' | '4' | '4.5' | null;
+  /** Yalnızca şu an açık olanlar (REQ-VER-010, E2E-002). */
+  acik: boolean;
   ozellik: string[];
   sirala: SearchSort;
   sayfa: number;
@@ -61,6 +63,7 @@ export const EMPTY_STATE: SearchState = {
   icerik: null,
   fiyat: null,
   puan: null,
+  acik: false,
   ozellik: [],
   sirala: 'recommended',
   sayfa: 1,
@@ -86,6 +89,7 @@ export function parseState(p: Params): SearchState {
     icerik: icerik === 'LISTING' || icerik === 'ARTICLE' ? icerik : null,
     fiyat: fiyat !== null && Number.isInteger(fiyat) ? fiyat : null,
     puan: puan === '3.5' || puan === '4' || puan === '4.5' ? puan : null,
+    acik: one(p.acik) === '1',
     ozellik: [...new Set(many(p.ozellik).filter((a) => ATTR.test(a)))].slice(0, 10),
     sirala: sirala && (SORTS as string[]).includes(sirala) ? (sirala as SearchSort) : 'recommended',
     sayfa: Math.trunc(num(p.sayfa, 1, 50) ?? 1),
@@ -106,6 +110,7 @@ export function toApiQuery(s: SearchState): Record<string, string | string[]> {
   if (s.icerik) out.type = s.icerik;
   if (s.fiyat !== null) out.priceMax = String(s.fiyat);
   if (s.puan) out.minRating = s.puan;
+  if (s.acik) out.openNow = 'true';
   if (s.ozellik.length) out.attr = s.ozellik;
   if (s.sirala !== 'recommended') out.sort = s.sirala;
   if (s.enlem !== null && s.boylam !== null) {
@@ -128,6 +133,7 @@ export function searchHref(s: SearchState): string {
   if (s.icerik) p.set('icerik', s.icerik);
   if (s.fiyat !== null) p.set('fiyat', String(s.fiyat));
   if (s.puan) p.set('puan', s.puan);
+  if (s.acik) p.set('acik', '1');
   for (const a of s.ozellik) p.append('ozellik', a);
   if (s.sirala !== 'recommended') p.set('sirala', s.sirala);
   if (s.enlem !== null && s.boylam !== null) {
@@ -144,6 +150,7 @@ export function searchHref(s: SearchState): string {
 export function activeFilterCount(s: SearchState): number {
   return (
     [s.il, s.kategori, s.tur, s.icerik, s.fiyat, s.puan].filter((v) => v !== null).length +
+    (s.acik ? 1 : 0) +
     s.ozellik.length
   );
 }
@@ -208,6 +215,7 @@ export function explicitChips(
     icerik?: string;
     fiyat?: string;
     puan?: string;
+    acik?: string;
     ozellik: (a: string) => string;
   },
 ): Chip[] {
@@ -251,6 +259,12 @@ export function explicitChips(
       label: names.puan ?? s.puan,
       href: searchHref({ ...base, puan: null }),
     });
+  if (s.acik)
+    chips.push({
+      id: 'acik',
+      label: names.acik ?? 'acik',
+      href: searchHref({ ...base, acik: false }),
+    });
   for (const a of s.ozellik) {
     chips.push({
       id: `ozellik:${a}`,
@@ -279,6 +293,7 @@ export function relaxHref(s: SearchState, i: SearchInterpretation, drop: string)
   else if (drop === 'category') next = { ...next, kategori: null };
   else if (drop === 'priceMax') next = { ...next, fiyat: null };
   else if (drop === 'minRating') next = { ...next, puan: null };
+  else if (drop === 'openNow') next = { ...next, acik: false };
   else if (drop === 'text') next = { ...next, q: '' };
   else if (drop.startsWith('attr:')) {
     const key = drop.slice(5);

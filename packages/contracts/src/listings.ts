@@ -294,3 +294,71 @@ export const AdminListingListQuery = z.object({
   cursor: z.string().optional(),
 });
 export type AdminListingListQuery = z.infer<typeof AdminListingListQuery>;
+
+// ── Çalışma saatleri (REQ-VER-010) ──
+
+const Clock = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
+const ClosingClock = z.string().regex(/^(([01]\d|2[0-3]):[0-5]\d|24:00)$/);
+const clockToMin = (v: string) => Number(v.slice(0, 2)) * 60 + Number(v.slice(3, 5));
+const differs = (r: { opens?: string | null; closes?: string | null }) =>
+  !r.opens || !r.closes || clockToMin(r.opens) !== clockToMin(r.closes);
+
+export const OpeningHoursBody = z
+  .object({
+    timezone: z
+      .string()
+      .regex(/^[A-Za-z]+(\/[A-Za-z_]+)+$|^UTC$/)
+      .default('Europe/Istanbul'),
+    /** ISO gün (1 = Pazartesi); kapanış açılıştan önceyse gece yarısını aşar (18:00–02:00). */
+    weekly: z
+      .array(
+        z
+          .object({ day: z.number().int().min(1).max(7), opens: Clock, closes: ClosingClock })
+          .refine(differs, { message: 'Açılış ve kapanış aynı olamaz' }),
+      )
+      .max(28),
+    exceptions: z
+      .array(
+        z
+          .object({
+            date: z.iso.date(),
+            closed: z.boolean(),
+            opens: Clock.optional(),
+            closes: ClosingClock.optional(),
+            note: z.string().trim().max(120).optional(),
+          })
+          .refine((e) => (e.closed ? !e.opens && !e.closes : e.opens && e.closes), {
+            message: 'Kapalı günde saat olmaz; açık özel günde açılış ve kapanış zorunlu',
+          })
+          .refine(differs, { message: 'Açılış ve kapanış aynı olamaz' }),
+      )
+      .max(60)
+      .refine((xs) => new Set(xs.map((x) => x.date)).size === xs.length, {
+        message: 'Aynı tarih iki kez girilemez',
+      }),
+    /** İşaretliyse `hoursVerifiedAt` şimdi olur (kaynak doğrulandı). */
+    verified: z.boolean().default(false),
+  })
+  .strict()
+  .meta({ id: 'OpeningHoursBody' });
+export type OpeningHoursBody = z.infer<typeof OpeningHoursBody>;
+
+export const OpeningHours = z
+  .object({
+    timezone: z.string(),
+    weekly: z.array(z.object({ day: z.number().int(), opens: z.string(), closes: z.string() })),
+    exceptions: z.array(
+      z.object({
+        date: z.string(),
+        closed: z.boolean(),
+        opens: z.string().nullable(),
+        closes: z.string().nullable(),
+        note: z.string().nullable(),
+      }),
+    ),
+    verifiedAt: z.iso.datetime().nullable(),
+    /** Sunucuda hesaplanır; haftalık düzen yoksa null (bilinmiyor). */
+    openNow: z.boolean().nullable(),
+  })
+  .meta({ id: 'OpeningHours' });
+export type OpeningHours = z.infer<typeof OpeningHours>;

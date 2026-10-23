@@ -5,7 +5,13 @@ export default defineConfig({
   test: {
     coverage: {
       provider: 'v8',
-      include: ['src/turkish.ts', 'src/format.ts', 'src/rating.ts', 'src/suffix.ts'],
+      include: [
+        'src/turkish.ts',
+        'src/format.ts',
+        'src/rating.ts',
+        'src/suffix.ts',
+        'src/opening-hours.ts',
+      ],
       thresholds: { lines: 95 },
       reporter: ['text-summary'],
     },
